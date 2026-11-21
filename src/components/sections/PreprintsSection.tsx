@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { publicationsData } from '../../data';
 import type { PublicationEntry } from '../../types/content';
+import { copyTextToClipboard } from '../../utils/clipboard';
 import { FileText, ExternalLink, Copy, Check, ShieldAlert } from 'lucide-react';
 
 export const PreprintsSection: React.FC = () => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const copyBibtex = (pub: PublicationEntry) => {
+  const copyBibtex = async (pub: PublicationEntry) => {
     const bibtex = `@article{pardeshi_${pub.id},
   author    = {${pub.authors.join(' and ')}},
   title     = {${pub.title}},
@@ -14,9 +15,11 @@ export const PreprintsSection: React.FC = () => {
   note      = {Independently authored research preprint},
   url       = {${pub.recordUrl}}
 }`;
-    navigator.clipboard.writeText(bibtex);
-    setCopiedId(pub.id);
-    setTimeout(() => setCopiedId(null), 2500);
+    const success = await copyTextToClipboard(bibtex);
+    if (success) {
+      setCopiedId(pub.id);
+      setTimeout(() => setCopiedId(null), 2500);
+    }
   };
 
   return (

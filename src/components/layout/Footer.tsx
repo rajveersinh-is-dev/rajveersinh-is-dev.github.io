@@ -63,8 +63,18 @@ export const Footer: React.FC = () => {
                 </a>
               </li>
               <li>
+                <a href="#education" className="hover:text-amber-400 transition-colors">
+                  06 // Academic Education
+                </a>
+              </li>
+              <li>
+                <a href="#cv" className="hover:text-amber-400 transition-colors">
+                  07 // Curriculum Vitae
+                </a>
+              </li>
+              <li>
                 <a href="#playground" className="hover:text-amber-400 transition-colors">
-                  06 // Mathematical Playground
+                  08 // Mathematical Playground
                 </a>
               </li>
             </ul>

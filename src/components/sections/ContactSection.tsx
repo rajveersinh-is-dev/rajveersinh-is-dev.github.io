@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { contactData } from '../../data';
+import { copyTextToClipboard } from '../../utils/clipboard';
 import {
   Copy,
   Check,
@@ -12,6 +13,7 @@ import { GithubIcon, LinkedinIcon } from '../common/BrandIcons';
 
 export const ContactSection: React.FC = () => {
   const [copiedEmail, setCopiedEmail] = useState(false);
+  const [copiedPayload, setCopiedPayload] = useState(false);
 
   // Form states
   const [name, setName] = useState('');
@@ -22,10 +24,12 @@ export const ContactSection: React.FC = () => {
   const [formError, setFormError] = useState<string | null>(null);
   const [preparedPayload, setPreparedPayload] = useState<string | null>(null);
 
-  const handleCopyEmail = () => {
-    navigator.clipboard.writeText(contactData.email);
-    setCopiedEmail(true);
-    setTimeout(() => setCopiedEmail(false), 2500);
+  const handleCopyEmail = async () => {
+    const success = await copyTextToClipboard(contactData.email);
+    if (success) {
+      setCopiedEmail(true);
+      setTimeout(() => setCopiedEmail(false), 2500);
+    }
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -259,12 +263,23 @@ export const ContactSection: React.FC = () => {
                   <div className="flex items-center justify-between text-amber-400 font-semibold">
                     <span>Generated Message Body:</span>
                     <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(preparedPayload);
+                      onClick={async () => {
+                        const ok = await copyTextToClipboard(preparedPayload);
+                        if (ok) {
+                          setCopiedPayload(true);
+                          setTimeout(() => setCopiedPayload(false), 2000);
+                        }
                       }}
-                      className="text-text-muted hover:text-amber-400 text-[11px] underline"
+                      className="text-text-muted hover:text-amber-400 text-[11px] underline flex items-center space-x-1"
                     >
-                      Copy message text
+                      {copiedPayload ? (
+                        <>
+                          <Check className="w-3 h-3 text-green-400" />
+                          <span className="text-green-400">Copied!</span>
+                        </>
+                      ) : (
+                        <span>Copy message text</span>
+                      )}
                     </button>
                   </div>
                   <pre className="p-2.5 rounded bg-bg-base border border-border-subtle text-text-secondary whitespace-pre-wrap text-[11px]">

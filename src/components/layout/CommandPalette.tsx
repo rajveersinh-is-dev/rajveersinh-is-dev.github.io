@@ -1,7 +1,8 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { usePreferences } from '../../context';
 import { projectsData, publicationsData, contactData } from '../../data';
 import { downloadPdfCv } from '../../utils/generatePdfCv';
+import { copyTextToClipboard } from '../../utils/clipboard';
 import {
   Search,
   BookOpen,
@@ -13,6 +14,7 @@ import {
   ExternalLink,
   Sparkles,
   ArrowRight,
+  GraduationCap,
   X
 } from 'lucide-react';
 
@@ -36,6 +38,8 @@ export const CommandPalette: React.FC = () => {
   } = usePreferences();
 
   const [query, setQuery] = useState('');
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const navigateToSection = useCallback((sectionId: string) => {
     setCommandPaletteOpen(false);
@@ -60,7 +64,7 @@ export const CommandPalette: React.FC = () => {
         id: 'sec-about',
         category: 'Navigation',
         title: 'About & Philosophy',
-        subtitle: 'Personal background, vision, education & experience',
+        subtitle: 'First-person background, vision, and aspirations',
         icon: <ArrowRight className="w-4 h-4 text-amber-500" />,
         action: () => navigateToSection('about'),
       },
@@ -105,6 +109,22 @@ export const CommandPalette: React.FC = () => {
         action: () => navigateToSection('skills'),
       },
       {
+        id: 'sec-education',
+        category: 'Navigation',
+        title: 'Education & Enrolment',
+        subtitle: 'IIT Madras (BSc Aerospace Enrolled) & Eon Gyanankur (Class XII)',
+        icon: <GraduationCap className="w-4 h-4 text-amber-500" />,
+        action: () => navigateToSection('education'),
+      },
+      {
+        id: 'sec-cv',
+        category: 'Navigation',
+        title: 'Curriculum Vitae',
+        subtitle: 'Download official PDF or inspect Markdown source',
+        icon: <FileText className="w-4 h-4 text-amber-500" />,
+        action: () => navigateToSection('cv'),
+      },
+      {
         id: 'sec-timeline',
         category: 'Navigation',
         title: 'Milestone Timeline',
@@ -142,7 +162,7 @@ export const CommandPalette: React.FC = () => {
         id: 'act-download-cv',
         category: 'Action',
         title: 'Download Curriculum Vitae (PDF)',
-        subtitle: 'Locally generate official 2-page PDF document',
+        subtitle: 'Locally generated vector PDF document',
         icon: <FileText className="w-4 h-4 text-amber-400" />,
         action: () => {
           setCommandPaletteOpen(false);
@@ -173,7 +193,7 @@ export const CommandPalette: React.FC = () => {
       },
     ];
 
-    // Add Projects
+    // Add Projects (Opens detailed specification view directly!)
     projectsData.forEach((proj) => {
       items.push({
         id: `proj-${proj.id}`,
@@ -183,7 +203,8 @@ export const CommandPalette: React.FC = () => {
         icon: <FolderGit2 className="w-4 h-4 text-slate-400" />,
         action: () => {
           setCommandPaletteOpen(false);
-          const el = document.getElementById(`project-${proj.id}`) || document.getElementById('projects');
+          window.location.hash = `#project-${proj.id}`;
+          const el = document.getElementById('projects');
           if (el) el.scrollIntoView({ behavior: 'smooth' });
         },
       });
@@ -212,8 +233,8 @@ export const CommandPalette: React.FC = () => {
       title: `Copy Email: ${contactData.email}`,
       subtitle: 'Copy address to clipboard',
       icon: <Mail className="w-4 h-4 text-slate-400" />,
-      action: () => {
-        navigator.clipboard.writeText(contactData.email);
+      action: async () => {
+        await copyTextToClipboard(contactData.email);
         setCommandPaletteOpen(false);
       },
     });
@@ -239,6 +260,43 @@ export const CommandPalette: React.FC = () => {
     );
   }, [query, commandItems]);
 
+  // Safe clamped index during render
+  const safeSelectedIndex = selectedIndex >= filteredItems.length ? 0 : selectedIndex;
+
+  // Keep selected item visible in scroll container
+  useEffect(() => {
+    if (commandPaletteOpen && itemRefs.current[safeSelectedIndex]) {
+      const el = itemRefs.current[safeSelectedIndex];
+      if (el && typeof el.scrollIntoView === 'function') {
+        el.scrollIntoView({
+          block: 'nearest',
+        });
+      }
+    }
+  }, [safeSelectedIndex, commandPaletteOpen]);
+
+  // Keyboard navigation listener (ArrowDown, ArrowUp, Enter, Escape)
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (filteredItems.length === 0) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev + 1) % filteredItems.length);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev - 1 + filteredItems.length) % filteredItems.length);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      const current = filteredItems[safeSelectedIndex];
+      if (current) {
+        current.action();
+      }
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      setCommandPaletteOpen(false);
+    }
+  };
+
   if (!commandPaletteOpen) return null;
 
   return (
@@ -248,6 +306,7 @@ export const CommandPalette: React.FC = () => {
       aria-label="Command Palette"
       className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-black/80 backdrop-blur-sm"
       onClick={() => setCommandPaletteOpen(false)}
+      onKeyDown={handleKeyDown}
     >
       <div
         className="w-full max-w-2xl bg-bg-surface border border-border-medium rounded-lg shadow-2xl overflow-hidden flex flex-col max-h-[75vh]"
@@ -260,9 +319,13 @@ export const CommandPalette: React.FC = () => {
             type="text"
             placeholder="Type a command, project, research area, or section..."
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setSelectedIndex(0);
+            }}
             autoFocus
             className="w-full bg-transparent text-text-primary placeholder:text-text-muted focus:outline-none text-sm font-mono"
+            aria-autocomplete="list"
           />
           <button
             onClick={() => setCommandPaletteOpen(false)}
@@ -280,30 +343,43 @@ export const CommandPalette: React.FC = () => {
               No matching commands or projects found.
             </div>
           ) : (
-            filteredItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={item.action}
-                className="w-full text-left px-3 py-2.5 rounded hover:bg-bg-cardHover flex items-center justify-between group transition-colors"
-              >
-                <div className="flex items-center space-x-3 min-w-0 pr-2">
-                  <div className="p-1.5 rounded bg-bg-base border border-border-subtle group-hover:border-amber-500/40">
-                    {item.icon}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-sm font-medium text-text-primary group-hover:text-amber-400 truncate">
-                      {item.title}
+            filteredItems.map((item, idx) => {
+              const isSelected = safeSelectedIndex === idx;
+              return (
+                <button
+                  key={item.id}
+                  ref={(el) => { itemRefs.current[idx] = el; }}
+                  onClick={item.action}
+                  onMouseEnter={() => setSelectedIndex(idx)}
+                  className={`w-full text-left px-3 py-2.5 rounded flex items-center justify-between group transition-colors ${
+                    isSelected
+                      ? 'bg-amber-500/15 border-l-2 border-amber-500 text-amber-400 font-semibold'
+                      : 'hover:bg-bg-cardHover text-text-primary'
+                  }`}
+                >
+                  <div className="flex items-center space-x-3 min-w-0 pr-2">
+                    <div className={`p-1.5 rounded bg-bg-base border ${
+                      isSelected ? 'border-amber-500/60' : 'border-border-subtle group-hover:border-amber-500/40'
+                    }`}>
+                      {item.icon}
                     </div>
-                    <div className="text-xs text-text-muted truncate">
-                      {item.subtitle}
+                    <div className="min-w-0">
+                      <div className={`text-sm truncate ${
+                        isSelected ? 'text-amber-400 font-bold' : 'group-hover:text-amber-400'
+                      }`}>
+                        {item.title}
+                      </div>
+                      <div className="text-xs text-text-muted truncate">
+                        {item.subtitle}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-text-dim px-2 py-0.5 rounded bg-bg-base border border-border-subtle flex-shrink-0">
-                  {item.category}
-                </span>
-              </button>
-            ))
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-text-dim px-2 py-0.5 rounded bg-bg-base border border-border-subtle flex-shrink-0">
+                    {item.category}
+                  </span>
+                </button>
+              );
+            })
           )}
         </div>
 

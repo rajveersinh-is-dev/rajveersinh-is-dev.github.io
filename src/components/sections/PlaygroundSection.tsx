@@ -670,22 +670,45 @@ const FractalSimulator: React.FC = () => {
 const HomologySimulator: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [epsilon, setEpsilon] = useState<number>(65);
+  const draggingIdxRef = useRef<number | null>(null);
 
-  // Fixed deterministic topological point set forming two prominent holes
-  const [points, setPoints] = useState<{ x: number; y: number }[]>(() => {
+  // Deterministic topological point set forming two prominent cavities
+  const createDualCavities = () => {
     const pts: { x: number; y: number }[] = [];
-    // Ring 1 (Left cavity)
     for (let i = 0; i < 10; i++) {
       const a = (i / 10) * Math.PI * 2;
       pts.push({ x: 180 + Math.cos(a) * 60, y: 150 + Math.sin(a) * 60 });
     }
-    // Ring 2 (Right cavity)
     for (let i = 0; i < 10; i++) {
       const a = (i / 10) * Math.PI * 2;
       pts.push({ x: 380 + Math.cos(a) * 60, y: 150 + Math.sin(a) * 60 });
     }
     return pts;
-  });
+  };
+
+  const [points, setPoints] = useState<{ x: number; y: number }[]>(createDualCavities);
+
+  // Preset loaders
+  const loadSingleRing = () => {
+    const pts: { x: number; y: number }[] = [];
+    for (let i = 0; i < 16; i++) {
+      const a = (i / 16) * Math.PI * 2;
+      pts.push({ x: 280 + Math.cos(a) * 90, y: 150 + Math.sin(a) * 90 });
+    }
+    setPoints(pts);
+    setEpsilon(50);
+  };
+
+  const loadRandomCloud = () => {
+    const pts: { x: number; y: number }[] = [];
+    for (let i = 0; i < 22; i++) {
+      pts.push({
+        x: 60 + Math.random() * 440,
+        y: 40 + Math.random() * 220,
+      });
+    }
+    setPoints(pts);
+  };
 
   // Calculate Betti numbers and 1-simplices / 2-simplices
   const [stats, setStats] = useState({ b0: 0, b1: 0, edgesCount: 0, trianglesCount: 0 });
@@ -725,7 +748,7 @@ const HomologySimulator: React.FC = () => {
           if (adj[i].includes(k) && adj[j].includes(k)) {
             triangles++;
             // Draw filled triangle simplex
-            ctx.fillStyle = 'rgba(245, 158, 11, 0.12)';
+            ctx.fillStyle = 'rgba(245, 158, 11, 0.14)';
             ctx.beginPath();
             ctx.moveTo(points[i].x, points[i].y);
             ctx.lineTo(points[j].x, points[j].y);
@@ -738,7 +761,7 @@ const HomologySimulator: React.FC = () => {
     }
 
     // Draw 1-simplices (Edges)
-    ctx.strokeStyle = 'rgba(245, 158, 11, 0.6)';
+    ctx.strokeStyle = 'rgba(245, 158, 11, 0.65)';
     ctx.lineWidth = 1.2;
     edgePairs.forEach(([i, j]) => {
       ctx.beginPath();
@@ -758,11 +781,14 @@ const HomologySimulator: React.FC = () => {
       // Vertex
       ctx.fillStyle = '#f8fafc';
       ctx.beginPath();
-      ctx.arc(pt.x, pt.y, 3.5, 0, Math.PI * 2);
+      ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2);
       ctx.fill();
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1;
+      ctx.stroke();
     });
 
-    // Compute Connected Components (B0) using BFS/Disjoint Set
+    // Compute Connected Components (B0) using BFS
     const visited = new Array(n).fill(false);
     let components = 0;
     for (let i = 0; i < n; i++) {
@@ -782,8 +808,7 @@ const HomologySimulator: React.FC = () => {
       }
     }
 
-    // Approximate 1st Betti number via Euler Characteristic: χ = V - E + F = b0 - b1
-    // => b1 = E - V - F + b0
+    // First Betti number approximation via Euler Characteristic: χ = V - E + F = b0 - b1
     const b0 = components;
     const b1 = Math.max(0, edgePairs.length - n - triangles + b0);
 
@@ -794,6 +819,48 @@ const HomologySimulator: React.FC = () => {
       trianglesCount: triangles,
     });
   }, [points, epsilon]);
+
+  // Interactive pointer handlers to add/drag vertices
+  const getCanvasCoords = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return {
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY,
+    };
+  };
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const { x, y } = getCanvasCoords(e);
+    // Check if clicking near an existing vertex to drag
+    const foundIdx = points.findIndex((pt) => Math.hypot(pt.x - x, pt.y - y) <= 14);
+    if (foundIdx !== -1) {
+      draggingIdxRef.current = foundIdx;
+    } else {
+      // Clicked empty space: add new vertex
+      if (points.length < 35) {
+        setPoints((prev) => [...prev, { x, y }]);
+      }
+    }
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (draggingIdxRef.current !== null) {
+      const { x, y } = getCanvasCoords(e);
+      setPoints((prev) => {
+        const copy = [...prev];
+        copy[draggingIdxRef.current!] = { x, y };
+        return copy;
+      });
+    }
+  };
+
+  const handlePointerUp = () => {
+    draggingIdxRef.current = null;
+  };
 
   return (
     <div className="space-y-6">
@@ -807,32 +874,50 @@ const HomologySimulator: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => {
-              const pts: { x: number; y: number }[] = [];
-              for (let i = 0; i < 10; i++) {
-                const a = (i / 10) * Math.PI * 2;
-                pts.push({ x: 180 + Math.cos(a) * 60, y: 150 + Math.sin(a) * 60 });
-              }
-              for (let i = 0; i < 10; i++) {
-                const a = (i / 10) * Math.PI * 2;
-                pts.push({ x: 380 + Math.cos(a) * 60, y: 150 + Math.sin(a) * 60 });
-              }
-              setPoints(pts);
+              setPoints(createDualCavities());
               setEpsilon(65);
             }}
-            className="px-3 py-1.5 rounded bg-bg-elevated border border-border-subtle text-xs font-mono text-text-secondary hover:text-text-primary flex items-center space-x-1"
+            className="px-2.5 py-1.5 rounded bg-bg-elevated border border-border-subtle text-xs font-mono text-text-secondary hover:text-text-primary flex items-center space-x-1"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>Reset Dual Cavities</span>
+            <span>Dual Cavities</span>
+          </button>
+          <button
+            onClick={loadSingleRing}
+            className="px-2.5 py-1.5 rounded bg-bg-elevated border border-border-subtle text-xs font-mono text-text-secondary hover:text-text-primary"
+          >
+            Single Ring
+          </button>
+          <button
+            onClick={loadRandomCloud}
+            className="px-2.5 py-1.5 rounded bg-bg-elevated border border-border-subtle text-xs font-mono text-text-secondary hover:text-text-primary"
+          >
+            Random Cloud
+          </button>
+          <button
+            onClick={() => setPoints([])}
+            className="px-2 py-1.5 rounded bg-bg-elevated border border-border-subtle text-xs font-mono text-text-dim hover:text-text-primary"
+          >
+            Clear
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
         <div className="lg:col-span-8 bg-bg-void rounded-lg border border-border-subtle overflow-hidden relative aspect-video flex items-center justify-center">
-          <canvas ref={canvasRef} width={560} height={300} className="w-full h-full block" />
+          <canvas
+            ref={canvasRef}
+            width={560}
+            height={300}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerLeave={handlePointerUp}
+            className="w-full h-full block cursor-crosshair select-none touch-none"
+          />
         </div>
 
         <div className="lg:col-span-4 space-y-4 font-mono text-xs">
@@ -868,6 +953,10 @@ const HomologySimulator: React.FC = () => {
                 <span className="text-amber-400 font-bold">{stats.b1}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-border-subtle text-text-secondary">
+                <span>0-simplices (Vertices):</span>
+                <span className="text-text-primary">{points.length}</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-border-subtle text-text-secondary">
                 <span>1-simplices (Edges):</span>
                 <span className="text-text-primary">{stats.edgesCount}</span>
               </div>
@@ -875,6 +964,10 @@ const HomologySimulator: React.FC = () => {
                 <span>2-simplices (Triangles):</span>
                 <span className="text-text-primary">{stats.trianglesCount}</span>
               </div>
+            </div>
+
+            <div className="pt-2 border-t border-border-subtle text-[10px] text-text-dim">
+              Tip: Click empty space to add vertices • Drag vertices to manipulate cycles.
             </div>
           </div>
         </div>

@@ -338,6 +338,18 @@ export const AsciiDitherCanvas: React.FC<AsciiDitherCanvasProps> = ({
   }, [mode, density, opacity, interactive, prefersReducedMotion, isVisible]);
 
   // Pointer event handlers with touch support
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    mouseRef.current.targetX = x;
+    mouseRef.current.targetY = y;
+    mouseRef.current.x = x;
+    mouseRef.current.y = y;
+    mouseRef.current.isInteracting = true;
+  };
+
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
@@ -355,6 +367,7 @@ export const AsciiDitherCanvas: React.FC<AsciiDitherCanvasProps> = ({
   return (
     <div
       ref={containerRef}
+      onPointerDown={interactive ? handlePointerDown : undefined}
       onPointerMove={interactive ? handlePointerMove : undefined}
       onPointerLeave={interactive ? handlePointerLeave : undefined}
       className={`relative w-full h-full overflow-hidden select-none pointer-events-auto ${className}`}

@@ -29,13 +29,17 @@ describe('Offline-First Architecture & Asset Verification', () => {
     expect(html).toContain('src="./');
   });
 
-  it('ensures offline service worker and manifest exist in dist/', () => {
+  it('ensures offline service worker, manifest, and static CV files exist in dist/', () => {
     const swPath = path.join(distDir, 'sw.js');
     const manifestPath = path.join(distDir, 'manifest.json');
     const faviconPath = path.join(distDir, 'favicon.svg');
+    const cvPdfPath = path.join(distDir, 'Rajveersinh_Vishal_Pardeshi_CV.pdf');
+    const cvMdPath = path.join(distDir, 'Rajveersinh_Vishal_Pardeshi_CV.md');
 
     expect(fs.existsSync(swPath)).toBe(true);
     expect(fs.existsSync(manifestPath)).toBe(true);
     expect(fs.existsSync(faviconPath)).toBe(true);
+    expect(fs.existsSync(cvPdfPath)).toBe(true);
+    expect(fs.existsSync(cvMdPath)).toBe(true);
   });
 });

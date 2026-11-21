@@ -1,15 +1,25 @@
 import React, { useState } from 'react';
 import { researchInterestsData } from '../../data';
+import { usePreferences } from '../../context';
+import { AsciiDitherCanvas } from '../visuals/AsciiDitherCanvas';
 import { GitBranch, Sigma } from 'lucide-react';
 
 export const ResearchInterestsSection: React.FC = () => {
+  const { visualEffectsEnabled, readingMode } = usePreferences();
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const selectedInterest = researchInterestsData.find((r) => r.id === selectedId) || null;
 
   return (
-    <section id="research-interests" className="py-20 border-t border-border-subtle relative bg-bg-surface/30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <section id="research-interests" className="py-20 border-t border-border-subtle relative bg-bg-surface/30 overflow-hidden">
+      {/* Background Interactive Manifold Reveal */}
+      {visualEffectsEnabled && !readingMode && (
+        <div className="absolute inset-0 z-0 opacity-25 pointer-events-none">
+          <AsciiDitherCanvas mode="hidden-structures" density="sparse" opacity={0.4} />
+        </div>
+      )}
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 relative z-10">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="space-y-2">
@@ -50,7 +60,7 @@ export const ResearchInterestsSection: React.FC = () => {
                     ? 'bg-bg-card border-amber-500 shadow-md shadow-amber-500/10 ring-1 ring-amber-500'
                     : isConnectedToSelected
                     ? 'bg-bg-elevated border-amber-500/50 text-text-primary'
-                    : 'bg-bg-surface border-border-subtle hover:border-border-medium hover:bg-bg-elevated'
+                    : 'bg-bg-surface/90 backdrop-blur-sm border-border-subtle hover:border-border-medium hover:bg-bg-elevated'
                 }`}
               >
                 <div className="flex items-start justify-between">

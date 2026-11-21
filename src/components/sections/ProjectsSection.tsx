@@ -1,20 +1,88 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { projectsData } from '../../data';
 import type { ProjectEntry } from '../../types/content';
+import { ProjectVisualDemo } from '../visuals/ProjectVisualDemo';
+import { copyTextToClipboard } from '../../utils/clipboard';
 import {
   Layers,
   ChevronRight,
   X,
   Sparkles,
-  Info
+  Info,
+  Link as LinkIcon,
+  Check
 } from 'lucide-react';
 import { GithubIcon } from '../common/BrandIcons';
 
 export const ProjectsSection: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [selectedProject, setSelectedProject] = useState<ProjectEntry | null>(null);
+  const [copiedLink, setCopiedLink] = useState(false);
 
   const categories = ['All', 'Compiler & Verification', 'Optimization & Graphs', 'Simulation & Systems'];
+
+  // Hash synchronization for deep linking and direct project page routing
+  useEffect(() => {
+    const handleHashSync = () => {
+      const hash = window.location.hash;
+      if (hash.startsWith('#project-')) {
+        const projId = hash.replace('#project-', '');
+        const target = projectsData.find((p) => p.id === projId);
+        if (target) {
+          setSelectedProject(target);
+        }
+      }
+    };
+
+    handleHashSync();
+    window.addEventListener('hashchange', handleHashSync);
+    return () => window.removeEventListener('hashchange', handleHashSync);
+  }, []);
+
+  const handleCloseModal = () => {
+    setSelectedProject(null);
+    try {
+      if (window.location.hash.startsWith('#project-')) {
+        window.history.replaceState(null, '', '#projects');
+      }
+    } catch {}
+  };
+
+  const handleOpenProject = (project: ProjectEntry) => {
+    setSelectedProject(project);
+    try {
+      window.history.replaceState(null, '', `#project-${project.id}`);
+    } catch {}
+  };
+
+  // Lock body scroll when project modal is open & handle ESC key
+  useEffect(() => {
+    if (selectedProject) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          handleCloseModal();
+        }
+      };
+
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+  }, [selectedProject]);
+
+  const handleCopyProjectLink = async (project: ProjectEntry) => {
+    const url = `${window.location.origin}${window.location.pathname}#project-${project.id}`;
+    const success = await copyTextToClipboard(url);
+    if (success) {
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
+    }
+  };
 
   const filterByCategory = (project: ProjectEntry) => {
     if (activeCategory === 'All') return true;
@@ -161,7 +229,7 @@ export const ProjectsSection: React.FC = () => {
                     {project.status}
                   </span>
                   <button
-                    onClick={() => setSelectedProject(project)}
+                    onClick={() => handleOpenProject(project)}
                     className="text-xs font-mono text-amber-500 hover:text-amber-400 flex items-center space-x-1 font-semibold group/btn"
                   >
                     <span>View Specifications</span>
@@ -201,18 +269,19 @@ export const ProjectsSection: React.FC = () => {
                         href={project.githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-1 rounded text-text-muted hover:text-amber-400 transition-colors"
+                        className="p-1.5 rounded text-text-muted hover:text-amber-400 transition-colors"
                         title="GitHub Repository"
                       >
                         <GithubIcon className="w-4 h-4" />
                       </a>
                     )}
                     <button
-                      onClick={() => setSelectedProject(project)}
-                      className="p-1 rounded text-text-muted hover:text-text-primary transition-colors"
+                      onClick={() => handleOpenProject(project)}
+                      className="px-2 py-1 rounded bg-bg-elevated hover:bg-bg-card border border-border-subtle text-amber-500 hover:text-amber-400 text-xs font-mono flex items-center space-x-1 transition-colors"
                       title="View Details"
                     >
-                      <Info className="w-4 h-4" />
+                      <Info className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Details</span>
                     </button>
                   </div>
                 </div>
@@ -221,32 +290,42 @@ export const ProjectsSection: React.FC = () => {
                   {project.conciseDescription}
                 </p>
 
-                <div className="flex flex-wrap gap-1">
-                  {project.technologies.slice(0, 4).map((tech) => (
-                    <span
-                      key={tech}
-                      className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-bg-elevated border border-border-subtle text-text-dim"
-                    >
-                      {tech}
-                    </span>
-                  ))}
+                <div className="flex items-center justify-between pt-1">
+                  <div className="flex flex-wrap gap-1">
+                    {project.technologies.slice(0, 4).map((tech) => (
+                      <span
+                        key={tech}
+                        className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-bg-elevated border border-border-subtle text-text-dim"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => handleOpenProject(project)}
+                    className="text-[11px] font-mono text-amber-500 hover:text-amber-400 font-semibold flex items-center space-x-0.5"
+                  >
+                    <span>Inspect</span>
+                    <ChevronRight className="w-3 h-3" />
+                  </button>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Project Detail Modal */}
+        {/* Project Detail Modal / Detailed Specification Page */}
         {selectedProject && (
           <div
             role="dialog"
             aria-modal="true"
             aria-label={`Project details for ${selectedProject.name}`}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md"
-            onClick={() => setSelectedProject(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md"
+            onClick={handleCloseModal}
           >
             <div
-              className="w-full max-w-3xl bg-bg-surface border border-border-medium rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
+              className="w-full max-w-4xl bg-bg-surface border border-border-medium rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
@@ -254,7 +333,7 @@ export const ProjectsSection: React.FC = () => {
                 <div>
                   <div className="flex items-center space-x-2">
                     <span className="text-xs font-mono text-amber-500 font-bold">
-                      [SPECIFICATION RECORD]
+                      [PROJECT SPECIFICATION RECORD]
                     </span>
                     <span className="text-xs text-text-muted font-mono">
                       Status: {selectedProject.status}
@@ -268,20 +347,39 @@ export const ProjectsSection: React.FC = () => {
                   </p>
                 </div>
 
-                <button
-                  onClick={() => setSelectedProject(null)}
-                  className="p-2 rounded hover:bg-bg-card text-text-muted hover:text-text-primary"
-                  aria-label="Close details dialog"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => handleCopyProjectLink(selectedProject)}
+                    className="p-2 rounded bg-bg-surface border border-border-subtle hover:border-amber-500/50 text-text-muted hover:text-amber-400 transition-colors"
+                    title="Copy direct share link to this project page"
+                    aria-label="Copy share link"
+                  >
+                    {copiedLink ? <Check className="w-4 h-4 text-green-400" /> : <LinkIcon className="w-4 h-4" />}
+                  </button>
+
+                  <button
+                    onClick={handleCloseModal}
+                    className="p-2 rounded hover:bg-bg-card text-text-muted hover:text-text-primary transition-colors"
+                    aria-label="Close details dialog"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
 
               {/* Modal Body */}
               <div className="p-6 overflow-y-auto space-y-6">
+                {/* Visual Demonstration / Architecture Flow */}
                 <div>
                   <h4 className="text-xs font-mono uppercase tracking-wider text-amber-500 mb-2 font-semibold">
-                    Description & Scope
+                    Visual Demonstration & Technical Architecture
+                  </h4>
+                  <ProjectVisualDemo project={selectedProject} />
+                </div>
+
+                <div>
+                  <h4 className="text-xs font-mono uppercase tracking-wider text-amber-500 mb-2 font-semibold">
+                    Description & Research Scope
                   </h4>
                   <p className="text-sm text-text-secondary leading-relaxed font-sans">
                     {selectedProject.conciseDescription}
@@ -357,7 +455,7 @@ export const ProjectsSection: React.FC = () => {
                 )}
 
                 <button
-                  onClick={() => setSelectedProject(null)}
+                  onClick={handleCloseModal}
                   className="px-4 py-2 rounded bg-bg-surface border border-border-subtle hover:border-border-highlight text-text-secondary hover:text-text-primary text-xs font-mono"
                 >
                   Close

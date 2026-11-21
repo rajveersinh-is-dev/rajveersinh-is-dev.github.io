@@ -12,10 +12,11 @@ This platform is a bespoke, offline-first personal research portfolio and comput
 
 ### Key Visual & Design Foundations
 - **Predominantly Monochromatic Palette**: Deep black (`#07080a`), dark charcoal (`#11141a`, `#171b23`), and slate tones balanced with selective amber accents (`#f59e0b`, `#ff7700`).
-- **Signature Interactive ASCII & Dithering Engine**: Real-time canvas physics with Hooke's spring displacement, directional velocity trails, 4x4 Bayer ordered dithering fields, and cursor-revealed Clifford attractor manifold topologies.
+- **Signature Interactive ASCII & Dithering Engine**: Real-time canvas physics with Hooke's spring displacement, directional velocity trails, 4x4 Bayer ordered dithering fields, and cursor-revealed Clifford attractor manifold topologies deployed across hero and research lattice backgrounds.
 - **Strict Academic & Computational Honesty**: Zero fabricated credentials, unverified dates, synthetic benchmarks, or peer-review claims.
 - **100% Offline-First Architecture**: Zero runtime CDNs, external font APIs, cloud databases, or telemetry services. Complete self-contained bundling with Service Worker PWA caching and relative-path static serving.
-- **Local Vector PDF CV Generation**: Programmatically compiled via `jspdf` directly from the single source of truth (`src/data/`), accompanied by pre-rendered vector PDF artifacts.
+- **Interactive Project Visual Demonstrations**: Architectural flowcharts, compiler lowering pipelines, hydraulic erosion profiles, and lower convex hull decoders embedded inside dedicated project specifications.
+- **Local Vector PDF & Markdown CV Generation**: Programmatically compiled via `jspdf` directly from the single source of truth (`src/data/`), accompanied by pre-rendered vector PDF and Markdown source artifacts.
 
 ---
 
@@ -27,9 +28,10 @@ website/
 │   ├── favicon.svg                       # Bespoke simplicial hypergraph vector icon
 │   ├── manifest.json                     # Offline PWA web app manifest
 │   ├── sw.js                             # Cache-first offline Service Worker
-│   └── Rajveersinh_Vishal_Pardeshi_CV.pdf # Pre-rendered vector academic CV PDF
+│   ├── Rajveersinh_Vishal_Pardeshi_CV.pdf # Pre-rendered vector academic CV PDF
+│   └── Rajveersinh_Vishal_Pardeshi_CV.md # Pre-rendered markdown academic CV source
 ├── scripts/
-│   └── build-static-cv.ts                # Headless PDF compiler script
+│   └── build-static-cv.ts                # Headless PDF & Markdown compiler script
 ├── src/
 │   ├── components/
 │   │   ├── common/
@@ -37,21 +39,24 @@ website/
 │   │   ├── layout/
 │   │   │   ├── Navbar.tsx                # Responsive header & mobile navigation drawer
 │   │   │   ├── Footer.tsx                # Verified records & attribution footer
-│   │   │   └── CommandPalette.tsx        # Keyboard accessible command center (Ctrl+K)
+│   │   │   └── CommandPalette.tsx        # Keyboard accessible command center (Ctrl+K / ⌘K)
 │   │   ├── sections/
 │   │   │   ├── HeroSection.tsx           # Opening statement & interactive canvas mode switcher
-│   │   │   ├── AboutSection.tsx          # First-person narrative, philosophy & education
-│   │   │   ├── ResearchInterestsSection.tsx # Theoretical mathematics connected lattice
+│   │   │   ├── AboutSection.tsx          # First-person narrative, philosophy & aspirations
+│   │   │   ├── ResearchInterestsSection.tsx # Theoretical mathematics connected lattice & hidden manifold
 │   │   │   ├── ProjectsSection.tsx       # Core implementations (1-5) & repository directory
 │   │   │   ├── PreprintsSection.tsx      # Zenodo preprints with citation extraction
 │   │   │   ├── AchievementsSection.tsx   # Kaggle (7th, ongoing) & SOF IMO distinctions
 │   │   │   ├── SkillsLandscapeSection.tsx# Intermediate capability clusters
+│   │   │   ├── EducationSection.tsx      # IIT Madras & school education enrolment credentials
+│   │   │   ├── CvSection.tsx             # Live Curriculum Vitae summary & downloads
 │   │   │   ├── TimelineSection.tsx       # Chronological academic & research milestones
 │   │   │   ├── ConnectionsGraphSection.tsx# Interactive topological research map
 │   │   │   ├── PlaygroundSection.tsx     # 4 interactive math labs (Lorenz, CA, Julia, Homology)
 │   │   │   └── ContactSection.tsx        # Direct contact & offline-honest inquiry form
 │   │   └── visuals/
-│   │       └── AsciiDitherCanvas.tsx     # Spring-physics ASCII & Bayer dithering engine
+│   │       ├── AsciiDitherCanvas.tsx     # Spring-physics ASCII & Bayer dithering engine
+│   │       └── ProjectVisualDemo.tsx     # Interactive visual demos for key project specifications
 │   ├── context/
 │   │   └── PreferencesContext.tsx        # Reading mode, visuals, command palette state
 │   ├── data/
@@ -74,6 +79,9 @@ website/
 │   │   └── components.test.tsx           # Full application integration & interaction tests
 │   ├── types/
 │   │   └── content.ts                    # TypeScript interface contracts
+│   ├── utils/
+│   │   ├── clipboard.ts                  # Resilient copy-to-clipboard with fallback
+│   │   └── generatePdfCv.ts              # Local vector PDF compiler
 │   ├── App.tsx                           # Root orchestrator
 │   ├── index.css                         # Tailored typography, scanlines & scrollbars
 │   └── main.tsx                          # DOM mount
@@ -116,8 +124,8 @@ npm run build
 ```
 This single command executes:
 1. TypeScript strict type-checking (`tsc -b`).
-2. Vite production bundling and minification.
-3. Automated compilation of the authoritative academic CV PDF to `dist/Rajveersinh_Vishal_Pardeshi_CV.pdf`.
+2. Vite production bundling with chunk splitting (`vendor-jspdf`, `vendor-react`, `vendor-icons`).
+3. Automated compilation of the authoritative academic CV PDF to `dist/Rajveersinh_Vishal_Pardeshi_CV.pdf` and synchronization of Markdown source `dist/Rajveersinh_Vishal_Pardeshi_CV.md`.
 
 ### Previewing the Production Build
 ```bash
@@ -195,8 +203,8 @@ Edit `src/data/publications.ts`:
 Edit `src/data/achievements.ts`:
 - Adjust the `description` or `details` fields (e.g. updating the current reported rank).
 
-### E. Regenerating the Curriculum Vitae (PDF)
-Whenever content in `src/data/` is updated, the PDF CV can be recompiled in two ways:
+### E. Regenerating the Curriculum Vitae (PDF & Markdown)
+Whenever content in `src/data/` is updated, the CV artifacts can be recompiled in two ways:
 1. **Command line**:
    ```bash
    npm run build:cv
@@ -212,11 +220,11 @@ Run the comprehensive automated test suite with Vitest:
 npm run test
 ```
 
-### Test Suite Coverage:
+### Test Suite Coverage (20/20 Tests Passing):
 - `src/test/content.test.ts`: Enforces strict data integrity, verifying age (16), IIT Madras enrolment details, school education, preprints peer-review honesty, priority 1-5 projects, and intermediate skill reporting.
 - `src/test/cv.test.ts`: Verifies programmatic PDF construction, page counts, vector text layout, and binary header validity (`%PDF-`).
-- `src/test/offline.test.ts`: Audits the production build for complete absence of remote network requests.
-- `src/test/components.test.tsx`: Tests UI component rendering, modal dialog interactions, and mathematical playground tab switching.
+- `src/test/offline.test.ts`: Audits the production build for complete absence of remote network requests, confirming PWA manifest, service worker, and static CV files.
+- `src/test/components.test.tsx`: Tests full UI component tree rendering, command palette arrow-key navigation and execution, project hash routing and specification modals, interactive Simplicial Homology vertex manipulation, and safe clipboard fallback.
 
 ---
 

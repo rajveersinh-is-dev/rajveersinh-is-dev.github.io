@@ -10,6 +10,8 @@ import { ProjectsSection } from './components/sections/ProjectsSection';
 import { PreprintsSection } from './components/sections/PreprintsSection';
 import { AchievementsSection } from './components/sections/AchievementsSection';
 import { SkillsLandscapeSection } from './components/sections/SkillsLandscapeSection';
+import { EducationSection } from './components/sections/EducationSection';
+import { CvSection } from './components/sections/CvSection';
 import { TimelineSection } from './components/sections/TimelineSection';
 import { ConnectionsGraphSection } from './components/sections/ConnectionsGraphSection';
 import { PlaygroundSection } from './components/sections/PlaygroundSection';
@@ -34,6 +36,8 @@ export const App: React.FC = () => {
           <PreprintsSection />
           <AchievementsSection />
           <SkillsLandscapeSection />
+          <EducationSection />
+          <CvSection />
           <TimelineSection />
           <ConnectionsGraphSection />
           <PlaygroundSection />

@@ -32,6 +32,8 @@ export const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+
   const navLinks = [
     { label: 'About', href: '#about' },
     { label: 'Research', href: '#research-interests' },
@@ -39,6 +41,8 @@ export const Navbar: React.FC = () => {
     { label: 'Preprints', href: '#preprints' },
     { label: 'Achievements', href: '#achievements' },
     { label: 'Skills', href: '#skills' },
+    { label: 'Education', href: '#education' },
+    { label: 'CV', href: '#cv' },
     { label: 'Graph', href: '#connections-graph' },
     { label: 'Playground', href: '#playground' },
     { label: 'Contact', href: '#contact' },
@@ -97,7 +101,7 @@ export const Navbar: React.FC = () => {
               <Command className="w-3.5 h-3.5 text-amber-500" />
               <span>Palette</span>
               <kbd className="text-[10px] bg-bg-base px-1.5 py-0.5 rounded border border-border-subtle text-text-muted">
-                ⌘K
+                {isMac ? '⌘K' : 'Ctrl+K'}
               </kbd>
             </button>
 
