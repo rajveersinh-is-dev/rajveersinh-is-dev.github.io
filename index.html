@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" class="dark scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rajveersinh Vishal Pardeshi — Independent Mathematical Researcher</title>
+    
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Official research portfolio of Rajveersinh Vishal Pardeshi, Independent Mathematical Researcher. Discovering Structure. Proving Ideas. Building the Future." />
+    <meta name="author" content="Rajveersinh Vishal Pardeshi" />
+    <meta name="theme-color" content="#07080a" />
+    <link rel="manifest" href="./manifest.json" />
+
+    <!-- Open Graph / Meta -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Rajveersinh Vishal Pardeshi — Independent Mathematical Researcher" />
+    <meta property="og:description" content="Discovering Structure. Proving Ideas. Building the Future. Research in theoretical mathematics, algorithms, scientific computing, and formal verification." />
+    <meta property="og:image" content="./favicon.svg" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Rajveersinh Vishal Pardeshi — Independent Mathematical Researcher" />
+    <meta name="twitter:description" content="Independent Mathematical Researcher. Theoretical mathematics, algorithms, and computational structures." />
+
+    <script>
+      // Service worker registration (safe check, works offline and gracefully handles file:// protocol)
+      if ('serviceWorker' in navigator && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').catch(() => {
+            // Service worker optional fallback
+          });
+        });
+      }
+    </script>
+  </head>
+  <body class="bg-bg-void text-text-primary antialiased selection:bg-amber-500/20 selection:text-amber-400 min-h-screen overflow-x-hidden">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

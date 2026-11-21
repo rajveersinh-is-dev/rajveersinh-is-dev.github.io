@@ -1,0 +1,17 @@
+{
+  "name": "Rajveersinh Vishal Pardeshi — Mathematical Research Portfolio",
+  "short_name": "RVP Research",
+  "description": "Independent Mathematical Researcher Portfolio — Discovering Structure. Proving Ideas. Building the Future.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#07080a",
+  "theme_color": "#07080a",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "64x64 128x128 256x256",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
