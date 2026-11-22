@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { usePreferences } from '../../context';
 import { projectsData, publicationsData, contactData } from '../../data';
 import { downloadPdfCv } from '../../utils/generatePdfCv';
@@ -302,19 +303,30 @@ export const CommandPalette: React.FC = () => {
     }
   };
 
+  // Lock body scroll when command palette is open
+  useEffect(() => {
+    if (commandPaletteOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [commandPaletteOpen]);
+
   if (!commandPaletteOpen) return null;
 
-  return (
+  const paletteModal = (
     <div
       role="dialog"
       aria-modal="true"
       aria-label="Command Palette"
-      className="fixed inset-0 z-50 flex items-start justify-center pt-14 sm:pt-20 px-4 bg-black/70 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-start justify-center pt-14 sm:pt-20 p-4 overflow-y-auto overscroll-contain bg-black/75 backdrop-blur-xs"
       onClick={() => setCommandPaletteOpen(false)}
       onKeyDown={handleKeyDown}
     >
       <div
-        className="w-full max-w-2xl bg-paper-bg-subtle border-2 border-paper-border-strong rounded shadow-2xl overflow-hidden flex flex-col max-h-[75vh]"
+        className="w-full max-w-2xl my-auto sm:my-0 bg-paper-bg-subtle border-2 border-paper-border-strong rounded shadow-2xl overflow-hidden flex flex-col max-h-[80vh] sm:max-h-[75vh] max-h-[80dvh] sm:max-h-[75dvh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Masthead Concordance Title Strip */}
@@ -345,14 +357,14 @@ export const CommandPalette: React.FC = () => {
           <button
             onClick={() => setCommandPaletteOpen(false)}
             aria-label="Close command palette"
-            className="p-1 text-ink-muted hover:text-ink-primary rounded transition-colors"
+            className="p-1 text-ink-muted hover:text-ink-primary rounded transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Results List — Academic Concordance Entries */}
-        <div className="overflow-y-auto divide-y divide-paper-border-subtle p-2">
+        <div className="overflow-y-auto divide-y divide-paper-border-subtle p-2 flex-1 min-h-0">
           {filteredItems.length === 0 ? (
             <div className="py-10 text-center text-ink-muted text-sm font-serif italic">
               No matching treatises, manuscripts, or sections found in concordance.
@@ -425,4 +437,6 @@ export const CommandPalette: React.FC = () => {
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(paletteModal, document.body) : paletteModal;
 };

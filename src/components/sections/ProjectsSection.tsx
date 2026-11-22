@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { projectsData } from '../../data';
 import type { ProjectEntry } from '../../types/content';
 import { ProjectVisualDemo } from '../visuals/ProjectVisualDemo';
@@ -23,6 +24,9 @@ export const ProjectsSection: React.FC = () => {
   const [copiedLink, setCopiedLink] = useState(false);
   const [sectionRef, isVisible] = useIntersectionObserver<HTMLElement>();
 
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const lastActiveElementRef = useRef<HTMLElement | null>(null);
+
   const categories = ['All', 'Compiler & Verification', 'Optimization & Graphs', 'Simulation & Systems'];
 
   // Hash synchronization for deep linking and direct project page routing
@@ -34,7 +38,12 @@ export const ProjectsSection: React.FC = () => {
         const target = projectsData.find((p) => p.id === projId);
         if (target) {
           setSelectedProject(target);
+        } else {
+          setSelectedProject(null);
         }
+      } else {
+        // If hash navigated away from project detail, dismiss the modal
+        setSelectedProject((prev) => (prev ? null : null));
       }
     };
 
@@ -50,20 +59,29 @@ export const ProjectsSection: React.FC = () => {
         window.history.replaceState(null, '', '#projects');
       }
     } catch {}
+    if (lastActiveElementRef.current) {
+      lastActiveElementRef.current.focus();
+    }
   };
 
   const handleOpenProject = (project: ProjectEntry) => {
+    lastActiveElementRef.current = document.activeElement as HTMLElement;
     setSelectedProject(project);
     try {
       window.history.replaceState(null, '', `#project-${project.id}`);
     } catch {}
   };
 
-  // Lock body scroll when project modal is open & handle ESC key
+  // Lock body scroll when project modal is open & handle ESC key & auto-focus
   useEffect(() => {
     if (selectedProject) {
       const originalOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
+
+      // Focus close button on dialog appearance for accessibility
+      const focusTimer = setTimeout(() => {
+        closeButtonRef.current?.focus();
+      }, 50);
 
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Escape') {
@@ -73,6 +91,7 @@ export const ProjectsSection: React.FC = () => {
 
       window.addEventListener('keydown', handleKeyDown);
       return () => {
+        clearTimeout(focusTimer);
         document.body.style.overflow = originalOverflow;
         window.removeEventListener('keydown', handleKeyDown);
       };
@@ -173,7 +192,17 @@ export const ProjectsSection: React.FC = () => {
               <div
                 key={project.id}
                 id={`project-${project.id}`}
-                className="rounded border border-paper-border-strong bg-paper-bg-subtle hover:border-academic-amber transition-all flex flex-col justify-between overflow-hidden group shadow-sm"
+                role="button"
+                tabIndex={0}
+                aria-label={`View specifications for ${project.name}`}
+                onClick={() => handleOpenProject(project)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleOpenProject(project);
+                  }
+                }}
+                className="rounded border border-paper-border-strong bg-paper-bg-subtle hover:border-academic-amber transition-all flex flex-col justify-between overflow-hidden group shadow-sm cursor-pointer focus:outline-none focus:ring-1 focus:ring-academic-amber"
               >
                 {/* Header Card Strip */}
                 <div className="p-6 space-y-4">
@@ -187,7 +216,13 @@ export const ProjectsSection: React.FC = () => {
                           #{project.priority}
                         </span>
                       </div>
-                      <h3 className="font-serif text-xl font-bold text-ink-primary group-hover:text-academic-amber transition-colors">
+                      <h3
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenProject(project);
+                        }}
+                        className="font-serif text-xl font-bold text-ink-primary group-hover:text-academic-amber transition-colors cursor-pointer"
+                      >
                         <span>{project.name}</span>
                       </h3>
                       <span className="text-xs text-ink-muted font-mono block mt-1">
@@ -200,8 +235,9 @@ export const ProjectsSection: React.FC = () => {
                         href={project.githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
                         aria-label={`View ${project.name} source on GitHub`}
-                        className="p-1.5 rounded border border-paper-border-subtle bg-paper-bg-base text-ink-secondary hover:text-academic-amber hover:border-academic-amber transition-colors"
+                        className="p-1.5 rounded border border-paper-border-subtle bg-paper-bg-base text-ink-secondary hover:text-academic-amber hover:border-academic-amber transition-colors cursor-pointer"
                       >
                         <GithubIcon className="w-4 h-4" />
                       </a>
@@ -248,7 +284,10 @@ export const ProjectsSection: React.FC = () => {
                     <span>{project.status}</span>
                   </div>
                   <button
-                    onClick={() => handleOpenProject(project)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenProject(project);
+                    }}
                     className="text-xs font-mono text-academic-amber hover:text-ink-primary flex items-center space-x-1 font-semibold group/btn transition-colors cursor-pointer"
                   >
                     <span>View Specifications</span>
@@ -272,7 +311,17 @@ export const ProjectsSection: React.FC = () => {
               <div
                 key={project.id}
                 id={`project-${project.id}`}
-                className="p-5 rounded border border-paper-border-subtle bg-paper-bg-subtle hover:border-paper-border-strong transition-all flex flex-col justify-between space-y-3 shadow-xs"
+                role="button"
+                tabIndex={0}
+                aria-label={`View specifications for ${project.name}`}
+                onClick={() => handleOpenProject(project)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleOpenProject(project);
+                  }
+                }}
+                className="p-5 rounded border border-paper-border-subtle bg-paper-bg-subtle hover:border-academic-amber transition-all flex flex-col justify-between space-y-3 shadow-xs cursor-pointer focus:outline-none focus:ring-1 focus:ring-academic-amber"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div>
@@ -281,7 +330,13 @@ export const ProjectsSection: React.FC = () => {
                         Treatise {romanNumerals[5 + idx] || `${idx + 6}`}
                       </span>
                     </div>
-                    <h4 className="font-serif text-lg font-bold text-ink-primary hover:text-academic-amber transition-colors">
+                    <h4
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenProject(project);
+                      }}
+                      className="font-serif text-lg font-bold text-ink-primary hover:text-academic-amber transition-colors cursor-pointer"
+                    >
                       <span>{project.name}</span>
                     </h4>
                     <span className="text-xs text-ink-muted font-mono">{project.category}</span>
@@ -293,14 +348,18 @@ export const ProjectsSection: React.FC = () => {
                         href={project.githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-1.5 rounded border border-paper-border-subtle bg-paper-bg-base text-ink-muted hover:text-academic-amber transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                        className="p-1.5 rounded border border-paper-border-subtle bg-paper-bg-base text-ink-muted hover:text-academic-amber transition-colors cursor-pointer"
                         title="GitHub Repository"
                       >
                         <GithubIcon className="w-4 h-4" />
                       </a>
                     )}
                     <button
-                      onClick={() => handleOpenProject(project)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenProject(project);
+                      }}
                       className="px-2.5 py-1 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-academic-amber text-xs font-mono flex items-center space-x-1 transition-colors font-semibold cursor-pointer"
                       title="View Details"
                     >
@@ -327,7 +386,10 @@ export const ProjectsSection: React.FC = () => {
                   </div>
 
                   <button
-                    onClick={() => handleOpenProject(project)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenProject(project);
+                    }}
                     className="text-[11px] font-mono text-academic-amber hover:text-ink-primary font-semibold flex items-center space-x-0.5 transition-colors cursor-pointer"
                   >
                     <span>Inspect</span>
@@ -340,155 +402,160 @@ export const ProjectsSection: React.FC = () => {
         </div>
 
         {/* Project Detail Modal — Treatise Specification & Structural Proof Viewer */}
-        {selectedProject && (
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label={`Project details for ${selectedProject.name}`}
-            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-xs"
-            onClick={handleCloseModal}
-          >
-            <div
-              className="w-full max-w-4xl bg-paper-bg-subtle border-2 border-paper-border-strong rounded shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Modal Header — Archival Folio Header */}
-              <div className="px-6 py-4 border-b-2 border-paper-border-strong bg-paper-bg-base flex items-center justify-between">
-                <div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-xs font-mono text-academic-amber font-bold tracking-wider">
-                      [PROJECT SPECIFICATION RECORD]
-                    </span>
-                    <span className="text-xs text-ink-muted font-mono">
-                      Status: {selectedProject.status}
-                    </span>
-                  </div>
-                  <h3 className="text-2xl font-bold font-serif text-ink-primary mt-1">
-                    <span>{selectedProject.name}</span>
-                  </h3>
-                  <p className="text-xs text-ink-muted font-mono">
-                    {selectedProject.category}
-                  </p>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={() => handleCopyProjectLink(selectedProject)}
-                    className="p-2 rounded border border-paper-border-subtle bg-paper-bg-subtle hover:bg-paper-bg-elevated text-ink-muted hover:text-academic-amber transition-colors"
-                    title="Copy direct share link to this project page"
-                    aria-label="Copy share link"
-                  >
-                    {copiedLink ? <Check className="w-4 h-4 text-academic-amber" /> : <LinkIcon className="w-4 h-4" />}
-                  </button>
-
-                  <button
-                    onClick={handleCloseModal}
-                    className="p-2 rounded border border-paper-border-subtle bg-paper-bg-subtle hover:bg-paper-bg-elevated text-ink-muted hover:text-ink-primary transition-colors"
-                    aria-label="Close details dialog"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Modal Body — Scholarly Specification Monograph */}
-              <div className="p-6 overflow-y-auto space-y-6">
-                {/* Visual Demonstration / Architecture Flow */}
-                <div>
-                  <h4 className="text-xs font-mono uppercase tracking-wider text-academic-amber mb-2 font-semibold">
-                    Visual Demonstration &amp; Technical Architecture
-                  </h4>
-                  <ProjectVisualDemo project={selectedProject} />
-                </div>
-
-                <div>
-                  <h4 className="text-xs font-serif uppercase tracking-wider text-ink-primary mb-1.5 font-bold">
-                    Description &amp; Research Scope
-                  </h4>
-                  <p className="text-sm text-ink-secondary leading-relaxed font-serif">
-                    {selectedProject.conciseDescription}
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="text-xs font-serif uppercase tracking-wider text-ink-primary mb-1.5 font-bold">
-                    Research &amp; Engineering Motivation
-                  </h4>
-                  <p className="text-xs text-ink-secondary leading-relaxed font-mono bg-paper-bg-base p-3.5 rounded border border-paper-border-subtle">
-                    {selectedProject.motivation}
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="text-xs font-serif uppercase tracking-wider text-ink-primary mb-1.5 font-bold">
-                    Key Technical Ideas &amp; Structural Principles
-                  </h4>
-                  <ul className="space-y-2">
-                    {selectedProject.keyIdeas.map((idea, idx) => (
-                      <li
-                        key={idx}
-                        className="text-xs text-ink-secondary flex items-start space-x-2 font-mono"
-                      >
-                        <span className="text-academic-amber font-bold">[{idx + 1}]</span>
-                        <span className="leading-relaxed">{idea}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {selectedProject.metricsAuditNote && (
-                  <div className="p-3.5 rounded border-l-2 border-academic-amber bg-paper-bg-base border border-paper-border-subtle text-xs text-ink-secondary font-mono">
-                    <span className="font-bold text-academic-amber">Metric Transparency: </span>
-                    {selectedProject.metricsAuditNote}
-                  </div>
-                )}
-
-                <div>
-                  <h4 className="text-xs font-mono uppercase tracking-wider text-ink-muted mb-2 font-semibold">
-                    Technologies &amp; Proof Assistants
-                  </h4>
-                  <div className="flex flex-wrap gap-1.5">
-                    {selectedProject.technologies.map((t) => (
-                      <span
-                        key={t}
-                        className="text-xs font-mono px-2.5 py-1 rounded border border-paper-border-strong bg-paper-bg-base text-ink-primary"
-                      >
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Modal Footer */}
-              <div className="px-6 py-4 border-t-2 border-paper-border-strong bg-paper-bg-base flex items-center justify-between">
-                {selectedProject.githubUrl ? (
-                  <a
-                    href={selectedProject.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-4 py-2 rounded border border-paper-border-strong bg-academic-amber text-paper-bg-base font-mono text-xs font-semibold flex items-center space-x-2 shadow-xs hover:opacity-90 transition-opacity"
-                  >
-                    <GithubIcon className="w-4 h-4" />
-                    <span>Open GitHub Repository</span>
-                    <ArrowUpRight className="w-3.5 h-3.5" />
-                  </a>
-                ) : (
-                  <span className="text-xs text-ink-muted font-mono">
-                    Private / Internal Research Prototype
-                  </span>
-                )}
-
-                <button
+        {selectedProject &&
+          (typeof document !== 'undefined'
+            ? createPortal(
+                <div
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label={`Project details for ${selectedProject.name}`}
+                  className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto overscroll-contain bg-black/75 backdrop-blur-xs"
                   onClick={handleCloseModal}
-                  className="px-4 py-2 rounded border border-paper-border-strong bg-paper-bg-subtle hover:bg-paper-bg-elevated text-ink-secondary hover:text-ink-primary text-xs font-mono transition-colors"
                 >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+                  <div
+                    className="max-w-4xl w-full my-auto max-h-[85vh] sm:max-h-[90vh] max-h-[85dvh] sm:max-h-[90dvh] flex flex-col overflow-hidden bg-paper-bg-subtle border-2 border-paper-border-strong rounded shadow-2xl"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {/* Modal Header — Archival Folio Header */}
+                    <div className="px-4 sm:px-6 py-4 border-b-2 border-paper-border-strong bg-paper-bg-base flex items-center justify-between shrink-0">
+                      <div className="min-w-0 pr-3">
+                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
+                          <span className="text-[10px] sm:text-xs font-mono text-academic-amber font-bold tracking-wider">
+                            [PROJECT SPECIFICATION RECORD]
+                          </span>
+                          <span className="text-[10px] sm:text-xs text-ink-muted font-mono">
+                            Status: {selectedProject.status}
+                          </span>
+                        </div>
+                        <h3 className="text-xl sm:text-2xl font-bold font-serif text-ink-primary truncate">
+                          <span>{selectedProject.name}</span>
+                        </h3>
+                        <p className="text-xs text-ink-muted font-mono truncate">
+                          {selectedProject.category}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center space-x-2 shrink-0">
+                        <button
+                          onClick={() => handleCopyProjectLink(selectedProject)}
+                          className="p-2 rounded border border-paper-border-subtle bg-paper-bg-subtle hover:bg-paper-bg-elevated text-ink-muted hover:text-academic-amber transition-colors cursor-pointer"
+                          title="Copy direct share link to this project page"
+                          aria-label="Copy share link"
+                        >
+                          {copiedLink ? <Check className="w-4 h-4 text-academic-amber" /> : <LinkIcon className="w-4 h-4" />}
+                        </button>
+
+                        <button
+                          ref={closeButtonRef}
+                          onClick={handleCloseModal}
+                          className="p-2 rounded border border-paper-border-subtle bg-paper-bg-subtle hover:bg-paper-bg-elevated text-ink-muted hover:text-ink-primary transition-colors cursor-pointer"
+                          aria-label="Close details dialog"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Modal Body — Scholarly Specification Monograph */}
+                    <div className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 min-h-0">
+                      {/* Visual Demonstration / Architecture Flow */}
+                      <div>
+                        <h4 className="text-xs font-mono uppercase tracking-wider text-academic-amber mb-2 font-semibold">
+                          Visual Demonstration &amp; Technical Architecture
+                        </h4>
+                        <ProjectVisualDemo project={selectedProject} />
+                      </div>
+
+                      <div>
+                        <h4 className="text-xs font-serif uppercase tracking-wider text-ink-primary mb-1.5 font-bold">
+                          Description &amp; Research Scope
+                        </h4>
+                        <p className="text-sm text-ink-secondary leading-relaxed font-serif">
+                          {selectedProject.conciseDescription}
+                        </p>
+                      </div>
+
+                      <div>
+                        <h4 className="text-xs font-serif uppercase tracking-wider text-ink-primary mb-1.5 font-bold">
+                          Research &amp; Engineering Motivation
+                        </h4>
+                        <p className="text-xs text-ink-secondary leading-relaxed font-mono bg-paper-bg-base p-3.5 rounded border border-paper-border-subtle">
+                          {selectedProject.motivation}
+                        </p>
+                      </div>
+
+                      <div>
+                        <h4 className="text-xs font-serif uppercase tracking-wider text-ink-primary mb-1.5 font-bold">
+                          Key Technical Ideas &amp; Structural Principles
+                        </h4>
+                        <ul className="space-y-2">
+                          {selectedProject.keyIdeas.map((idea, idx) => (
+                            <li
+                              key={idx}
+                              className="text-xs text-ink-secondary flex items-start space-x-2 font-mono"
+                            >
+                              <span className="text-academic-amber font-bold">[{idx + 1}]</span>
+                              <span className="leading-relaxed">{idea}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {selectedProject.metricsAuditNote && (
+                        <div className="p-3.5 rounded border-l-2 border-academic-amber bg-paper-bg-base border border-paper-border-subtle text-xs text-ink-secondary font-mono">
+                          <span className="font-bold text-academic-amber">Metric Transparency: </span>
+                          {selectedProject.metricsAuditNote}
+                        </div>
+                      )}
+
+                      <div>
+                        <h4 className="text-xs font-mono uppercase tracking-wider text-ink-muted mb-2 font-semibold">
+                          Technologies &amp; Proof Assistants
+                        </h4>
+                        <div className="flex flex-wrap gap-1.5">
+                          {selectedProject.technologies.map((t) => (
+                            <span
+                              key={t}
+                              className="text-xs font-mono px-2.5 py-1 rounded border border-paper-border-strong bg-paper-bg-base text-ink-primary"
+                            >
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Modal Footer */}
+                    <div className="px-4 sm:px-6 py-4 border-t-2 border-paper-border-strong bg-paper-bg-base flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shrink-0">
+                      {selectedProject.githubUrl ? (
+                        <a
+                          href={selectedProject.githubUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-4 py-2 rounded border border-paper-border-strong bg-academic-amber text-paper-bg-base font-mono text-xs font-semibold flex items-center justify-center space-x-2 shadow-xs hover:opacity-90 transition-opacity"
+                        >
+                          <GithubIcon className="w-4 h-4" />
+                          <span>Open GitHub Repository</span>
+                          <ArrowUpRight className="w-3.5 h-3.5" />
+                        </a>
+                      ) : (
+                        <span className="text-xs text-ink-muted font-mono text-center sm:text-left">
+                          Private / Internal Research Prototype
+                        </span>
+                      )}
+
+                      <button
+                        onClick={handleCloseModal}
+                        className="px-4 py-2 rounded border border-paper-border-strong bg-paper-bg-subtle hover:bg-paper-bg-elevated text-ink-secondary hover:text-ink-primary text-xs font-mono transition-colors cursor-pointer text-center"
+                      >
+                        Close
+                      </button>
+                    </div>
+                  </div>
+                </div>,
+                document.body
+              )
+            : null)}
       </div>
     </section>
   );

@@ -150,6 +150,28 @@ export const SkillsLandscapeSection: React.FC = () => {
           ))}
         </div>
 
+        {/* Competency Node Chips for Fast Inspection & Mobile Access */}
+        <div className="flex flex-wrap gap-1.5 pt-1">
+          {skills.map((skill) => {
+            const isSelected = (activeSkillName || inspectionSkill.name) === skill.name;
+            return (
+              <button
+                key={skill.name}
+                onClick={() => {
+                  setActiveSkillName(skill.name);
+                }}
+                className={`text-[11px] font-mono px-2.5 py-1 rounded border transition-colors cursor-pointer ${
+                  isSelected
+                    ? 'border-academic-amber bg-academic-amber/15 text-academic-amber font-semibold shadow-xs'
+                    : 'border-paper-border-subtle bg-paper-bg-base text-ink-muted hover:text-ink-primary hover:border-paper-border-strong'
+                }`}
+              >
+                {skill.name}
+              </button>
+            );
+          })}
+        </div>
+
         {/* SVG Skill Constellation Layout */}
         <div className="rounded border border-paper-border-strong bg-paper-bg-base p-4 sm:p-8 space-y-6 shadow-sm">
           <div

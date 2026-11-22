@@ -6,6 +6,8 @@ import { ProjectsSection } from '../components/sections/ProjectsSection';
 import { CommandPalette } from '../components/layout/CommandPalette';
 import { EducationSection } from '../components/sections/EducationSection';
 import { CvSection } from '../components/sections/CvSection';
+import { PreprintsSection } from '../components/sections/PreprintsSection';
+import { SkillsLandscapeSection } from '../components/sections/SkillsLandscapeSection';
 import { PreferencesProvider } from '../context';
 import { copyTextToClipboard } from '../utils/clipboard';
 
@@ -148,5 +150,195 @@ describe('React Component Rendering and Interaction Tests', () => {
   it('verifies safe copy utility fallback works without throwing', async () => {
     const success = await copyTextToClipboard('Test text');
     expect(typeof success).toBe('boolean');
+  });
+
+  it('verifies React Portal architecture and viewport centering for project modal', () => {
+    render(
+      <PreferencesProvider>
+        <ProjectsSection />
+      </PreferencesProvider>
+    );
+
+    // Open project modal
+    const viewButtons = screen.getAllByText(/View Specifications/i);
+    fireEvent.click(viewButtons[0]);
+
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toBeTruthy();
+
+    // Verify it is mounted directly into document.body to break out of containing blocks
+    expect(dialog.parentElement).toBe(document.body);
+
+    // Verify viewport centering and sizing classes
+    expect(dialog.className).toContain('fixed');
+    expect(dialog.className).toContain('inset-0');
+    expect(dialog.className).toContain('items-center');
+    expect(dialog.className).toContain('justify-center');
+    expect(dialog.className).toContain('overflow-y-auto');
+
+    // Verify inner card sizing
+    const innerCard = dialog.firstElementChild as HTMLElement;
+    expect(innerCard).toBeTruthy();
+    expect(innerCard.className).toContain('max-w-4xl');
+    expect(innerCard.className).toContain('w-full');
+    expect(innerCard.className).toContain('my-auto');
+
+    // Test backdrop click closes modal
+    fireEvent.click(dialog);
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  it('opens project modal by clicking project title and handles Escape key', () => {
+    render(
+      <PreferencesProvider>
+        <ProjectsSection />
+      </PreferencesProvider>
+    );
+
+    // Click on NumLang title
+    const numlangTitle = screen.getByRole('heading', { level: 3, name: /NumLang/i });
+    fireEvent.click(numlangTitle);
+
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toBeTruthy();
+    expect(dialog.parentElement).toBe(document.body);
+
+    // Press Escape to close
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  it('opens project modal for additional treatises and verifies portal mounting', () => {
+    render(
+      <PreferencesProvider>
+        <ProjectsSection />
+      </PreferencesProvider>
+    );
+
+    // Find Details button on additional treatises
+    const detailsButtons = screen.getAllByText(/Details/i);
+    expect(detailsButtons.length).toBeGreaterThan(0);
+    fireEvent.click(detailsButtons[0]);
+
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toBeTruthy();
+    expect(dialog.parentElement).toBe(document.body);
+
+    // Close
+    const closeBtn = screen.getByLabelText('Close details dialog');
+    fireEvent.click(closeBtn);
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  it('opens project modal by clicking anywhere on the card container or via keyboard', () => {
+    render(
+      <PreferencesProvider>
+        <ProjectsSection />
+      </PreferencesProvider>
+    );
+
+    // Find the card container for NumLang
+    const numlangCard = screen.getByLabelText('View specifications for NumLang');
+    expect(numlangCard).toBeTruthy();
+    expect(numlangCard.getAttribute('tabIndex')).toBe('0');
+
+    // Click card container directly
+    fireEvent.click(numlangCard);
+    let dialog = screen.getByRole('dialog');
+    expect(dialog).toBeTruthy();
+    expect(document.body.style.overflow).toBe('hidden');
+
+    // Close modal
+    const closeBtn = screen.getByLabelText('Close details dialog');
+    fireEvent.click(closeBtn);
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(document.body.style.overflow).not.toBe('hidden');
+
+    // Test keyboard activation (Enter key)
+    fireEvent.keyDown(numlangCard, { key: 'Enter' });
+    dialog = screen.getByRole('dialog');
+    expect(dialog).toBeTruthy();
+
+    // Close via Escape
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  it('closes project modal automatically when browser hash navigates away', () => {
+    render(
+      <PreferencesProvider>
+        <ProjectsSection />
+      </PreferencesProvider>
+    );
+
+    const numlangCard = screen.getByLabelText('View specifications for NumLang');
+    fireEvent.click(numlangCard);
+    expect(screen.getByRole('dialog')).toBeTruthy();
+
+    // Simulate browser navigation / back button
+    window.location.hash = '#projects';
+    fireEvent(window, new HashChangeEvent('hashchange'));
+
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(document.body.style.overflow).not.toBe('hidden');
+  });
+
+  it('verifies CommandPalette locks body scroll and uses flex-1 min-h-0', () => {
+    render(
+      <PreferencesProvider>
+        <CommandPalette />
+      </PreferencesProvider>
+    );
+
+    // Open command palette with Ctrl+K
+    fireEvent.keyDown(window, { key: 'k', ctrlKey: true });
+
+    const dialog = screen.getByRole('dialog', { name: /Command Palette/i });
+    expect(dialog).toBeTruthy();
+    expect(dialog.parentElement).toBe(document.body);
+    expect(document.body.style.overflow).toBe('hidden');
+
+    // Verify results list has flex-1 and min-h-0
+    const resultsContainer = dialog.querySelector('.divide-y');
+    expect(resultsContainer?.className).toContain('flex-1');
+    expect(resultsContainer?.className).toContain('min-h-0');
+
+    // Close with Escape
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(document.body.style.overflow).not.toBe('hidden');
+  });
+
+  it('verifies PreprintsSection BibTeX drawer toggle and accessibility', () => {
+    render(<PreprintsSection />);
+
+    const bibtexButtons = screen.getAllByRole('button', { name: /View BibTeX/i });
+    expect(bibtexButtons.length).toBeGreaterThan(0);
+
+    // Initially drawer is not visible
+    expect(screen.queryByText(/Bibliographic Entry \(BibTeX format\)/i)).toBeNull();
+
+    // Click to open drawer
+    fireEvent.click(bibtexButtons[0]);
+    expect(screen.getByText(/Bibliographic Entry \(BibTeX format\)/i)).toBeTruthy();
+    expect(bibtexButtons[0].getAttribute('aria-expanded')).toBe('true');
+
+    // Click to close drawer
+    fireEvent.click(bibtexButtons[0]);
+    expect(screen.queryByText(/Bibliographic Entry \(BibTeX format\)/i)).toBeNull();
+  });
+
+  it('verifies SkillsLandscapeSection competency chips fast inspection', () => {
+    render(<SkillsLandscapeSection />);
+
+    // Click a skill chip
+    const rustChip = screen.getByRole('button', { name: /Rust/i });
+    expect(rustChip).toBeTruthy();
+    fireEvent.click(rustChip);
+
+    // Verify inspection panel updates
+    const headings = screen.getAllByRole('heading', { level: 3 });
+    const rustHeading = headings.find((h) => h.textContent?.includes('Rust'));
+    expect(rustHeading).toBeTruthy();
   });
 });

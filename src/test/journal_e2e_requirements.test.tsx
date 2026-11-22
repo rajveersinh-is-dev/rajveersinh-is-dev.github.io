@@ -130,6 +130,7 @@ describe('Acta Mathematica & Computatoria — 4-Tier E2E Requirements Test Suite
       // Assert treatise modal appears
       const modal = screen.getByRole('dialog');
       expect(modal).toBeTruthy();
+      expect(modal.parentElement).toBe(document.body);
       expect(screen.getByText(/PROJECT SPECIFICATION RECORD/i)).toBeTruthy();
       expect(screen.getByText(/INTERACTIVE COMPILER PIPELINE STAGES/i)).toBeTruthy();
 
@@ -387,6 +388,7 @@ describe('Acta Mathematica & Computatoria — 4-Tier E2E Requirements Test Suite
 
       const dialog = screen.getByRole('dialog');
       expect(dialog).toBeTruthy();
+      expect(dialog.parentElement).toBe(document.body);
 
       // Interact with compiler pipeline tabs inside modal
       const stageButtons = screen.getAllByRole('button');

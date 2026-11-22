@@ -151,7 +151,9 @@ export const PreprintsSection: React.FC = () => {
 
                     <button
                       onClick={() => setExpandedBibtexId(isBibtexOpen ? null : pub.id)}
-                      className="px-3 py-1.5 rounded border border-paper-border-subtle hover:border-paper-border-strong bg-paper-bg-elevated text-ink-secondary hover:text-ink-primary transition-colors flex items-center space-x-1"
+                      aria-expanded={isBibtexOpen}
+                      aria-controls={`bibtex-${pub.id}`}
+                      className="px-3 py-1.5 rounded border border-paper-border-subtle hover:border-paper-border-strong bg-paper-bg-elevated text-ink-secondary hover:text-ink-primary transition-colors flex items-center space-x-1 cursor-pointer"
                     >
                       <Code className="w-3.5 h-3.5" />
                       <span>{isBibtexOpen ? 'Hide BibTeX' : 'View BibTeX'}</span>
@@ -160,7 +162,7 @@ export const PreprintsSection: React.FC = () => {
 
                   <button
                     onClick={() => copyBibtex(pub)}
-                    className="px-3.5 py-1.5 rounded border border-paper-border-strong hover:border-academic-amber bg-paper-bg-base text-ink-primary hover:text-academic-amber flex items-center space-x-1.5 transition-colors font-medium"
+                    className="px-3.5 py-1.5 rounded border border-paper-border-strong hover:border-academic-amber bg-paper-bg-base text-ink-primary hover:text-academic-amber flex items-center space-x-1.5 transition-colors font-medium cursor-pointer"
                   >
                     {copiedId === pub.id ? (
                       <>
