@@ -244,7 +244,7 @@ const LorenzSimulator: React.FC = () => {
             Lorenz Strange Attractor (Non-Linear ODE System)
           </h3>
           <p className="text-xs text-ink-muted font-mono mt-1">
-            dx/dt = σ(y - x) &nbsp;|&nbsp; dy/dt = x(ρ - z) - y &nbsp;|&nbsp; dz/dt = xy - βz
+            dx/dt = σ(y − x) &nbsp;|&nbsp; dy/dt = x(ρ − z) − y &nbsp;|&nbsp; dz/dt = xy − βz
           </p>
         </div>
 
@@ -267,17 +267,50 @@ const LorenzSimulator: React.FC = () => {
       </div>
 
       {/* Mathematical Formulation Display Plate */}
-      <div className="math-display text-xs sm:text-sm">
-        <span className="font-math">
-          \frac&#123;dx&#125;&#123;dt&#125; = \sigma (y - x) \quad\Big|\quad \frac&#123;dy&#125;&#123;dt&#125; = x(\rho - z) - y \quad\Big|\quad \frac&#123;dz&#125;&#123;dt&#125; = xy - \beta z
-        </span>
+      <div
+        className="math-display text-sm sm:text-base font-math"
+        role="region"
+        aria-label="Lorenz Strange Attractor Differential Equations: dx/dt = σ(y − x) | dy/dt = x(ρ − z) − y | dz/dt = xy − βz"
+      >
+        <div className="flex flex-wrap items-center justify-center gap-y-3 gap-x-2 sm:gap-x-4">
+          <div className="inline-flex items-center">
+            <span className="math-fraction">
+              <span className="math-fraction-num">d<var className="math-var">x</var></span>
+              <span className="math-fraction-den">d<var className="math-var">t</var></span>
+            </span>
+            <span className="math-op">=</span>
+            <span><var className="math-var">σ</var>(<var className="math-var">y</var> <span className="math-op">−</span> <var className="math-var">x</var>)</span>
+          </div>
+
+          <span className="math-delimiter hidden sm:inline" aria-hidden="true">|</span>
+
+          <div className="inline-flex items-center">
+            <span className="math-fraction">
+              <span className="math-fraction-num">d<var className="math-var">y</var></span>
+              <span className="math-fraction-den">d<var className="math-var">t</var></span>
+            </span>
+            <span className="math-op">=</span>
+            <span><var className="math-var">x</var>(<var className="math-var">ρ</var> <span className="math-op">−</span> <var className="math-var">z</var>) <span className="math-op">−</span> <var className="math-var">y</var></span>
+          </div>
+
+          <span className="math-delimiter hidden sm:inline" aria-hidden="true">|</span>
+
+          <div className="inline-flex items-center">
+            <span className="math-fraction">
+              <span className="math-fraction-num">d<var className="math-var">z</var></span>
+              <span className="math-fraction-den">d<var className="math-var">t</var></span>
+            </span>
+            <span className="math-op">=</span>
+            <span><var className="math-var">x</var><var className="math-var">y</var> <span className="math-op">−</span> <var className="math-var">β</var><var className="math-var">z</var></span>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
         {/* Canvas Display with Coordinate Framing */}
         <div className="lg:col-span-8 bg-[#121110] rounded border-2 border-paper-border-strong overflow-hidden relative aspect-video flex items-center justify-center math-grid shadow-inner">
           <div className="absolute top-2 left-2 text-[9px] font-mono text-[#a8a29e] tracking-widest uppercase pointer-events-none bg-[#121110]/80 px-1.5 py-0.5 rounded border border-[#38332d]">
-            R³ Phase Space • \dot&#123;x&#125; = F(x)
+            ℝ³ Phase Space • ẋ = F(x)
           </div>
           <canvas
             ref={canvasRef}
@@ -510,7 +543,7 @@ const CellularSimulator: React.FC = () => {
 
       <div className="space-y-2">
         <div className="flex justify-between text-xs font-mono text-ink-muted px-1">
-          <span className="font-serif italic">Discrete lattice \mathbb&#123;Z&#125;² — Click cells to toggle state</span>
+          <span className="font-serif italic">Discrete lattice <span className="font-math not-italic">ℤ²</span> — Click cells to toggle state</span>
           <span className="font-bold text-academic-amber">Generation: {generation}</span>
         </div>
 
@@ -611,10 +644,10 @@ const FractalSimulator: React.FC = () => {
             Plate III • Complex Quadratic Dynamics
           </div>
           <h3 className="font-serif text-xl sm:text-2xl font-bold text-ink-primary">
-            Complex Julia Dynamics: z_(n+1) = z_n^2 + c
+            Complex Julia Dynamics: <span className="font-math font-normal">z<sub>n+1</sub> = z<sub>n</sub>² + c</span>
           </h3>
           <p className="text-xs text-ink-muted font-mono mt-1">
-            Quadratic polynomial map on the complex plane with varying constant parameter c = cr + i·ci.
+            Quadratic polynomial map on the complex plane with varying constant parameter c = cᵣ + i·cᵢ.
           </p>
         </div>
 
@@ -633,16 +666,30 @@ const FractalSimulator: React.FC = () => {
       </div>
 
       {/* Mathematical Display Formula */}
-      <div className="math-display text-xs sm:text-sm">
-        <span className="font-math">
-          f_c(z) = z^2 + c, \quad c = c_r + i \cdot c_i \in \mathbb&#123;C&#125;, \quad J(f_c) = \partial K(f_c)
-        </span>
+      <div
+        className="math-display text-sm sm:text-base font-math"
+        role="region"
+        aria-label="Complex Julia Dynamics Formulation: fc(z) = z² + c; c = cr + i·ci ∈ ℂ; J(fc) = ∂K(fc)"
+      >
+        <div className="flex flex-wrap items-center justify-center gap-y-2 gap-x-3 sm:gap-x-5">
+          <div className="inline-flex items-center">
+            <var className="math-var">f</var><sub><var className="math-var">c</var></sub>(<var className="math-var">z</var>) <span className="math-op">=</span> <var className="math-var">z</var>² <span className="math-op">+</span> <var className="math-var">c</var>
+          </div>
+          <span className="math-delimiter hidden sm:inline" aria-hidden="true">|</span>
+          <div className="inline-flex items-center">
+            <var className="math-var">c</var> <span className="math-op">=</span> <var className="math-var">c</var><sub><var className="math-var">r</var></sub> <span className="math-op">+</span> <var className="math-var">i</var> <span className="math-op">·</span> <var className="math-var">c</var><sub><var className="math-var">i</var></sub> <span className="math-op">∈</span> ℂ
+          </div>
+          <span className="math-delimiter hidden sm:inline" aria-hidden="true">|</span>
+          <div className="inline-flex items-center">
+            <var className="math-var">J</var>(<var className="math-var">f</var><sub><var className="math-var">c</var></sub>) <span className="math-op">=</span> <span className="math-op">∂</span><var className="math-var">K</var>(<var className="math-var">f</var><sub><var className="math-var">c</var></sub>)
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
         <div className="lg:col-span-8 bg-[#121110] rounded border-2 border-paper-border-strong overflow-hidden relative aspect-video flex items-center justify-center math-grid shadow-inner">
           <div className="absolute top-2 left-2 text-[9px] font-mono text-[#a8a29e] tracking-widest uppercase pointer-events-none bg-[#121110]/80 px-1.5 py-0.5 rounded border border-[#38332d]">
-            \mathbb&#123;C&#125; Argand Plane • |z| \le 2
+            ℂ Argand Plane • |z| ≤ 2
           </div>
           <canvas ref={canvasRef} width={400} height={250} className="w-full h-full block" />
         </div>
@@ -653,7 +700,7 @@ const FractalSimulator: React.FC = () => {
               <span className="text-academic-amber font-bold uppercase tracking-wider text-[11px] font-serif">
                 Complex Coordinates
               </span>
-              <span className="text-[10px] text-ink-muted">c \in \mathbb&#123;C&#125;</span>
+              <span className="text-[10px] text-ink-muted font-math">c ∈ ℂ</span>
             </div>
 
             <div className="space-y-1">
@@ -979,10 +1026,20 @@ const HomologySimulator: React.FC = () => {
       </div>
 
       {/* Mathematical Homology Definition */}
-      <div className="math-display text-xs sm:text-sm">
-        <span className="font-math">
-          \mathrm&#123;VR&#125;_\epsilon(X) = \Big\&#123; \sigma \subseteq X : \operatorname&#123;diam&#125;(\sigma) \le \epsilon \Big\&#125;, \quad \chi = V - E + F = \beta_0 - \beta_1
-        </span>
+      <div
+        className="math-display text-sm sm:text-base font-math"
+        role="region"
+        aria-label="Vietoris-Rips Homology Definition: VR_ε(X) = { σ ⊆ X : diam(σ) ≤ ε } | χ = V − E + F = β₀ − β₁"
+      >
+        <div className="flex flex-wrap items-center justify-center gap-y-2 gap-x-3 sm:gap-x-5">
+          <div className="inline-flex items-center">
+            <span className="font-serif not-italic">VR</span><sub><var className="math-var">ε</var></sub>(<var className="math-var">X</var>) <span className="math-op">=</span> &#123; <var className="math-var">σ</var> <span className="math-op">⊆</span> <var className="math-var">X</var> <span className="px-1.5">:</span> <span className="font-serif not-italic">diam</span>(<var className="math-var">σ</var>) <span className="math-op">≤</span> <var className="math-var">ε</var> &#125;
+          </div>
+          <span className="math-delimiter hidden sm:inline" aria-hidden="true">|</span>
+          <div className="inline-flex items-center">
+            <var className="math-var">χ</var> <span className="math-op">=</span> <var className="math-var">V</var> <span className="math-op">−</span> <var className="math-var">E</var> <span className="math-op">+</span> <var className="math-var">F</var> <span className="math-op">=</span> <var className="math-var">β</var>₀ <span className="math-op">−</span> <var className="math-var">β</var>₁
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
@@ -1010,7 +1067,7 @@ const HomologySimulator: React.FC = () => {
               <span className="text-academic-amber font-bold uppercase tracking-wider text-[11px] font-serif">
                 Filtration Parameter
               </span>
-              <span className="text-[10px] text-ink-muted">\epsilon \in [20, 130]</span>
+              <span className="text-[10px] text-ink-muted font-math">ε ∈ [20, 130]</span>
             </div>
 
             <div className="space-y-1">

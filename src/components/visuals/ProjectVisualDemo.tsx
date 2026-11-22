@@ -329,8 +329,8 @@ const DualPruningHullVisualizer: React.FC = () => {
         <span className="text-academic-amber font-bold uppercase tracking-wider text-[11px] font-mono">
           [LAGRANGIAN HULL PRUNING ON DECODING LATTICE]
         </span>
-        <span className="text-ink-muted text-[10px] font-math">
-          \mathcal&#123;L&#125;(x, \lambda) = \mathrm&#123;NLL&#125;(x) + \lambda \cdot \mathrm&#123;Cost&#125;(x)
+        <span className="text-ink-muted text-[11px] font-math">
+          ℒ(<var className="math-var">x</var>, <var className="math-var">λ</var>) <span className="math-op">=</span> <span className="font-serif not-italic">NLL</span>(<var className="math-var">x</var>) <span className="math-op">+</span> <var className="math-var">λ</var> <span className="math-op">·</span> <span className="font-serif not-italic">Cost</span>(<var className="math-var">x</var>)
         </span>
       </div>
 
@@ -404,7 +404,7 @@ const EarlyWarningDynamicsVisualizer: React.FC = () => {
           [CRITICAL SLOWING DOWN DYNAMICAL INDICATORS]
         </span>
         <span className="text-ink-muted text-[10px] font-serif italic">
-          Dominant eigenvalue λ_dom → 1, Autocorrelation AR(1) and Permutation Entropy
+          Dominant eigenvalue <span className="font-math not-italic"><var className="math-var">λ</var><sub>dom</sub></span> <span className="font-math not-italic">→ 1</span>, Autocorrelation AR(1) and Permutation Entropy
         </span>
       </div>
 
@@ -439,7 +439,7 @@ const EarlyWarningDynamicsVisualizer: React.FC = () => {
 
           <div>
             <div className="flex justify-between text-[10px] text-ink-muted mb-1 font-serif">
-              <span>Permutation Entropy H_p:</span>
+              <span>Permutation Entropy <span className="font-math"><var className="math-var">H</var><sub><var className="math-var">p</var></sub></span>:</span>
               <span className="text-ink-primary font-bold font-mono">0.61 (Structural Loss)</span>
             </div>
             <div className="h-1.5 w-full bg-paper-bg-base rounded border border-paper-border-subtle overflow-hidden">
@@ -462,8 +462,8 @@ const PersistentHomologyHypergraphVisualizer: React.FC = () => {
         <span className="text-academic-amber font-bold uppercase tracking-wider text-[11px] block font-mono">
           [PATH-CROSSING FUNCTORS &amp; PERSISTENCE BARCODES]
         </span>
-        <span className="text-ink-muted text-[10px] font-math">
-          \mathcal&#123;F&#125;: \mathbf&#123;TempHyperGraph&#125; \to \mathbf&#123;ChComplex&#125;; \quad H_1 \text&#123; Invariant Intervals&#125;
+        <span className="text-ink-muted text-[11px] font-math">
+          ℱ: <span className="font-semibold font-mono">TempHyperGraph</span> → <span className="font-semibold font-mono">ChComplex</span>; <span className="font-serif italic ml-2"><var className="math-var">H</var>₁ Invariant Intervals</span>
         </span>
       </div>
 
@@ -543,16 +543,13 @@ const SunflowerHypergraphVisualizer: React.FC = () => {
           [ERDŐS-RADO SUNFLOWER STRUCTURE SCHEMATIC]
         </span>
         <span className="text-ink-muted text-[10px] font-serif italic">
-          r-sunflower with shared central kernel Y and mutually disjoint petals P_i
+          <var className="math-var">r</var>-sunflower with shared central kernel <var className="math-var">Y</var> and mutually disjoint petals <var className="math-var">P</var><sub><var className="math-var">i</var></sub>
         </span>
       </div>
 
       <div className="p-4 rounded border border-paper-border-strong bg-paper-bg-subtle text-center space-y-2.5">
-        <div className="text-academic-amber text-xs font-bold font-math">
-          A_i \cap A_j = Y \quad (\text&#123;for all distinct &#125; i \ne j)
-        </div>
-        <div className="text-xs text-ink-muted font-mono">
-          A_i ∩ A_j = Y &nbsp;(for all distinct i ≠ j)
+        <div className="text-academic-amber text-sm font-bold font-math">
+          <var className="math-var">A</var><sub><var className="math-var">i</var></sub> <span className="math-op">∩</span> <var className="math-var">A</var><sub><var className="math-var">j</var></sub> <span className="math-op">=</span> <var className="math-var">Y</var> <span className="text-xs font-normal font-serif text-ink-secondary ml-2">(for all distinct <var className="math-var">i</var> ≠ <var className="math-var">j</var>)</span>
         </div>
         <p className="text-[11px] text-ink-secondary leading-relaxed font-serif">
           Audit harness tests uniform set systems under fractional spreadness bounds, systematically verifying absence of pairwise intersecting petals outside kernel Y.
