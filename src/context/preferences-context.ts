@@ -1,6 +1,11 @@
 import { createContext } from 'react';
 
+export type ThemeMode = 'night' | 'paper' | 'amber-crt';
+
 export interface PreferencesContextType {
+  theme: ThemeMode;
+  setTheme: (theme: ThemeMode) => void;
+  cycleTheme: () => void;
   visualEffectsEnabled: boolean;
   setVisualEffectsEnabled: (enabled: boolean) => void;
   toggleVisualEffects: () => void;

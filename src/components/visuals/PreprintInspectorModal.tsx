@@ -29,9 +29,31 @@ export const PreprintInspectorModal: React.FC<PreprintInspectorModalProps> = ({
   const [filtrationEpsilon, setFiltrationEpsilon] = useState<number>(0.45);
   const [lambdaMultiplier, setLambdaMultiplier] = useState<number>(1.2);
   const [isPlayingFiltration, setIsPlayingFiltration] = useState(false);
+  const [sheetTranslateY, setSheetTranslateY] = useState(0);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartYRef.current = e.touches[0].clientY;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartYRef.current === null) return;
+    const deltaY = e.touches[0].clientY - touchStartYRef.current;
+    if (deltaY > 0) {
+      setSheetTranslateY(deltaY);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (sheetTranslateY > 80) {
+      onClose();
+    }
+    setSheetTranslateY(0);
+    touchStartYRef.current = null;
+  };
 
   // Focus close button on mount & lock body scroll
   useEffect(() => {
@@ -409,13 +431,20 @@ export const PreprintInspectorModal: React.FC<PreprintInspectorModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-label={`Scholarly Preprint Inspector: ${publication.title}`}
-      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-y-auto overscroll-contain bg-black/80 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 overflow-y-auto overscroll-contain bg-black/85 sm:bg-black/80 sm:backdrop-blur-xs transition-colors"
       onClick={onClose}
     >
       <div
-        className="max-w-6xl w-full my-auto max-h-[92vh] max-h-[92dvh] flex flex-col overflow-hidden bg-paper-bg-subtle border-2 border-paper-border-strong rounded-xs shadow-2xl"
+        style={sheetTranslateY > 0 ? { transform: `translateY(${sheetTranslateY}px)`, transition: 'none' } : undefined}
+        className="w-full sm:max-w-6xl my-0 sm:my-auto max-h-[85dvh] sm:max-h-[92dvh] flex flex-col overflow-hidden bg-paper-bg-subtle border-t-2 sm:border-2 border-paper-border-strong rounded-t-xl sm:rounded-xs shadow-2xl transition-transform"
         onClick={(e) => e.stopPropagation()}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
+        {/* Mobile Grab Handle for Bottom-Sheet */}
+        <div className="w-12 h-1.5 bg-ink-muted/40 rounded-full mx-auto my-2 sm:hidden shrink-0 cursor-grab active:cursor-grabbing" aria-hidden="true" />
+
         {/* Modal Top Masthead */}
         <div className="px-4 sm:px-6 py-3.5 border-b-2 border-paper-border-strong bg-paper-bg-base flex items-center justify-between shrink-0">
           <div className="flex items-center space-x-2 min-w-0 pr-2">

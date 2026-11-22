@@ -2,6 +2,9 @@ import { useContext } from 'react';
 import { PreferencesContext, type PreferencesContextType } from './preferences-context';
 
 const defaultPreferences: PreferencesContextType = {
+  theme: 'night',
+  setTheme: () => {},
+  cycleTheme: () => {},
   visualEffectsEnabled: true,
   setVisualEffectsEnabled: () => {},
   toggleVisualEffects: () => {},

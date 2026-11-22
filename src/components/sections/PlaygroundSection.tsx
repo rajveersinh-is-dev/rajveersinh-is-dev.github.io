@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Pause, RotateCcw, Info, Sliders, Compass, Activity, Layers } from 'lucide-react';
+import { Play, Pause, RotateCcw, Info, Sliders, Compass, Activity, Layers, Box } from 'lucide-react';
 import { useIntersectionObserver } from '../../utils/intersectionObserver';
 import { MaskedReveal } from '../common/MaskedReveal';
 import { usePreferences } from '../../context';
+import { ManifoldSimulator } from '../visuals/ManifoldSimulator';
 
-type PlaygroundTab = 'lorenz' | 'cellular' | 'fractal' | 'homology';
+type PlaygroundTab = 'lorenz' | 'cellular' | 'fractal' | 'homology' | 'manifold';
 
 export const PlaygroundSection: React.FC = () => {
   const [activeTab, setActiveTab] = useState<PlaygroundTab>('lorenz');
@@ -91,6 +92,17 @@ export const PlaygroundSection: React.FC = () => {
               <Layers className="w-3.5 h-3.5" />
               <span>Plate IV: 4. Simplicial Homology</span>
             </button>
+            <button
+              onClick={() => setActiveTab('manifold')}
+              className={`px-3 py-1.5 rounded transition-all flex items-center space-x-1.5 ${
+                activeTab === 'manifold'
+                  ? 'bg-academic-amber text-paper-bg-base font-bold shadow-xs'
+                  : 'text-ink-secondary hover:text-ink-primary hover:bg-paper-bg-elevated'
+              }`}
+            >
+              <Box className="w-3.5 h-3.5" />
+              <span>Plate V: 5. 3D Manifolds</span>
+            </button>
           </div>
         </div>
 
@@ -100,7 +112,7 @@ export const PlaygroundSection: React.FC = () => {
           <div className="space-y-1">
             <span className="text-ink-primary font-bold">Laboratorium Pedagogical Notice:</span>
             <p>
-              These interactive mathematical instruments demonstrate canonical non-linear dynamical chaos, discrete Turing-complete cellular emergence, quadratic complex polynomial maps, and Vietoris-Rips simplicial homology filtrations. They function as genuine pedagogical testbeds and numerical experiments.
+              These interactive mathematical instruments demonstrate canonical non-linear dynamical chaos, discrete Turing-complete cellular emergence, quadratic complex polynomial maps, Vietoris-Rips simplicial homology filtrations, and 3D parametric topological immersions. They function as genuine pedagogical testbeds and numerical experiments.
             </p>
           </div>
         </div>
@@ -111,6 +123,7 @@ export const PlaygroundSection: React.FC = () => {
           {activeTab === 'cellular' && <CellularSimulator />}
           {activeTab === 'fractal' && <FractalSimulator />}
           {activeTab === 'homology' && <HomologySimulator />}
+          {activeTab === 'manifold' && <ManifoldSimulator />}
         </div>
       </div>
     </section>
@@ -462,6 +475,8 @@ const CellularSimulator: React.FC = () => {
   const [grid, setGrid] = useState<number[][]>(() => createEmptyGrid(ROWS, COLS));
   const [isRunning, setIsRunning] = useState(false);
   const [generation, setGeneration] = useState(0);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [activeBrush, setActiveBrush] = useState<'draw' | 'erase'>('draw');
 
   function createEmptyGrid(r: number, c: number) {
     return Array.from({ length: r }, () => Array(c).fill(0));
@@ -480,14 +495,72 @@ const CellularSimulator: React.FC = () => {
 
   const loadPresetGlider = () => {
     const next = createEmptyGrid(ROWS, COLS);
-    // Glider structure
+    const midR = Math.floor(ROWS / 2) - 2;
+    const midC = Math.floor(COLS / 2) - 2;
+    const glider = [
+      [0, 1],
+      [1, 2],
+      [2, 0],
+      [2, 1],
+      [2, 2],
+    ];
+    glider.forEach(([dr, dc]) => {
+      const r = (midR + dr + ROWS) % ROWS;
+      const c = (midC + dc + COLS) % COLS;
+      next[r][c] = 1;
+    });
+    setGrid(next);
+    setGeneration(0);
+  };
+
+  const loadPresetPulsar = () => {
+    const next = createEmptyGrid(ROWS, COLS);
     const midR = Math.floor(ROWS / 2);
     const midC = Math.floor(COLS / 2);
-    next[midR][midC + 1] = 1;
-    next[midR + 1][midC + 2] = 1;
-    next[midR + 2][midC] = 1;
-    next[midR + 2][midC + 1] = 1;
-    next[midR + 2][midC + 2] = 1;
+
+    // Period 3 Pulsar coordinates relative to center
+    const deltas = [-6, -1, 1, 6];
+    deltas.forEach((dr) => {
+      for (const dc of [-4, -3, -2, 2, 3, 4]) {
+        const r = (midR + dr + ROWS) % ROWS;
+        const c = (midC + dc + COLS) % COLS;
+        next[r][c] = 1;
+      }
+    });
+    for (const dr of [-4, -3, -2, 2, 3, 4]) {
+      deltas.forEach((dc) => {
+        const r = (midR + dr + ROWS) % ROWS;
+        const c = (midC + dc + COLS) % COLS;
+        next[r][c] = 1;
+      });
+    }
+
+    setGrid(next);
+    setGeneration(0);
+  };
+
+  const loadGosperGun = () => {
+    const next = createEmptyGrid(ROWS, COLS);
+    const offsetR = 4;
+    const offsetC = 2;
+
+    const gunCoords = [
+      [4, 0], [4, 1], [5, 0], [5, 1], // left block
+      [4, 10], [5, 10], [6, 10], [3, 11], [7, 11], [2, 12], [8, 12], [2, 13], [8, 13],
+      [5, 14], [3, 15], [7, 15], [4, 16], [5, 16], [6, 16], [5, 17], // left ship
+      [2, 20], [3, 20], [4, 20], [2, 21], [3, 21], [4, 21], [1, 22], [5, 22],
+      [0, 24], [1, 24], [5, 24], [6, 24], // right ship
+      [2, 34], [3, 34], [2, 35], [3, 35] // right block
+    ];
+
+    gunCoords.forEach(([r, c]) => {
+      const nr = (offsetR + r) % ROWS;
+      const nc = (offsetC + c) % COLS;
+      if (nr < ROWS && nc < COLS) {
+        next[nr][nc] = 1;
+      }
+    });
+
     setGrid(next);
     setGeneration(0);
   };
@@ -529,74 +602,147 @@ const CellularSimulator: React.FC = () => {
   const toggleCell = (r: number, c: number) => {
     setGrid((current) => {
       const copy = current.map((row) => [...row]);
-      copy[r][c] = copy[r][c] ? 0 : 1;
+      copy[r][c] = activeBrush === 'draw' ? (copy[r][c] ? 0 : 1) : 0;
       return copy;
     });
   };
 
+  const handleCellPointerEnter = (r: number, c: number) => {
+    if (!isDrawing) return;
+    setGrid((current) => {
+      if (current[r][c] === (activeBrush === 'draw' ? 1 : 0)) return current;
+      const copy = current.map((row) => [...row]);
+      copy[r][c] = activeBrush === 'draw' ? 1 : 0;
+      return copy;
+    });
+  };
+
+  const handleClearGrid = () => {
+    setGrid(createEmptyGrid(ROWS, COLS));
+    setGeneration(0);
+    setIsRunning(false);
+  };
+
   return (
-    <div className="space-y-6">
+    <div
+      className="space-y-6 select-none"
+      onPointerUp={() => setIsDrawing(false)}
+      onPointerLeave={() => setIsDrawing(false)}
+    >
       {/* Plate Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-paper-border-subtle">
         <div>
           <div className="text-[10px] font-mono uppercase tracking-widest text-ink-muted font-semibold">
-            Plate II • Emergent Discrete Complexity
+            Plate II • Emergent Discrete Complexity &amp; Interactive Brush
           </div>
           <h3 className="font-serif text-xl sm:text-2xl font-bold text-ink-primary">
             Cellular Automata (Conway Emergence Engine)
           </h3>
           <p className="text-xs text-ink-muted font-mono mt-1">
-            Deterministic discrete lattice updates generating Turing-complete emergent structures (Rule B3/S23).
+            Click or drag across the lattice to draw live cells. Select classic mathematical stamp presets below.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setIsRunning(!isRunning)}
-            className="px-3.5 py-1.5 rounded border border-paper-border-strong bg-academic-amber text-paper-bg-base text-xs font-mono font-bold flex items-center space-x-1 shadow-xs hover:opacity-90 transition-opacity"
+            className="px-3.5 py-1.5 rounded border border-paper-border-strong bg-academic-amber text-paper-bg-base text-xs font-mono font-bold flex items-center space-x-1 shadow-xs hover:opacity-90 transition-opacity cursor-pointer"
           >
             {isRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
             <span>{isRunning ? 'Pause' : 'Run'}</span>
           </button>
           <button
             onClick={stepSimulation}
-            className="px-3 py-1.5 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-xs font-mono text-ink-secondary hover:text-ink-primary transition-colors"
+            className="px-3 py-1.5 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-xs font-mono text-ink-secondary hover:text-ink-primary transition-colors cursor-pointer"
           >
             Step
           </button>
           <button
             onClick={randomizeGrid}
-            className="px-3 py-1.5 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-xs font-mono text-ink-secondary hover:text-ink-primary transition-colors"
+            className="px-3 py-1.5 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-xs font-mono text-ink-secondary hover:text-ink-primary transition-colors cursor-pointer"
           >
             Randomize
           </button>
           <button
             onClick={loadPresetGlider}
-            className="px-3 py-1.5 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-xs font-mono text-ink-secondary hover:text-ink-primary transition-colors"
+            className="px-3 py-1.5 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-xs font-mono text-ink-secondary hover:text-ink-primary transition-colors cursor-pointer"
           >
             Preset Glider
           </button>
           <button
-            onClick={() => {
-              setGrid(createEmptyGrid(ROWS, COLS));
-              setGeneration(0);
-              setIsRunning(false);
-            }}
-            className="px-2.5 py-1.5 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-xs font-mono text-ink-dim hover:text-ink-primary transition-colors"
+            onClick={handleClearGrid}
+            className="px-2.5 py-1.5 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-xs font-mono text-ink-dim hover:text-ink-primary transition-colors cursor-pointer"
           >
-            Clear
+            Clear Grid
+          </button>
+        </div>
+      </div>
+
+      {/* Stamp Palette Ribbon */}
+      <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 rounded bg-paper-bg-base border border-paper-border-subtle text-xs font-mono">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-[10px] text-ink-muted uppercase tracking-wider font-semibold mr-1">
+            Mathematical Stamp Palette:
+          </span>
+          <button
+            onClick={loadPresetGlider}
+            className="px-2 py-1 rounded bg-paper-bg-subtle hover:bg-paper-bg-elevated border border-paper-border-subtle text-ink-secondary hover:text-ink-primary cursor-pointer text-[11px]"
+          >
+            Glider
+          </button>
+          <button
+            onClick={loadPresetPulsar}
+            className="px-2 py-1 rounded bg-paper-bg-subtle hover:bg-paper-bg-elevated border border-paper-border-subtle text-ink-secondary hover:text-ink-primary cursor-pointer text-[11px]"
+          >
+            Pulsar (Period 3)
+          </button>
+          <button
+            onClick={loadGosperGun}
+            className="px-2 py-1 rounded bg-paper-bg-subtle hover:bg-paper-bg-elevated border border-paper-border-subtle text-ink-secondary hover:text-ink-primary cursor-pointer text-[11px]"
+          >
+            Gosper Glider Gun
+          </button>
+          <button
+            onClick={randomizeGrid}
+            className="px-2 py-1 rounded bg-paper-bg-subtle hover:bg-paper-bg-elevated border border-paper-border-subtle text-ink-secondary hover:text-ink-primary cursor-pointer text-[11px]"
+          >
+            Random Noise Seed
+          </button>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <span className="text-[10px] text-ink-muted">Brush Mode:</span>
+          <button
+            onClick={() => setActiveBrush('draw')}
+            className={`px-2 py-0.5 rounded text-[10px] font-mono cursor-pointer ${
+              activeBrush === 'draw'
+                ? 'bg-academic-amber text-paper-bg-base font-bold'
+                : 'text-ink-muted hover:text-ink-primary'
+            }`}
+          >
+            Draw Cell
+          </button>
+          <button
+            onClick={() => setActiveBrush('erase')}
+            className={`px-2 py-0.5 rounded text-[10px] font-mono cursor-pointer ${
+              activeBrush === 'erase'
+                ? 'bg-academic-amber text-paper-bg-base font-bold'
+                : 'text-ink-muted hover:text-ink-primary'
+            }`}
+          >
+            Erase
           </button>
         </div>
       </div>
 
       <div className="space-y-2">
         <div className="flex justify-between text-xs font-mono text-ink-muted px-1">
-          <span className="font-serif italic">Discrete lattice <span className="font-math not-italic">ℤ²</span> — Click cells to toggle state</span>
+          <span className="font-serif italic">Discrete lattice <span className="font-math not-italic">ℤ²</span> — Click or drag to draw live cells</span>
           <span className="font-bold text-academic-amber">Generation: {generation}</span>
         </div>
 
         {/* Lattice Grid with Archival Frame */}
-        <div className="bg-paper-bg-base p-4 rounded border-2 border-paper-border-strong overflow-x-auto shadow-inner">
+        <div className="bg-paper-bg-base p-4 rounded border-2 border-paper-border-strong overflow-x-auto shadow-inner touch-none">
           <div
             className="grid gap-0.5 mx-auto"
             style={{
@@ -608,7 +754,11 @@ const CellularSimulator: React.FC = () => {
               row.map((val, c) => (
                 <div
                   key={`${r}-${c}`}
-                  onClick={() => toggleCell(r, c)}
+                  onPointerDown={() => {
+                    setIsDrawing(true);
+                    toggleCell(r, c);
+                  }}
+                  onPointerEnter={() => handleCellPointerEnter(r, c)}
                   className={`aspect-square rounded-xs cursor-pointer transition-colors ${
                     val
                       ? (readingMode
@@ -616,7 +766,7 @@ const CellularSimulator: React.FC = () => {
                           : 'bg-academic-amber border border-academic-amber/60 shadow-xs')
                       : 'bg-paper-bg-subtle hover:bg-paper-bg-elevated border border-paper-border-subtle'
                   }`}
-                  title={`Cell (${r}, ${c}): ${val ? 'Alive' : 'Dead'}`}
+                  title={`Cell (${r}, ${c}): ${val ? 'Alive' : 'Dead'} • Click or drag to draw`}
                 />
               ))
             )}

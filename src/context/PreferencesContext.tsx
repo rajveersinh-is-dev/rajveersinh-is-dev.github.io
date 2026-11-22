@@ -1,8 +1,22 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { PreferencesContext } from './preferences-context';
+import { PreferencesContext, type ThemeMode } from './preferences-context';
 import { audioService } from '../utils/audioFeedback';
 
 export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [theme, setThemeState] = useState<ThemeMode>(() => {
+    try {
+      const storedTheme = localStorage.getItem('rvp_theme');
+      if (storedTheme === 'amber-crt') return 'amber-crt';
+      if (storedTheme === 'light') return 'paper';
+      if (storedTheme === 'dark') return 'night';
+      const storedReading = localStorage.getItem('rvp_reading_mode');
+      if (storedReading !== null && JSON.parse(storedReading) === true) return 'paper';
+      return 'night';
+    } catch {
+      return 'night';
+    }
+  });
+
   const [visualEffectsEnabled, setVisualEffectsEnabledState] = useState<boolean>(() => {
     try {
       const stored = localStorage.getItem('rvp_visual_effects');
@@ -14,11 +28,12 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   const [readingMode, setReadingModeState] = useState<boolean>(() => {
     try {
+      const storedTheme = localStorage.getItem('rvp_theme');
+      if (storedTheme === 'amber-crt') return false;
       const stored = localStorage.getItem('rvp_reading_mode');
       if (stored !== null) return JSON.parse(stored);
-      const theme = localStorage.getItem('rvp_theme');
-      if (theme === 'light') return true;
-      if (theme === 'dark') return false;
+      if (storedTheme === 'light') return true;
+      if (storedTheme === 'dark') return false;
       return false; // Default: Night Study (false = dark mode)
     } catch {
       return false;
@@ -54,18 +69,59 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
     if (soundEnabled) audioService.playToggle(!visualEffectsEnabled);
   };
 
-  const setReadingMode = (val: boolean) => {
-    setReadingModeState(val);
+  const applyTheme = useCallback((newTheme: ThemeMode) => {
+    setThemeState(newTheme);
+    const isPaper = newTheme === 'paper';
+    setReadingModeState(isPaper);
     try {
-      localStorage.setItem('rvp_reading_mode', JSON.stringify(val));
-      localStorage.setItem('rvp_theme', val ? 'light' : 'dark');
+      localStorage.setItem('rvp_reading_mode', JSON.stringify(isPaper));
+      if (newTheme === 'amber-crt') {
+        localStorage.setItem('rvp_theme', 'amber-crt');
+      } else if (newTheme === 'paper') {
+        localStorage.setItem('rvp_theme', 'light');
+      } else {
+        localStorage.setItem('rvp_theme', 'dark');
+      }
     } catch {}
+  }, []);
+
+  const setTheme = useCallback((newTheme: ThemeMode) => {
+    applyTheme(newTheme);
+  }, [applyTheme]);
+
+  const cycleTheme = useCallback(() => {
+    setThemeState((current) => {
+      let next: ThemeMode = 'night';
+      if (current === 'night') next = 'paper';
+      else if (current === 'paper') next = 'amber-crt';
+      else next = 'night';
+
+      const isPaper = next === 'paper';
+      setReadingModeState(isPaper);
+      try {
+        localStorage.setItem('rvp_reading_mode', JSON.stringify(isPaper));
+        if (next === 'amber-crt') {
+          localStorage.setItem('rvp_theme', 'amber-crt');
+        } else if (next === 'paper') {
+          localStorage.setItem('rvp_theme', 'light');
+        } else {
+          localStorage.setItem('rvp_theme', 'dark');
+        }
+      } catch {}
+      return next;
+    });
+    if (soundEnabled) audioService.playClick(1020);
+  }, [soundEnabled]);
+
+  const setReadingMode = (val: boolean) => {
+    const nextTheme: ThemeMode = val ? 'paper' : 'night';
+    applyTheme(nextTheme);
   };
 
   const toggleReadingMode = () => {
-    const next = !readingMode;
-    setReadingMode(next);
-    if (soundEnabled) audioService.playToggle(next);
+    const nextTheme: ThemeMode = theme === 'paper' ? 'night' : 'paper';
+    applyTheme(nextTheme);
+    if (soundEnabled) audioService.playToggle(nextTheme === 'paper');
   };
 
   const setSoundEnabled = (val: boolean) => {
@@ -139,26 +195,27 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [commandPaletteOpen, terminalOpen, soundEnabled]);
 
-  // Sync reading mode and dark mode classes to html document
+  // Sync theme and reading mode classes to html document
   useEffect(() => {
-    if (readingMode) {
-      document.documentElement.classList.add('reading-mode');
-      document.documentElement.classList.remove('dark');
-      try {
-        localStorage.setItem('rvp_theme', 'light');
-      } catch {}
+    const root = document.documentElement;
+    if (theme === 'paper') {
+      root.classList.add('reading-mode');
+      root.classList.remove('dark', 'amber-crt');
+    } else if (theme === 'amber-crt') {
+      root.classList.add('amber-crt', 'dark');
+      root.classList.remove('reading-mode');
     } else {
-      document.documentElement.classList.remove('reading-mode');
-      document.documentElement.classList.add('dark');
-      try {
-        localStorage.setItem('rvp_theme', 'dark');
-      } catch {}
+      root.classList.add('dark');
+      root.classList.remove('reading-mode', 'amber-crt');
     }
-  }, [readingMode]);
+  }, [theme]);
 
   return (
     <PreferencesContext.Provider
       value={{
+        theme,
+        setTheme,
+        cycleTheme,
         visualEffectsEnabled,
         setVisualEffectsEnabled,
         toggleVisualEffects,

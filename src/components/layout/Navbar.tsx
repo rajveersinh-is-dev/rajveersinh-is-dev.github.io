@@ -22,9 +22,7 @@ const NAV_LINKS = [
   { label: 'Preprints', href: '#preprints', section: '§ 4' },
   { label: 'Achievements', href: '#achievements', section: '§ 5' },
   { label: 'Skills', href: '#skills', section: '§ 6' },
-  { label: 'Education', href: '#education', section: '§ 7' },
-  { label: 'CV', href: '#cv', section: '§ 8' },
-  { label: 'Timeline', href: '#timeline', section: '§ 9' },
+  { label: 'Curriculum', href: '#education', section: '§ 7' },
   { label: 'Graph', href: '#connections-graph', section: '§ 10' },
   { label: 'Playground', href: '#playground', section: '§ 11' },
   { label: 'Contact', href: '#contact', section: '§ 12' },
@@ -35,8 +33,8 @@ export const Navbar: React.FC = () => {
     toggleCommandPalette,
     visualEffectsEnabled,
     toggleVisualEffects,
-    readingMode,
-    toggleReadingMode,
+    theme,
+    cycleTheme,
     soundEnabled,
     toggleSound,
     toggleTerminal,
@@ -177,25 +175,40 @@ export const Navbar: React.FC = () => {
               {soundEnabled ? <Volume2 className="w-4 h-4 text-academic-amber" /> : <VolumeX className="w-4 h-4" />}
             </button>
 
-            {/* Reading Mode Toggle (Warm Archival Paper vs Deep Espresso Night Study) */}
+            {/* Aesthetic Mode Toggle: Night Study -> Archival Paper -> Amber CRT -> Night Study */}
             <button
-              onClick={toggleReadingMode}
-              aria-label={readingMode ? 'Exit Reading Mode' : 'Enable Reading Mode'}
+              onClick={cycleTheme}
+              aria-label={
+                theme === 'night'
+                  ? 'Switch to Warm Archival Paper Mode'
+                  : theme === 'paper'
+                  ? 'Exit Reading Mode (Switch to Amber Phosphor CRT Mode)'
+                  : 'Switch to Deep Espresso Night Mode'
+              }
               className={`p-1.5 px-2 rounded-xs border text-xs font-serif flex items-center space-x-1 transition-colors cursor-pointer ${
-                readingMode
+                theme === 'paper'
                   ? 'bg-paper-bg-elevated border-paper-border-strong text-ink-primary'
+                  : theme === 'amber-crt'
+                  ? 'bg-[#1a1408] border-[#805800] text-[#ffd24d]'
                   : 'bg-paper-bg-subtle border-paper-border-subtle hover:border-paper-border-strong text-ink-secondary hover:text-ink-primary'
               }`}
               title={
-                readingMode
-                  ? 'Exit Reading Mode (Return to Night Study)'
-                  : 'Enable Reading Mode (Warm Archival Paper)'
+                theme === 'night'
+                  ? 'Current: Night Study (Click to switch to Archival Paper)'
+                  : theme === 'paper'
+                  ? 'Current: Archival Paper (Click to switch to Amber Phosphor CRT)'
+                  : 'Current: DEC VT220 Amber CRT (Click to switch to Night Study)'
               }
             >
-              {readingMode ? (
+              {theme === 'paper' ? (
                 <>
                   <Sun className="w-3.5 h-3.5 text-academic-amber" />
                   <span className="hidden xl:inline text-[11px] font-serif">Paper</span>
+                </>
+              ) : theme === 'amber-crt' ? (
+                <>
+                  <TerminalIcon className="w-3.5 h-3.5 text-academic-amber" />
+                  <span className="hidden xl:inline text-[11px] font-serif">Amber CRT</span>
                 </>
               ) : (
                 <>
@@ -327,14 +340,25 @@ export const Navbar: React.FC = () => {
 
             <div className="flex items-center justify-between px-1 pt-1 text-xs font-serif text-ink-muted">
               <button
-                onClick={toggleReadingMode}
-                aria-label={readingMode ? 'Exit Reading Mode' : 'Enable Reading Mode'}
+                onClick={cycleTheme}
+                aria-label={
+                  theme === 'night'
+                    ? 'Switch to Warm Archival Paper Mode'
+                    : theme === 'paper'
+                    ? 'Exit Reading Mode (Switch to Amber Phosphor CRT Mode)'
+                    : 'Switch to Deep Espresso Night Mode'
+                }
                 className="flex items-center space-x-1.5 py-1 px-2 rounded-xs bg-paper-bg-subtle border border-paper-border-subtle cursor-pointer"
               >
-                {readingMode ? (
+                {theme === 'paper' ? (
                   <>
                     <Sun className="w-3.5 h-3.5 text-academic-amber" />
                     <span>Archival Paper</span>
+                  </>
+                ) : theme === 'amber-crt' ? (
+                  <>
+                    <TerminalIcon className="w-3.5 h-3.5 text-academic-amber" />
+                    <span>Amber CRT</span>
                   </>
                 ) : (
                   <>

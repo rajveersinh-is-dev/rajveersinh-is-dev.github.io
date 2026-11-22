@@ -256,6 +256,26 @@ const TerrainErosionSimulator: React.FC = () => {
       }
       ctx.stroke();
 
+      // 1-Bit Stippled Bayer Dither Halftone Texture on Hydraulic Sediment Bed
+      const bayer4x4 = [
+        [0, 8, 2, 10],
+        [12, 4, 14, 6],
+        [3, 11, 1, 9],
+        [15, 7, 13, 5],
+      ];
+      ctx.fillStyle = '#d97706';
+      for (let px = 0; px < w; px += 4) {
+        const colIdx = Math.min(len - 1, Math.floor((px / w) * (len - 1)));
+        const surfaceY = h - map[colIdx];
+        for (let py = Math.floor(surfaceY) + 2; py < h; py += 4) {
+          const depthFrac = (py - surfaceY) / Math.max(1, h - surfaceY);
+          const threshold = Math.floor(depthFrac * 16);
+          if (bayer4x4[(py >> 2) % 4][(px >> 2) % 4] < threshold) {
+            ctx.fillRect(px, py, 1.5, 1.5);
+          }
+        }
+      }
+
       animId = requestAnimationFrame(render);
     };
 
@@ -349,15 +369,46 @@ const DualPruningHullVisualizer: React.FC = () => {
           step="0.05"
           value={lambda}
           onChange={(e) => setLambda(parseFloat(e.target.value))}
-          className="w-full accent-amber-600 bg-paper-bg-elevated cursor-pointer"
+          className="w-full accent-academic-amber bg-paper-bg-elevated cursor-pointer"
         />
       </div>
 
-      {/* Hull Diagram Representation */}
+      {/* 1-Bit Dither Halftone Pareto Frontier Visualizer */}
       <div className="p-3.5 bg-paper-bg-subtle rounded border border-paper-border-strong space-y-3">
         <div className="text-[11px] text-ink-muted flex justify-between font-serif">
-          <span>Cost vs Score Pruning Matrix</span>
+          <span>Cost vs Score Pruning Matrix &amp; 1-Bit Bayer Pareto Hull</span>
           <span className="text-academic-amber font-semibold">Lower Convex Hull Active</span>
+        </div>
+
+        {/* Mini 1-Bit Dithered Pareto Curve Diagram */}
+        <div className="relative h-20 bg-paper-bg-base rounded border border-paper-border-subtle overflow-hidden">
+          <svg className="w-full h-full" viewBox="0 0 300 80" preserveAspectRatio="none">
+            <defs>
+              <pattern id="pareto-bayer" width="8" height="8" patternUnits="userSpaceOnUse">
+                <rect x="0" y="0" width="2" height="2" fill="currentColor" opacity="0.4" />
+                <rect x="4" y="4" width="2" height="2" fill="currentColor" opacity="0.4" />
+                <rect x="4" y="0" width="2" height="2" fill="currentColor" opacity="0.15" />
+                <rect x="0" y="4" width="2" height="2" fill="currentColor" opacity="0.15" />
+              </pattern>
+            </defs>
+            {/* Shaded Pareto feasible region with Bayer dither pattern */}
+            <path
+              d={`M 20,${65 - lambda * 15} Q 100,${50 - lambda * 20} 280,${15 + lambda * 10} L 280,80 L 20,80 Z`}
+              fill="url(#pareto-bayer)"
+              className="text-academic-amber"
+            />
+            {/* Pareto frontier curve */}
+            <path
+              d={`M 20,${65 - lambda * 15} Q 100,${50 - lambda * 20} 280,${15 + lambda * 10}`}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="text-academic-amber"
+            />
+          </svg>
+          <div className="absolute top-1 left-2 text-[9px] font-mono text-ink-muted">
+            Pareto Optimal Trade-off Frontier (λ = {lambda.toFixed(2)})
+          </div>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">

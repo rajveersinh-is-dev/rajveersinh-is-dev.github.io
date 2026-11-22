@@ -4,9 +4,12 @@ import { projectsData } from '../../data';
 import type { ProjectEntry } from '../../types/content';
 import { ProjectVisualDemo } from '../visuals/ProjectVisualDemo';
 import { NumLangLoweringWalkthrough } from '../visuals/NumLangLoweringWalkthrough';
+import { NumLangReplEvaluator } from '../visuals/NumLangReplEvaluator';
 import { TiltCard } from '../common/TiltCard';
 import { MaskedReveal } from '../common/MaskedReveal';
 import { AcademicPopover } from '../common/AcademicPopover';
+import { AsciiFrame } from '../common/AsciiFrame';
+import { AsciiDecodeText } from '../common/AsciiDecodeText';
 import { copyTextToClipboard } from '../../utils/clipboard';
 import { useIntersectionObserver } from '../../utils/intersectionObserver';
 import { usePreferences } from '../../context';
@@ -30,11 +33,33 @@ export const ProjectsSection: React.FC = () => {
   const [selectedProject, setSelectedProject] = useState<ProjectEntry | null>(null);
   const [modalTab, setModalTab] = useState<'overview' | 'walkthrough'>('overview');
   const [copiedLink, setCopiedLink] = useState(false);
+  const [sheetTranslateY, setSheetTranslateY] = useState(0);
   const [sectionRef, isVisible] = useIntersectionObserver<HTMLElement>();
   const { playClick } = usePreferences();
 
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const lastActiveElementRef = useRef<HTMLElement | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartYRef.current = e.touches[0].clientY;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartYRef.current === null) return;
+    const deltaY = e.touches[0].clientY - touchStartYRef.current;
+    if (deltaY > 0) {
+      setSheetTranslateY(deltaY);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (sheetTranslateY > 80) {
+      handleCloseModal();
+    }
+    setSheetTranslateY(0);
+    touchStartYRef.current = null;
+  };
 
   const categories = ['All', 'Compiler & Verification', 'Optimization & Graphs', 'Simulation & Systems'];
 
@@ -62,7 +87,7 @@ export const ProjectsSection: React.FC = () => {
   }, []);
 
   const handleCloseModal = useCallback(() => {
-    playClick(700);
+    playClick(440);
     setSelectedProject(null);
     try {
       if (window.location.hash.startsWith('#project-')) {
@@ -75,7 +100,7 @@ export const ProjectsSection: React.FC = () => {
   }, [playClick]);
 
   const handleOpenProject = (project: ProjectEntry, initialTab: 'overview' | 'walkthrough' = 'overview') => {
-    playClick(850);
+    playClick(620);
     lastActiveElementRef.current = document.activeElement as HTMLElement;
     setSelectedProject(project);
     setModalTab(initialTab);
@@ -217,137 +242,145 @@ export const ProjectsSection: React.FC = () => {
             <span className="font-semibold">Core Research Monographs — Asymmetric Bento Architecture</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* NUMLANG: Primary Anchor (Spans 2 columns on lg screens) */}
-            {numlangProject && (
-              <TiltCard
-                key={numlangProject.id}
-                id={`project-${numlangProject.id}`}
-                maxTilt={5}
-                spotlightColor="rgba(245, 158, 11, 0.16)"
-                role="button"
-                tabIndex={0}
-                aria-label={`View specifications for ${numlangProject.name}`}
-                onClick={() => handleOpenProject(numlangProject)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    handleOpenProject(numlangProject);
-                  }
-                }}
-                className="col-span-1 md:col-span-2 lg:col-span-2 rounded border-2 border-academic-amber/60 bg-paper-bg-subtle hover:border-academic-amber transition-all flex flex-col justify-between overflow-visible group shadow-md cursor-pointer focus:outline-none focus:ring-1 focus:ring-academic-amber"
-              >
-                <div className="p-6 sm:p-8 space-y-5">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <span className="text-[10px] font-mono px-2.5 py-0.5 rounded border border-academic-amber bg-academic-amber/15 text-academic-amber font-bold">
-                          PRIMARY RESEARCH ANCHOR • MONOGRAPH I
-                        </span>
-                        <span className="text-[10px] font-mono text-ink-muted">
-                          #1 Verified Compiler
-                        </span>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-paper-border-strong bg-paper-bg-base text-ink-secondary">
-                          Lean 4 Formal Semantics
-                        </span>
-                      </div>
-                      <h3 className="font-serif text-2xl sm:text-3xl font-bold text-ink-primary group-hover:text-academic-amber transition-colors">
-                        {numlangProject.name}
-                      </h3>
-                      <span className="text-xs text-ink-muted font-mono block mt-1">
-                        {numlangProject.category}
+          {/* NUMLANG: Signature Hero Anchor (Top Full-Width Bento Anchor) */}
+          {numlangProject && (
+            <TiltCard
+              key={numlangProject.id}
+              id={`project-${numlangProject.id}`}
+              maxTilt={4}
+              spotlightColor="rgba(245, 158, 11, 0.16)"
+              role="button"
+              tabIndex={0}
+              aria-label={`View specifications for ${numlangProject.name}`}
+              onClick={() => handleOpenProject(numlangProject)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleOpenProject(numlangProject);
+                }
+              }}
+              className="w-full rounded border-2 border-academic-amber/60 bg-paper-bg-subtle hover:border-academic-amber transition-all flex flex-col justify-between overflow-visible group shadow-md cursor-pointer focus:outline-none focus:ring-1 focus:ring-academic-amber"
+            >
+              <div className="p-6 sm:p-8 space-y-6">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <span className="text-[10px] font-mono px-2.5 py-0.5 rounded border border-academic-amber bg-academic-amber/15 text-academic-amber font-bold">
+                        PRIMARY RESEARCH ANCHOR • MONOGRAPH I
+                      </span>
+                      <span className="text-[10px] font-mono text-ink-muted">
+                        #1 Verified Compiler
+                      </span>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-paper-border-strong bg-paper-bg-base text-ink-secondary">
+                        Lean 4 Formal Semantics
                       </span>
                     </div>
-
-                    <div className="flex items-center space-x-2 shrink-0">
-                      {numlangProject.githubUrl && (
-                        <a
-                          href={numlangProject.githubUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            playClick(900);
-                          }}
-                          aria-label={`View ${numlangProject.name} source on GitHub`}
-                          className="p-2 rounded border border-paper-border-strong bg-paper-bg-base text-ink-secondary hover:text-academic-amber hover:border-academic-amber transition-colors cursor-pointer"
-                        >
-                          <GithubIcon className="w-4 h-4" />
-                        </a>
-                      )}
-                    </div>
-                  </div>
-
-                  <p className="text-sm text-ink-secondary font-serif leading-relaxed">
-                    {numlangProject.conciseDescription}
-                  </p>
-
-                  {/* Theoretical Invariant & Motivation with Academic Popover */}
-                  <div className="p-4 rounded border-l-3 border-academic-amber bg-paper-bg-base border border-paper-border-subtle font-mono text-xs space-y-2.5">
-                    <span className="text-academic-amber font-semibold uppercase tracking-wider text-[10px] block font-serif">
-                      Formal Specification &amp; Inductive Invariant:
+                    <h3 className="font-serif text-2xl sm:text-3xl font-bold text-ink-primary group-hover:text-academic-amber transition-colors">
+                      {numlangProject.name}
+                    </h3>
+                    <span className="text-xs text-ink-muted font-mono block mt-1">
+                      {numlangProject.category}
                     </span>
-                    <p className="leading-relaxed text-ink-secondary font-serif text-xs sm:text-sm">
-                      {numlangProject.motivation}
-                    </p>
-                    <div className="pt-1 flex items-center">
-                      <AcademicPopover type="theorem" id="thm-supercompilation" align="left">
-                        [Supercompilation Contract]
-                      </AcademicPopover>
-                    </div>
                   </div>
 
-                  {/* NumLang Lowering Pipeline Quick Launch Teaser */}
-                  <div className="p-3 bg-paper-bg-elevated rounded border border-paper-border-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="flex items-center space-x-2 text-xs font-mono text-ink-primary">
-                      <Code2 className="w-4 h-4 text-academic-amber" />
-                      <span>Interactive Step-by-Step Lowering Walkthrough Available</span>
-                    </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleOpenProject(numlangProject, 'walkthrough');
-                      }}
-                      className="px-3 py-1.5 rounded bg-academic-amber text-paper-bg-base font-mono text-xs font-bold flex items-center space-x-1.5 hover:opacity-95 transition-opacity cursor-pointer self-start sm:self-auto shadow-xs"
-                    >
-                      <Cpu className="w-3.5 h-3.5" />
-                      <span>Launch Lowering Walkthrough</span>
-                    </button>
-                  </div>
-
-                  {/* Technology Badges */}
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {numlangProject.technologies.map((tech) => (
-                      <span
-                        key={tech}
-                        className="text-[10px] font-mono px-2.5 py-1 rounded border border-paper-border-subtle bg-paper-bg-base text-ink-muted font-medium"
+                  <div className="flex items-center space-x-2 shrink-0">
+                    {numlangProject.githubUrl && (
+                      <a
+                        href={numlangProject.githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          playClick(900);
+                        }}
+                        aria-label={`View ${numlangProject.name} source on GitHub`}
+                        className="p-2 rounded border border-paper-border-strong bg-paper-bg-base text-ink-secondary hover:text-academic-amber hover:border-academic-amber transition-colors cursor-pointer"
                       >
-                        {tech}
-                      </span>
-                    ))}
+                        <GithubIcon className="w-4 h-4" />
+                      </a>
+                    )}
                   </div>
                 </div>
 
-                <div className="px-6 sm:px-8 py-3.5 border-t border-paper-border-subtle bg-paper-bg-base flex items-center justify-between rounded-b">
-                  <div className="flex items-center space-x-1.5 text-xs font-mono text-ink-muted">
-                    <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                    <span>{numlangProject.status}</span>
+                <p className="text-sm text-ink-secondary font-serif leading-relaxed max-w-4xl">
+                  {numlangProject.conciseDescription}
+                </p>
+
+                {/* Clean Left Accent Bar (Removed Nested Border Box) */}
+                <div className="border-l-2 border-academic-amber pl-3.5 bg-transparent font-mono text-xs space-y-2.5">
+                  <span className="text-academic-amber font-semibold uppercase tracking-wider text-[10px] block font-serif">
+                    Formal Specification &amp; Inductive Invariant:
+                  </span>
+                  <p className="leading-relaxed text-ink-secondary font-serif text-xs sm:text-sm">
+                    {numlangProject.motivation}
+                  </p>
+                  <div className="pt-1 flex items-center">
+                    <AcademicPopover type="theorem" id="thm-supercompilation" align="left">
+                      [Supercompilation Contract]
+                    </AcademicPopover>
+                  </div>
+                </div>
+
+                {/* Lowering Pipeline Launch Teaser */}
+                <div className="p-3 bg-paper-bg-elevated rounded border border-paper-border-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center space-x-2 text-xs font-mono text-ink-primary">
+                    <Code2 className="w-4 h-4 text-academic-amber" />
+                    <span>Interactive Step-by-Step Lowering Walkthrough Available</span>
                   </div>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleOpenProject(numlangProject);
+                      handleOpenProject(numlangProject, 'walkthrough');
                     }}
-                    className="text-xs font-mono text-academic-amber hover:text-ink-primary flex items-center space-x-1 font-semibold group/btn transition-colors cursor-pointer"
+                    className="px-3 py-1.5 rounded bg-academic-amber text-paper-bg-base font-mono text-xs font-bold flex items-center space-x-1.5 hover:opacity-95 transition-opacity cursor-pointer self-start sm:self-auto shadow-xs"
                   >
-                    <span>View Specifications</span>
-                    <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
+                    <Cpu className="w-3.5 h-3.5" />
+                    <span><AsciiDecodeText text="Launch Lowering Walkthrough" /></span>
                   </button>
                 </div>
-              </TiltCard>
-            )}
 
-            {/* Other Featured Projects in Bento Grid */}
+                {/* Interactive In-Browser NumLang Compiler REPL / Evaluator Directly in Hero Bento Card */}
+                <div
+                  className="pt-2 cursor-default"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <NumLangReplEvaluator />
+                </div>
+
+                {/* Technology Badges */}
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {numlangProject.technologies.map((tech) => (
+                    <span
+                      key={tech}
+                      className="text-[10px] font-mono px-2.5 py-1 rounded border border-paper-border-subtle bg-paper-bg-base text-ink-muted font-medium"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="px-6 sm:px-8 py-3.5 border-t border-paper-border-subtle bg-paper-bg-base flex items-center justify-between rounded-b">
+                <div className="flex items-center space-x-1.5 text-xs font-mono text-ink-muted">
+                  <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                  <span>{numlangProject.status}</span>
+                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleOpenProject(numlangProject);
+                  }}
+                  className="text-xs font-mono text-academic-amber hover:text-ink-primary flex items-center space-x-1 font-semibold group/btn transition-colors cursor-pointer"
+                >
+                  <span><AsciiDecodeText text="View Specifications" /></span>
+                  <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
+                </button>
+              </div>
+            </TiltCard>
+          )}
+
+          {/* Secondary Featured Projects in Asymmetric Bento Grid Beneath NumLang */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
             {otherFeatured.map((project) => (
               <TiltCard
                 key={project.id}
@@ -364,90 +397,98 @@ export const ProjectsSection: React.FC = () => {
                     handleOpenProject(project);
                   }
                 }}
-                className="col-span-1 rounded border border-paper-border-strong bg-paper-bg-subtle hover:border-academic-amber transition-all flex flex-col justify-between overflow-hidden group shadow-sm cursor-pointer focus:outline-none focus:ring-1 focus:ring-academic-amber"
+                className="col-span-1 rounded bg-paper-bg-subtle hover:border-academic-amber transition-all flex flex-col justify-between overflow-hidden group shadow-sm cursor-pointer focus:outline-none focus:ring-1 focus:ring-academic-amber"
               >
-                <div className="p-6 space-y-4">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <div className="flex items-center space-x-2 mb-1.5">
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-paper-border-strong bg-paper-bg-base text-academic-amber font-bold">
-                          Monograph {romanNumerals[project.priority - 1] || project.priority}
-                        </span>
-                        <span className="text-[10px] font-mono text-ink-muted">
-                          #{project.priority}
+                <AsciiFrame
+                  titleLeft={`ID: ${project.id.toUpperCase()}`}
+                  titleRight={project.category.includes('Compiler') ? 'ℝ⁴ • SSA' : 'Ω • ALGO'}
+                  footerLeft={project.status}
+                  footerRight="▼ 48ms"
+                  className="h-full flex flex-col justify-between"
+                >
+                  <div className="p-4 sm:p-5 space-y-4">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div className="flex items-center space-x-2 mb-1.5">
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-paper-border-strong bg-paper-bg-base text-academic-amber font-bold">
+                            Monograph {romanNumerals[project.priority - 1] || project.priority}
+                          </span>
+                          <span className="text-[10px] font-mono text-ink-muted">
+                            #{project.priority}
+                          </span>
+                        </div>
+                        <h3 className="font-serif text-xl font-bold text-ink-primary group-hover:text-academic-amber transition-colors">
+                          {project.name}
+                        </h3>
+                        <span className="text-xs text-ink-muted font-mono block mt-1">
+                          {project.category}
                         </span>
                       </div>
-                      <h3 className="font-serif text-xl font-bold text-ink-primary group-hover:text-academic-amber transition-colors">
-                        {project.name}
-                      </h3>
-                      <span className="text-xs text-ink-muted font-mono block mt-1">
-                        {project.category}
-                      </span>
+
+                      {project.githubUrl && (
+                        <a
+                          href={project.githubUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            playClick(900);
+                          }}
+                          aria-label={`View ${project.name} source on GitHub`}
+                          className="p-1.5 rounded border border-paper-border-subtle bg-paper-bg-base text-ink-secondary hover:text-academic-amber hover:border-academic-amber transition-colors cursor-pointer"
+                        >
+                          <GithubIcon className="w-4 h-4" />
+                        </a>
+                      )}
                     </div>
 
-                    {project.githubUrl && (
-                      <a
-                        href={project.githubUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          playClick(900);
-                        }}
-                        aria-label={`View ${project.name} source on GitHub`}
-                        className="p-1.5 rounded border border-paper-border-subtle bg-paper-bg-base text-ink-secondary hover:text-academic-amber hover:border-academic-amber transition-colors cursor-pointer"
-                      >
-                        <GithubIcon className="w-4 h-4" />
-                      </a>
+                    <p className="text-xs text-ink-secondary font-serif leading-relaxed line-clamp-3">
+                      {project.conciseDescription}
+                    </p>
+
+                    <div className="border-l-2 border-academic-amber pl-3.5 bg-transparent font-mono text-[11px] text-ink-muted space-y-1">
+                      <span className="text-academic-amber font-semibold uppercase tracking-wider text-[9px] block font-serif">
+                        Theoretical Invariant:
+                      </span>
+                      <p className="line-clamp-2 leading-relaxed text-ink-secondary">{project.motivation}</p>
+                    </div>
+
+                    {project.metricsAuditNote && (
+                      <div className="text-[10px] font-mono text-ink-muted flex items-center space-x-1.5 bg-paper-bg-elevated p-2 rounded border border-paper-border-subtle">
+                        <Info className="w-3.5 h-3.5 text-ink-muted flex-shrink-0" />
+                        <span className="line-clamp-1">{project.metricsAuditNote}</span>
+                      </div>
                     )}
-                  </div>
 
-                  <p className="text-xs text-ink-secondary font-serif leading-relaxed line-clamp-3">
-                    {project.conciseDescription}
-                  </p>
-
-                  <div className="p-3 rounded border-l-2 border-academic-amber bg-paper-bg-base border border-paper-border-subtle font-mono text-[11px] text-ink-muted space-y-1">
-                    <span className="text-academic-amber font-semibold uppercase tracking-wider text-[9px] block font-serif">
-                      Theoretical Invariant:
-                    </span>
-                    <p className="line-clamp-2 leading-relaxed text-ink-secondary">{project.motivation}</p>
-                  </div>
-
-                  {project.metricsAuditNote && (
-                    <div className="text-[10px] font-mono text-ink-muted flex items-center space-x-1.5 bg-paper-bg-elevated p-2 rounded border border-paper-border-subtle">
-                      <Info className="w-3.5 h-3.5 text-ink-muted flex-shrink-0" />
-                      <span className="line-clamp-1">{project.metricsAuditNote}</span>
+                    <div className="flex flex-wrap gap-1 pt-1">
+                      {project.technologies.slice(0, 4).map((tech) => (
+                        <span
+                          key={tech}
+                          className="text-[10px] font-mono px-2 py-0.5 rounded border border-paper-border-subtle bg-paper-bg-base text-ink-muted"
+                        >
+                          {tech}
+                        </span>
+                      ))}
                     </div>
-                  )}
-
-                  <div className="flex flex-wrap gap-1 pt-1">
-                    {project.technologies.slice(0, 4).map((tech) => (
-                      <span
-                        key={tech}
-                        className="text-[10px] font-mono px-2 py-0.5 rounded border border-paper-border-subtle bg-paper-bg-base text-ink-muted"
-                      >
-                        {tech}
-                      </span>
-                    ))}
                   </div>
-                </div>
 
-                <div className="px-6 py-3 border-t border-paper-border-subtle bg-paper-bg-base flex items-center justify-between">
-                  <div className="flex items-center space-x-1.5 text-[11px] font-mono text-ink-muted">
-                    <ShieldCheck className="w-3.5 h-3.5 text-ink-muted" />
-                    <span>{project.status}</span>
+                  <div className="px-4 sm:px-5 py-3 border-t border-paper-border-subtle bg-paper-bg-base flex items-center justify-between">
+                    <div className="flex items-center space-x-1.5 text-[11px] font-mono text-ink-muted">
+                      <ShieldCheck className="w-3.5 h-3.5 text-ink-muted" />
+                      <span>{project.status}</span>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenProject(project);
+                      }}
+                      className="text-xs font-mono text-academic-amber hover:text-ink-primary flex items-center space-x-1 font-semibold group/btn transition-colors cursor-pointer"
+                    >
+                      <span><AsciiDecodeText text="View Specifications" /></span>
+                      <ChevronRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
+                    </button>
                   </div>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleOpenProject(project);
-                    }}
-                    className="text-xs font-mono text-academic-amber hover:text-ink-primary flex items-center space-x-1 font-semibold group/btn transition-colors cursor-pointer"
-                  >
-                    <span>View Specifications</span>
-                    <ChevronRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
-                  </button>
-                </div>
+                </AsciiFrame>
               </TiltCard>
             ))}
           </div>
@@ -561,13 +602,20 @@ export const ProjectsSection: React.FC = () => {
                   role="dialog"
                   aria-modal="true"
                   aria-label={`Project details for ${selectedProject.name}`}
-                  className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto overscroll-contain bg-black/75 backdrop-blur-xs"
+                  className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6 overflow-y-auto overscroll-contain bg-black/85 sm:bg-black/75 sm:backdrop-blur-xs transition-colors"
                   onClick={handleCloseModal}
                 >
                   <div
-                    className="max-w-4xl w-full my-auto max-h-[85vh] sm:max-h-[90vh] max-h-[85dvh] sm:max-h-[90dvh] flex flex-col overflow-hidden bg-paper-bg-subtle border-2 border-paper-border-strong rounded shadow-2xl"
+                    style={sheetTranslateY > 0 ? { transform: `translateY(${sheetTranslateY}px)`, transition: 'none' } : undefined}
+                    className="w-full sm:max-w-4xl my-0 sm:my-auto max-h-[85dvh] sm:max-h-[90dvh] flex flex-col overflow-hidden bg-paper-bg-subtle border-t-2 sm:border-2 border-paper-border-strong rounded-t-xl sm:rounded shadow-2xl transition-transform"
                     onClick={(e) => e.stopPropagation()}
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
                   >
+                    {/* Mobile Grab Handle for Bottom-Sheet */}
+                    <div className="w-12 h-1.5 bg-ink-muted/40 rounded-full mx-auto my-2 sm:hidden shrink-0 cursor-grab active:cursor-grabbing" aria-hidden="true" />
+
                     {/* Modal Header */}
                     <div className="px-4 sm:px-6 py-4 border-b-2 border-paper-border-strong bg-paper-bg-base flex items-center justify-between shrink-0">
                       <div className="min-w-0 pr-3">
@@ -593,7 +641,7 @@ export const ProjectsSection: React.FC = () => {
                           <div className="flex items-center space-x-1 bg-paper-bg-subtle p-1 rounded border border-paper-border-subtle mr-1">
                             <button
                               onClick={() => {
-                                playClick(800);
+                                playClick(1050);
                                 setModalTab('overview');
                               }}
                               className={`px-2.5 py-1 text-xs font-mono rounded cursor-pointer transition-colors ${
@@ -606,7 +654,7 @@ export const ProjectsSection: React.FC = () => {
                             </button>
                             <button
                               onClick={() => {
-                                playClick(850);
+                                playClick(1050);
                                 setModalTab('walkthrough');
                               }}
                               className={`px-2.5 py-1 text-xs font-mono rounded cursor-pointer transition-colors ${

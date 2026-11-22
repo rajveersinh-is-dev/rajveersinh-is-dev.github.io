@@ -14,7 +14,7 @@ export const timelineData: TimelineEntry[] = [
     yearOrPeriod: "Current Stage",
     title: "Class XII — Secondary Education",
     category: "Education",
-    description: "Undertaking Class XII academic studies at Eon Gyanankur English School while concurrently conducting self-directed mathematical and computational research.",
+    description: "Undertaking Class XII academic studies while concurrently conducting self-directed mathematical and computational research.",
     verified: true,
   },
   {
@@ -22,7 +22,7 @@ export const timelineData: TimelineEntry[] = [
     yearOrPeriod: "Current Enrolment",
     title: "Enrolment at IIT Madras",
     category: "Education",
-    description: "Admitted and currently enrolled in the Bachelor of Science in Aerospace, Aeronautical and Astronautical Engineering at the Indian Institute of Technology Madras.",
+    description: "Admitted and currently enrolled in the Bachelor of Science in Aerospace Engineering at IIT Madras.",
     verified: true,
   },
   {
