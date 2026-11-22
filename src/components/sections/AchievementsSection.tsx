@@ -4,32 +4,35 @@ import { Trophy, Award, ExternalLink, AlertCircle } from 'lucide-react';
 
 export const AchievementsSection: React.FC = () => {
   return (
-    <section id="achievements" className="py-20 border-t border-border-subtle relative bg-bg-base/40">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <section id="achievements" className="py-20 border-t border-paper-border-subtle relative bg-paper-bg-base">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         {/* Section Header */}
-        <div className="space-y-2">
-          <div className="flex items-center space-x-2 text-xs font-mono text-amber-500 uppercase tracking-widest">
-            <span>05 // Verified Milestones</span>
+        <div className="space-y-3">
+          <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-academic-seal font-semibold">
+            Documenta et Laureae • Section V
           </div>
-          <h2 className="text-3xl sm:text-4xl font-bold font-mono text-text-primary uppercase tracking-tight">
-            Honors & Achievements
+          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-ink-primary tracking-tight">
+            § 5. Verified Academic Milestones &amp; Honors
           </h2>
-          <p className="text-xs text-text-muted font-mono max-w-2xl">
-            Recorded competitive and academic distinctions strictly verified against supplied authoritative data.
+          <p className="font-serif italic text-ink-muted text-sm sm:text-base">
+            Honors &amp; Achievements — Recorded Academic Distinctions &amp; Verified Competitive Standings
           </p>
         </div>
+
+        {/* Oxford Rule Divider */}
+        <hr className="oxford-rule" />
 
         {/* Achievements Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {achievementsData.map((item) => (
             <div
               key={item.id}
-              className="p-6 rounded-lg bg-bg-surface border border-border-medium hover:border-amber-500/50 transition-all flex flex-col justify-between space-y-4"
+              className="p-6 rounded border border-paper-border-strong bg-paper-bg-subtle flex flex-col justify-between space-y-4 shadow-sm"
             >
               <div className="space-y-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center space-x-2.5">
-                    <div className="p-2 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400">
+                <div className="flex items-start justify-between border-b border-paper-border-subtle pb-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 rounded border border-academic-seal/30 bg-academic-seal/10 text-academic-seal">
                       {item.organization === 'Kaggle' ? (
                         <Trophy className="w-5 h-5" />
                       ) : (
@@ -37,35 +40,35 @@ export const AchievementsSection: React.FC = () => {
                       )}
                     </div>
                     <div>
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-amber-500 font-semibold block">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-academic-seal font-semibold block">
                         {item.organization}
                       </span>
-                      <h3 className="font-mono text-lg font-bold text-text-primary">
+                      <h3 className="font-serif text-lg font-bold text-ink-primary">
                         {item.title}
                       </h3>
                     </div>
                   </div>
 
                   {item.isOngoing && (
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                      Ongoing
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-academic-amber/40 bg-academic-amber/10 text-academic-amber font-semibold">
+                      Active Cycle
                     </span>
                   )}
                 </div>
 
-                {/* Primary Description (Prominent Leaderboard / Medal indicator) */}
-                <div className="p-3.5 rounded bg-bg-elevated border border-border-subtle font-mono text-xs text-text-primary font-semibold">
+                {/* Primary Description */}
+                <div className="p-3.5 rounded border border-paper-border-subtle bg-paper-bg-base font-serif text-sm text-ink-primary font-medium">
                   {item.description}
                 </div>
 
-                <p className="text-xs text-text-secondary font-sans leading-relaxed">
+                <p className="font-serif text-xs text-ink-secondary leading-relaxed">
                   {item.details}
                 </p>
 
-                {/* Explicit Transparency Note for ongoing competition */}
+                {/* Transparency Note for ongoing competition */}
                 {item.isOngoing && (
-                  <div className="p-2.5 rounded bg-bg-base border border-border-subtle flex items-start space-x-2 text-[11px] font-mono text-text-muted">
-                    <AlertCircle className="w-3.5 h-3.5 text-amber-500 mt-0.5 flex-shrink-0" />
+                  <div className="p-3 rounded border border-paper-border-subtle bg-paper-bg-elevated flex items-start space-x-2 text-xs font-mono text-ink-muted">
+                    <AlertCircle className="w-3.5 h-3.5 text-academic-amber mt-0.5 flex-shrink-0" />
                     <span>
                       Leaderboard standing reflects current public rank during an active competition cycle (~13,000 entries).
                     </span>
@@ -74,14 +77,14 @@ export const AchievementsSection: React.FC = () => {
               </div>
 
               {item.url && (
-                <div className="pt-2 border-t border-border-subtle">
+                <div className="pt-2 border-t border-paper-border-subtle">
                   <a
                     href={item.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs font-mono text-amber-500 hover:text-amber-400 flex items-center space-x-1.5 font-semibold"
+                    className="text-xs font-mono text-academic-seal hover:text-academic-seal/80 flex items-center space-x-1.5 font-semibold"
                   >
-                    <span>View Competition Details</span>
+                    <span>View Competition Registry Record</span>
                     <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                 </div>

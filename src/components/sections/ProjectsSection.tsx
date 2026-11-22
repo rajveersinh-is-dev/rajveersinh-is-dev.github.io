@@ -7,10 +7,12 @@ import {
   Layers,
   ChevronRight,
   X,
-  Sparkles,
   Info,
   Link as LinkIcon,
-  Check
+  Check,
+  BookOpen,
+  ShieldCheck,
+  ArrowUpRight
 } from 'lucide-react';
 import { GithubIcon } from '../common/BrandIcons';
 
@@ -111,33 +113,38 @@ export const ProjectsSection: React.FC = () => {
     return true;
   };
 
+  const romanNumerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'];
+
   const featuredProjects = projectsData.filter((p) => p.isFeatured && filterByCategory(p));
   const additionalProjects = projectsData.filter((p) => !p.isFeatured && filterByCategory(p));
 
   return (
-    <section id="projects" className="py-20 border-t border-border-subtle relative bg-bg-base/60">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <section id="projects" className="py-20 border-t border-paper-border-subtle relative bg-paper-bg-base">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2 text-xs font-mono text-amber-500 uppercase tracking-widest">
-              <span>03 // Computational Systems</span>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-3">
+            <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-academic-seal font-semibold">
+              Fasciculus Systematum • Section II
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold font-mono text-text-primary uppercase tracking-tight">
-              Projects & Research Repositories
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-ink-primary tracking-tight">
+              § 2. Computational Treatises &amp; Verified Algorithms
             </h2>
+            <p className="font-serif italic text-ink-muted text-sm sm:text-base">
+              Projects &amp; Research Repositories — Mechanized Compilers, Algorithmic Lattices, and Discrete Physical Simulations
+            </p>
           </div>
 
-          {/* Filter Pills */}
-          <div className="flex flex-wrap gap-1.5 p-1 rounded-lg bg-bg-surface border border-border-subtle self-start md:self-auto">
+          {/* Filter Catalog Ribbon */}
+          <div className="flex flex-wrap gap-1.5 p-1 rounded border border-paper-border-strong bg-paper-bg-subtle self-start md:self-auto shadow-xs">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-3 py-1 text-xs font-mono rounded transition-colors ${
+                className={`px-3 py-1.5 text-xs font-mono rounded transition-colors ${
                   activeCategory === cat
-                    ? 'bg-amber-500 text-bg-void font-bold'
-                    : 'text-text-muted hover:text-text-primary'
+                    ? 'bg-academic-amber text-paper-bg-base font-bold shadow-xs'
+                    : 'text-ink-secondary hover:text-ink-primary hover:bg-paper-bg-elevated'
                 }`}
               >
                 {cat}
@@ -146,11 +153,11 @@ export const ProjectsSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Featured Top Projects (Priority 1-5) */}
+        {/* Core Mathematical Treatises (Monographs I-V) */}
         <div className="space-y-6">
-          <div className="flex items-center space-x-2 text-xs font-mono text-text-muted uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            <span>Featured Core Implementations (Priority 1–5)</span>
+          <div className="flex items-center space-x-2 text-xs font-mono text-ink-muted uppercase tracking-wider">
+            <BookOpen className="w-4 h-4 text-academic-amber" />
+            <span className="font-semibold">Core Research Monographs (Monographs I–V)</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -158,21 +165,24 @@ export const ProjectsSection: React.FC = () => {
               <div
                 key={project.id}
                 id={`project-${project.id}`}
-                className="rounded-lg bg-bg-surface border border-border-medium hover:border-amber-500/60 transition-all flex flex-col justify-between overflow-hidden group shadow-lg"
+                className="rounded border border-paper-border-strong bg-paper-bg-subtle hover:border-academic-amber transition-all flex flex-col justify-between overflow-hidden group shadow-sm"
               >
                 {/* Header Card Strip */}
                 <div className="p-6 space-y-4">
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-start justify-between gap-2">
                     <div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-bg-elevated border border-border-subtle text-amber-500 font-bold">
+                      <div className="flex items-center space-x-2 mb-1.5">
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-paper-border-strong bg-paper-bg-base text-academic-seal font-bold">
+                          Monograph {romanNumerals[project.priority - 1] || project.priority}
+                        </span>
+                        <span className="text-[10px] font-mono text-ink-muted">
                           #{project.priority}
                         </span>
-                        <h3 className="font-mono text-lg font-bold text-text-primary group-hover:text-amber-400 transition-colors">
-                          {project.name}
-                        </h3>
                       </div>
-                      <span className="text-xs text-text-muted font-mono block mt-1">
+                      <h3 className="font-serif text-xl font-bold text-ink-primary group-hover:text-academic-amber transition-colors">
+                        <span>{project.name}</span>
+                      </h3>
+                      <span className="text-xs text-ink-muted font-mono block mt-1">
                         {project.category}
                       </span>
                     </div>
@@ -183,39 +193,39 @@ export const ProjectsSection: React.FC = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={`View ${project.name} source on GitHub`}
-                        className="p-1.5 rounded bg-bg-elevated text-text-secondary hover:text-amber-400 hover:bg-bg-card transition-colors"
+                        className="p-1.5 rounded border border-paper-border-subtle bg-paper-bg-base text-ink-secondary hover:text-academic-amber hover:border-academic-amber transition-colors"
                       >
                         <GithubIcon className="w-4 h-4" />
                       </a>
                     )}
                   </div>
 
-                  <p className="text-xs text-text-secondary font-sans leading-relaxed">
+                  <p className="text-xs text-ink-secondary font-serif leading-relaxed">
                     {project.conciseDescription}
                   </p>
 
-                  {/* Mathematical / Technical Motivation Snapshot */}
-                  <div className="p-3 rounded bg-bg-base/70 border border-border-subtle font-mono text-[11px] text-text-muted space-y-1">
-                    <span className="text-amber-400/90 font-semibold uppercase tracking-wider text-[9px] block">
-                      Core Motivation:
+                  {/* Mathematical Motivation Block */}
+                  <div className="p-3.5 rounded border-l-2 border-academic-amber bg-paper-bg-base border border-paper-border-subtle font-mono text-[11px] text-ink-muted space-y-1">
+                    <span className="text-academic-amber font-semibold uppercase tracking-wider text-[9px] block font-serif">
+                      Theoretical Invariant &amp; Motivation:
                     </span>
-                    <p className="line-clamp-2">{project.motivation}</p>
+                    <p className="line-clamp-2 leading-relaxed text-ink-secondary">{project.motivation}</p>
                   </div>
 
-                  {/* Audit / Simulation honesty note if present */}
+                  {/* Audit / Simulation Honesty Note */}
                   {project.metricsAuditNote && (
-                    <div className="text-[10px] font-mono text-text-dim flex items-center space-x-1.5 bg-bg-elevated/50 p-2 rounded border border-border-subtle">
-                      <Info className="w-3 h-3 text-amber-500 flex-shrink-0" />
+                    <div className="text-[10px] font-mono text-ink-muted flex items-center space-x-1.5 bg-paper-bg-elevated p-2 rounded border border-paper-border-subtle">
+                      <Info className="w-3.5 h-3.5 text-academic-seal flex-shrink-0" />
                       <span>{project.metricsAuditNote}</span>
                     </div>
                   )}
 
-                  {/* Tech stack badges */}
+                  {/* Technology Tags */}
                   <div className="flex flex-wrap gap-1 pt-1">
                     {project.technologies.map((tech) => (
                       <span
                         key={tech}
-                        className="text-[10px] font-mono px-2 py-0.5 rounded bg-bg-elevated border border-border-subtle text-text-secondary"
+                        className="text-[10px] font-mono px-2 py-0.5 rounded border border-paper-border-subtle bg-paper-bg-base text-ink-muted"
                       >
                         {tech}
                       </span>
@@ -223,14 +233,15 @@ export const ProjectsSection: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Footer Action */}
-                <div className="px-6 py-3 border-t border-border-subtle bg-bg-elevated/40 flex items-center justify-between">
-                  <span className="text-[11px] font-mono text-text-muted">
-                    {project.status}
-                  </span>
+                {/* Footer Action Strip */}
+                <div className="px-6 py-3.5 border-t border-paper-border-subtle bg-paper-bg-base flex items-center justify-between">
+                  <div className="flex items-center space-x-1.5 text-[11px] font-mono text-ink-muted">
+                    <ShieldCheck className="w-3.5 h-3.5 text-academic-seal" />
+                    <span>{project.status}</span>
+                  </div>
                   <button
                     onClick={() => handleOpenProject(project)}
-                    className="text-xs font-mono text-amber-500 hover:text-amber-400 flex items-center space-x-1 font-semibold group/btn"
+                    className="text-xs font-mono text-academic-amber hover:text-academic-seal flex items-center space-x-1 font-semibold group/btn transition-colors"
                   >
                     <span>View Specifications</span>
                     <ChevronRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
@@ -241,35 +252,40 @@ export const ProjectsSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Additional Research Repositories */}
+        {/* Additional Algorithmic Treatises */}
         <div className="space-y-4 pt-6">
-          <div className="flex items-center space-x-2 text-xs font-mono text-text-muted uppercase tracking-wider">
-            <Layers className="w-3.5 h-3.5 text-amber-500" />
-            <span>Additional Research & Algorithmic Repositories</span>
+          <div className="flex items-center space-x-2 text-xs font-mono text-ink-muted uppercase tracking-wider">
+            <Layers className="w-4 h-4 text-academic-seal" />
+            <span className="font-semibold">Additional Research &amp; Algorithmic Repositories</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {additionalProjects.map((project) => (
+            {additionalProjects.map((project, idx) => (
               <div
                 key={project.id}
                 id={`project-${project.id}`}
-                className="p-5 rounded-lg bg-bg-surface border border-border-subtle hover:border-border-medium transition-all flex flex-col justify-between space-y-3"
+                className="p-5 rounded border border-paper-border-subtle bg-paper-bg-subtle hover:border-paper-border-strong transition-all flex flex-col justify-between space-y-3 shadow-xs"
               >
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between gap-2">
                   <div>
-                    <h4 className="font-mono text-base font-bold text-text-primary hover:text-amber-400 transition-colors">
-                      {project.name}
+                    <div className="flex items-center space-x-2 mb-1">
+                      <span className="text-[10px] font-mono text-academic-seal font-semibold">
+                        Treatise {romanNumerals[5 + idx] || `${idx + 6}`}
+                      </span>
+                    </div>
+                    <h4 className="font-serif text-lg font-bold text-ink-primary hover:text-academic-amber transition-colors">
+                      <span>{project.name}</span>
                     </h4>
-                    <span className="text-xs text-text-muted font-mono">{project.category}</span>
+                    <span className="text-xs text-ink-muted font-mono">{project.category}</span>
                   </div>
 
-                  <div className="flex items-center space-x-1">
+                  <div className="flex items-center space-x-1.5">
                     {project.githubUrl && (
                       <a
                         href={project.githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-1.5 rounded text-text-muted hover:text-amber-400 transition-colors"
+                        className="p-1.5 rounded border border-paper-border-subtle bg-paper-bg-base text-ink-muted hover:text-academic-amber transition-colors"
                         title="GitHub Repository"
                       >
                         <GithubIcon className="w-4 h-4" />
@@ -277,7 +293,7 @@ export const ProjectsSection: React.FC = () => {
                     )}
                     <button
                       onClick={() => handleOpenProject(project)}
-                      className="px-2 py-1 rounded bg-bg-elevated hover:bg-bg-card border border-border-subtle text-amber-500 hover:text-amber-400 text-xs font-mono flex items-center space-x-1 transition-colors"
+                      className="px-2.5 py-1 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-academic-amber text-xs font-mono flex items-center space-x-1 transition-colors font-semibold"
                       title="View Details"
                     >
                       <Info className="w-3.5 h-3.5" />
@@ -286,16 +302,16 @@ export const ProjectsSection: React.FC = () => {
                   </div>
                 </div>
 
-                <p className="text-xs text-text-secondary font-sans leading-relaxed">
+                <p className="text-xs text-ink-secondary font-serif leading-relaxed">
                   {project.conciseDescription}
                 </p>
 
-                <div className="flex items-center justify-between pt-1">
+                <div className="flex items-center justify-between pt-2 border-t border-paper-border-subtle">
                   <div className="flex flex-wrap gap-1">
                     {project.technologies.slice(0, 4).map((tech) => (
                       <span
                         key={tech}
-                        className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-bg-elevated border border-border-subtle text-text-dim"
+                        className="text-[10px] font-mono px-2 py-0.5 rounded border border-paper-border-subtle bg-paper-bg-base text-ink-muted"
                       >
                         {tech}
                       </span>
@@ -304,7 +320,7 @@ export const ProjectsSection: React.FC = () => {
 
                   <button
                     onClick={() => handleOpenProject(project)}
-                    className="text-[11px] font-mono text-amber-500 hover:text-amber-400 font-semibold flex items-center space-x-0.5"
+                    className="text-[11px] font-mono text-academic-amber hover:text-academic-seal font-semibold flex items-center space-x-0.5 transition-colors"
                   >
                     <span>Inspect</span>
                     <ChevronRight className="w-3 h-3" />
@@ -315,34 +331,34 @@ export const ProjectsSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Project Detail Modal / Detailed Specification Page */}
+        {/* Project Detail Modal — Treatise Specification & Structural Proof Viewer */}
         {selectedProject && (
           <div
             role="dialog"
             aria-modal="true"
             aria-label={`Project details for ${selectedProject.name}`}
-            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md"
+            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-xs"
             onClick={handleCloseModal}
           >
             <div
-              className="w-full max-w-4xl bg-bg-surface border border-border-medium rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+              className="w-full max-w-4xl bg-paper-bg-subtle border-2 border-paper-border-strong rounded shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Modal Header */}
-              <div className="px-6 py-4 border-b border-border-subtle bg-bg-elevated flex items-center justify-between">
+              {/* Modal Header — Archival Folio Header */}
+              <div className="px-6 py-4 border-b-2 border-paper-border-strong bg-paper-bg-base flex items-center justify-between">
                 <div>
                   <div className="flex items-center space-x-2">
-                    <span className="text-xs font-mono text-amber-500 font-bold">
+                    <span className="text-xs font-mono text-academic-seal font-bold tracking-wider">
                       [PROJECT SPECIFICATION RECORD]
                     </span>
-                    <span className="text-xs text-text-muted font-mono">
+                    <span className="text-xs text-ink-muted font-mono">
                       Status: {selectedProject.status}
                     </span>
                   </div>
-                  <h3 className="text-2xl font-bold font-mono text-text-primary mt-1">
-                    {selectedProject.name}
+                  <h3 className="text-2xl font-bold font-serif text-ink-primary mt-1">
+                    <span>{selectedProject.name}</span>
                   </h3>
-                  <p className="text-xs text-text-muted font-mono">
+                  <p className="text-xs text-ink-muted font-mono">
                     {selectedProject.category}
                   </p>
                 </div>
@@ -350,16 +366,16 @@ export const ProjectsSection: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => handleCopyProjectLink(selectedProject)}
-                    className="p-2 rounded bg-bg-surface border border-border-subtle hover:border-amber-500/50 text-text-muted hover:text-amber-400 transition-colors"
+                    className="p-2 rounded border border-paper-border-subtle bg-paper-bg-subtle hover:bg-paper-bg-elevated text-ink-muted hover:text-academic-amber transition-colors"
                     title="Copy direct share link to this project page"
                     aria-label="Copy share link"
                   >
-                    {copiedLink ? <Check className="w-4 h-4 text-green-400" /> : <LinkIcon className="w-4 h-4" />}
+                    {copiedLink ? <Check className="w-4 h-4 text-academic-amber" /> : <LinkIcon className="w-4 h-4" />}
                   </button>
 
                   <button
                     onClick={handleCloseModal}
-                    className="p-2 rounded hover:bg-bg-card text-text-muted hover:text-text-primary transition-colors"
+                    className="p-2 rounded border border-paper-border-subtle bg-paper-bg-subtle hover:bg-paper-bg-elevated text-ink-muted hover:text-ink-primary transition-colors"
                     aria-label="Close details dialog"
                   >
                     <X className="w-5 h-5" />
@@ -367,67 +383,67 @@ export const ProjectsSection: React.FC = () => {
                 </div>
               </div>
 
-              {/* Modal Body */}
+              {/* Modal Body — Scholarly Specification Monograph */}
               <div className="p-6 overflow-y-auto space-y-6">
                 {/* Visual Demonstration / Architecture Flow */}
                 <div>
-                  <h4 className="text-xs font-mono uppercase tracking-wider text-amber-500 mb-2 font-semibold">
-                    Visual Demonstration & Technical Architecture
+                  <h4 className="text-xs font-mono uppercase tracking-wider text-academic-amber mb-2 font-semibold">
+                    Visual Demonstration &amp; Technical Architecture
                   </h4>
                   <ProjectVisualDemo project={selectedProject} />
                 </div>
 
                 <div>
-                  <h4 className="text-xs font-mono uppercase tracking-wider text-amber-500 mb-2 font-semibold">
-                    Description & Research Scope
+                  <h4 className="text-xs font-serif uppercase tracking-wider text-ink-primary mb-1.5 font-bold">
+                    Description &amp; Research Scope
                   </h4>
-                  <p className="text-sm text-text-secondary leading-relaxed font-sans">
+                  <p className="text-sm text-ink-secondary leading-relaxed font-serif">
                     {selectedProject.conciseDescription}
                   </p>
                 </div>
 
                 <div>
-                  <h4 className="text-xs font-mono uppercase tracking-wider text-amber-500 mb-2 font-semibold">
-                    Research & Engineering Motivation
+                  <h4 className="text-xs font-serif uppercase tracking-wider text-ink-primary mb-1.5 font-bold">
+                    Research &amp; Engineering Motivation
                   </h4>
-                  <p className="text-xs text-text-secondary leading-relaxed font-mono bg-bg-base p-3.5 rounded border border-border-subtle">
+                  <p className="text-xs text-ink-secondary leading-relaxed font-mono bg-paper-bg-base p-3.5 rounded border border-paper-border-subtle">
                     {selectedProject.motivation}
                   </p>
                 </div>
 
                 <div>
-                  <h4 className="text-xs font-mono uppercase tracking-wider text-amber-500 mb-2 font-semibold">
-                    Key Technical Ideas & Structural Principles
+                  <h4 className="text-xs font-serif uppercase tracking-wider text-ink-primary mb-1.5 font-bold">
+                    Key Technical Ideas &amp; Structural Principles
                   </h4>
                   <ul className="space-y-2">
                     {selectedProject.keyIdeas.map((idea, idx) => (
                       <li
                         key={idx}
-                        className="text-xs text-text-secondary flex items-start space-x-2 font-mono"
+                        className="text-xs text-ink-secondary flex items-start space-x-2 font-mono"
                       >
-                        <span className="text-amber-500 font-bold">[{idx + 1}]</span>
-                        <span>{idea}</span>
+                        <span className="text-academic-amber font-bold">[{idx + 1}]</span>
+                        <span className="leading-relaxed">{idea}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
                 {selectedProject.metricsAuditNote && (
-                  <div className="p-3 rounded bg-amber-500/10 border border-amber-500/30 text-xs text-amber-400 font-mono">
-                    <span className="font-bold">Metric Transparency: </span>
+                  <div className="p-3.5 rounded border-l-2 border-academic-seal bg-paper-bg-base border border-paper-border-subtle text-xs text-ink-secondary font-mono">
+                    <span className="font-bold text-academic-seal">Metric Transparency: </span>
                     {selectedProject.metricsAuditNote}
                   </div>
                 )}
 
                 <div>
-                  <h4 className="text-xs font-mono uppercase tracking-wider text-text-muted mb-2 font-semibold">
-                    Technologies
+                  <h4 className="text-xs font-mono uppercase tracking-wider text-ink-muted mb-2 font-semibold">
+                    Technologies &amp; Proof Assistants
                   </h4>
                   <div className="flex flex-wrap gap-1.5">
                     {selectedProject.technologies.map((t) => (
                       <span
                         key={t}
-                        className="text-xs font-mono px-2.5 py-1 rounded bg-bg-elevated border border-border-medium text-text-primary"
+                        className="text-xs font-mono px-2.5 py-1 rounded border border-paper-border-strong bg-paper-bg-base text-ink-primary"
                       >
                         {t}
                       </span>
@@ -437,26 +453,27 @@ export const ProjectsSection: React.FC = () => {
               </div>
 
               {/* Modal Footer */}
-              <div className="px-6 py-4 border-t border-border-subtle bg-bg-elevated flex items-center justify-between">
+              <div className="px-6 py-4 border-t-2 border-paper-border-strong bg-paper-bg-base flex items-center justify-between">
                 {selectedProject.githubUrl ? (
                   <a
                     href={selectedProject.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-4 py-2 rounded bg-amber-500 hover:bg-amber-600 text-bg-void font-mono text-xs font-semibold flex items-center space-x-2 transition-colors"
+                    className="px-4 py-2 rounded border border-paper-border-strong bg-academic-amber text-paper-bg-base font-mono text-xs font-semibold flex items-center space-x-2 shadow-xs hover:opacity-90 transition-opacity"
                   >
                     <GithubIcon className="w-4 h-4" />
                     <span>Open GitHub Repository</span>
+                    <ArrowUpRight className="w-3.5 h-3.5" />
                   </a>
                 ) : (
-                  <span className="text-xs text-text-muted font-mono">
+                  <span className="text-xs text-ink-muted font-mono">
                     Private / Internal Research Prototype
                   </span>
                 )}
 
                 <button
                   onClick={handleCloseModal}
-                  className="px-4 py-2 rounded bg-bg-surface border border-border-subtle hover:border-border-highlight text-text-secondary hover:text-text-primary text-xs font-mono"
+                  className="px-4 py-2 rounded border border-paper-border-strong bg-paper-bg-subtle hover:bg-paper-bg-elevated text-ink-secondary hover:text-ink-primary text-xs font-mono transition-colors"
                 >
                   Close
                 </button>

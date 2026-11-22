@@ -12,10 +12,12 @@ import {
   Eye,
   Sliders,
   ExternalLink,
-  Sparkles,
-  ArrowRight,
   GraduationCap,
-  X
+  X,
+  Compass,
+  ArrowRight,
+  ShieldCheck,
+  Check
 } from 'lucide-react';
 
 interface CommandItem {
@@ -39,6 +41,7 @@ export const CommandPalette: React.FC = () => {
 
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [copiedEmail, setCopiedEmail] = useState(false);
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const navigateToSection = useCallback((sectionId: string) => {
@@ -51,119 +54,119 @@ export const CommandPalette: React.FC = () => {
 
   const commandItems: CommandItem[] = useMemo(() => {
     const items: CommandItem[] = [
-      // Sections
+      // Sections — Formal Journal Landmarks
       {
         id: 'sec-hero',
-        category: 'Navigation',
-        title: 'Hero / Overview',
-        subtitle: 'Go to beginning of portfolio',
-        icon: <ArrowRight className="w-4 h-4 text-amber-500" />,
+        category: 'Index',
+        title: 'Title Plate & Frontispiece',
+        subtitle: 'Annals volume, issue metadata, and research abstract',
+        icon: <Compass className="w-4 h-4 text-academic-seal" />,
         action: () => navigateToSection('hero'),
       },
       {
         id: 'sec-about',
-        category: 'Navigation',
-        title: 'About & Philosophy',
-        subtitle: 'First-person background, vision, and aspirations',
-        icon: <ArrowRight className="w-4 h-4 text-amber-500" />,
+        category: 'Index',
+        title: 'About & Research Philosophy',
+        subtitle: 'Scholarly manifesto, intellectual trajectory, and methodology',
+        icon: <BookOpen className="w-4 h-4 text-academic-amber" />,
         action: () => navigateToSection('about'),
       },
       {
         id: 'sec-research',
-        category: 'Navigation',
-        title: 'Research Interests',
-        subtitle: 'Explore theoretical & computational mathematics domains',
-        icon: <BookOpen className="w-4 h-4 text-amber-500" />,
+        category: 'Index',
+        title: 'Research Program & Axiomatic Areas',
+        subtitle: 'Persistent homology, combinatorial lattices, and mechanized proofs',
+        icon: <BookOpen className="w-4 h-4 text-academic-amber" />,
         action: () => navigateToSection('research-interests'),
       },
       {
         id: 'sec-projects',
-        category: 'Navigation',
-        title: 'Projects Directory',
-        subtitle: 'NumLang, Omni Toolkit, Terrain Erosion Engine, Umbra, etc.',
-        icon: <FolderGit2 className="w-4 h-4 text-amber-500" />,
+        category: 'Index',
+        title: 'Computational Treatises & Verified Algorithms',
+        subtitle: 'NumLang compiler, Omni toolkit, hydraulic modeling, and audit suites',
+        icon: <FolderGit2 className="w-4 h-4 text-academic-seal" />,
         action: () => navigateToSection('projects'),
       },
       {
         id: 'sec-preprints',
-        category: 'Navigation',
-        title: 'Research & Preprints',
-        subtitle: 'Zenodo archived independent preprints',
-        icon: <FileText className="w-4 h-4 text-amber-500" />,
+        category: 'Index',
+        title: 'Archival Manuscripts & Preprints',
+        subtitle: 'Zenodo deposited independent manuscripts with MSC2020 codes',
+        icon: <FileText className="w-4 h-4 text-academic-seal" />,
         action: () => navigateToSection('preprints'),
       },
       {
         id: 'sec-achievements',
-        category: 'Navigation',
-        title: 'Achievements',
-        subtitle: 'Kaggle Squares in Squares (7th) & SOF IMO medals',
-        icon: <Sparkles className="w-4 h-4 text-amber-500" />,
+        category: 'Index',
+        title: 'Honors & Verified Milestones',
+        subtitle: 'Kaggle Squares in Squares (7th ongoing) and SOF IMO medals',
+        icon: <ShieldCheck className="w-4 h-4 text-academic-amber" />,
         action: () => navigateToSection('achievements'),
       },
       {
         id: 'sec-skills',
-        category: 'Navigation',
-        title: 'Technical Landscape',
-        subtitle: 'Intermediate capabilities across Rust, Lean 4, Python, etc.',
-        icon: <Sliders className="w-4 h-4 text-amber-500" />,
+        category: 'Index',
+        title: 'Technical Landscape & Mathematical Tools',
+        subtitle: 'Verified intermediate competencies across Lean 4, Rust, Python, etc.',
+        icon: <Sliders className="w-4 h-4 text-academic-amber" />,
         action: () => navigateToSection('skills'),
       },
       {
         id: 'sec-education',
-        category: 'Navigation',
-        title: 'Education & Enrolment',
+        category: 'Index',
+        title: 'Education & Institutional Credentials',
         subtitle: 'IIT Madras (BSc Aerospace Enrolled) & Eon Gyanankur (Class XII)',
-        icon: <GraduationCap className="w-4 h-4 text-amber-500" />,
+        icon: <GraduationCap className="w-4 h-4 text-academic-seal" />,
         action: () => navigateToSection('education'),
       },
       {
         id: 'sec-cv',
-        category: 'Navigation',
-        title: 'Curriculum Vitae',
-        subtitle: 'Download official PDF or inspect Markdown source',
-        icon: <FileText className="w-4 h-4 text-amber-500" />,
+        category: 'Index',
+        title: 'Curriculum Vitae & Academic Dossier',
+        subtitle: 'Download official vector PDF or inspect Markdown source',
+        icon: <FileText className="w-4 h-4 text-academic-seal" />,
         action: () => navigateToSection('cv'),
       },
       {
         id: 'sec-timeline',
-        category: 'Navigation',
-        title: 'Milestone Timeline',
-        subtitle: 'Chronological research and academic milestones',
-        icon: <ArrowRight className="w-4 h-4 text-amber-500" />,
+        category: 'Index',
+        title: 'Scholarly Chronology',
+        subtitle: 'Chronological timeline of academic milestones and research discoveries',
+        icon: <ArrowRight className="w-4 h-4 text-academic-amber" />,
         action: () => navigateToSection('timeline'),
       },
       {
         id: 'sec-connections',
-        category: 'Navigation',
-        title: 'Research Connections Graph',
-        subtitle: 'Interactive map of areas, projects, and concepts',
-        icon: <Sparkles className="w-4 h-4 text-amber-500" />,
+        category: 'Index',
+        title: 'Harmonic Topological Lattice',
+        subtitle: 'Interactive network mapping mathematical areas, treatises, and concepts',
+        icon: <Compass className="w-4 h-4 text-academic-seal" />,
         action: () => navigateToSection('connections-graph'),
       },
       {
         id: 'sec-playground',
-        category: 'Navigation',
-        title: 'Mathematical Visual Playground',
-        subtitle: 'Interactive simulations: Attractors, Cellular Automata, Fractals, Homology',
-        icon: <Sparkles className="w-4 h-4 text-amber-500" />,
+        category: 'Index',
+        title: 'The Computational Workbench / Laboratorium Mathematicum',
+        subtitle: 'Plates I–IV: Lorenz attractor, cellular automata, Julia dynamics, simplicial homology',
+        icon: <Compass className="w-4 h-4 text-academic-amber" />,
         action: () => navigateToSection('playground'),
       },
       {
         id: 'sec-contact',
-        category: 'Navigation',
-        title: 'Contact Information',
-        subtitle: 'Reach out via email or verified profiles',
-        icon: <Mail className="w-4 h-4 text-amber-500" />,
+        category: 'Index',
+        title: 'Academic Correspondence & Contact',
+        subtitle: 'Direct email channel and verified academic repositories',
+        icon: <Mail className="w-4 h-4 text-academic-seal" />,
         action: () => navigateToSection('contact'),
       },
 
-      // Actions
+      // Actions & Study Preferences
       {
         id: 'act-download-cv',
-        category: 'Action',
+        category: 'Dossier',
         title: 'Download Curriculum Vitae (PDF)',
-        subtitle: 'Locally generated vector PDF document',
-        icon: <FileText className="w-4 h-4 text-amber-400" />,
+        subtitle: 'Locally generated vector PDF document without remote dependencies',
+        icon: <FileText className="w-4 h-4 text-academic-seal" />,
         action: () => {
           setCommandPaletteOpen(false);
           downloadPdfCv();
@@ -174,7 +177,7 @@ export const CommandPalette: React.FC = () => {
         category: 'Action',
         title: visualEffectsEnabled ? 'Disable Visual Effects' : 'Enable Visual Effects',
         subtitle: `Currently: ${visualEffectsEnabled ? 'Active' : 'Disabled'}`,
-        icon: <Eye className="w-4 h-4 text-amber-400" />,
+        icon: <Eye className="w-4 h-4 text-academic-amber" />,
         action: () => {
           toggleVisualEffects();
           setCommandPaletteOpen(false);
@@ -185,7 +188,7 @@ export const CommandPalette: React.FC = () => {
         category: 'Action',
         title: readingMode ? 'Exit Reading Mode' : 'Enter Reading Mode',
         subtitle: `Currently: ${readingMode ? 'Active (Minimal Animations)' : 'Normal Mode'}`,
-        icon: <BookOpen className="w-4 h-4 text-amber-400" />,
+        icon: <BookOpen className="w-4 h-4 text-academic-amber" />,
         action: () => {
           toggleReadingMode();
           setCommandPaletteOpen(false);
@@ -193,14 +196,14 @@ export const CommandPalette: React.FC = () => {
       },
     ];
 
-    // Add Projects (Opens detailed specification view directly!)
+    // Add Treatises / Projects
     projectsData.forEach((proj) => {
       items.push({
         id: `proj-${proj.id}`,
-        category: 'Project',
+        category: 'Treatise',
         title: proj.name,
         subtitle: `${proj.category} — ${proj.technologies.slice(0, 3).join(', ')}`,
-        icon: <FolderGit2 className="w-4 h-4 text-slate-400" />,
+        icon: <FolderGit2 className="w-4 h-4 text-academic-seal" />,
         action: () => {
           setCommandPaletteOpen(false);
           window.location.hash = `#project-${proj.id}`;
@@ -210,14 +213,14 @@ export const CommandPalette: React.FC = () => {
       });
     });
 
-    // Add Publications
+    // Add Preprints
     publicationsData.forEach((pub) => {
       items.push({
         id: `pub-${pub.id}`,
-        category: 'Research Preprint',
+        category: 'Preprint',
         title: pub.title,
-        subtitle: `Zenodo Preprint — ${pub.researchArea}`,
-        icon: <ExternalLink className="w-4 h-4 text-amber-400" />,
+        subtitle: `Zenodo Accession — ${pub.researchArea}`,
+        icon: <ExternalLink className="w-4 h-4 text-academic-amber" />,
         action: () => {
           setCommandPaletteOpen(false);
           const el = document.getElementById('preprints');
@@ -226,15 +229,17 @@ export const CommandPalette: React.FC = () => {
       });
     });
 
-    // Add Contact Actions
+    // Add Epistolary / Contact Action
     items.push({
       id: 'contact-email',
-      category: 'Contact',
+      category: 'Epistolary',
       title: `Copy Email: ${contactData.email}`,
-      subtitle: 'Copy address to clipboard',
-      icon: <Mail className="w-4 h-4 text-slate-400" />,
+      subtitle: 'Copy institutional correspondence address to clipboard',
+      icon: <Mail className="w-4 h-4 text-academic-seal" />,
       action: async () => {
         await copyTextToClipboard(contactData.email);
+        setCopiedEmail(true);
+        setTimeout(() => setCopiedEmail(false), 2000);
         setCommandPaletteOpen(false);
       },
     });
@@ -304,43 +309,53 @@ export const CommandPalette: React.FC = () => {
       role="dialog"
       aria-modal="true"
       aria-label="Command Palette"
-      className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-black/80 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-start justify-center pt-14 sm:pt-20 px-4 bg-black/70 backdrop-blur-xs"
       onClick={() => setCommandPaletteOpen(false)}
       onKeyDown={handleKeyDown}
     >
       <div
-        className="w-full max-w-2xl bg-bg-surface border border-border-medium rounded-lg shadow-2xl overflow-hidden flex flex-col max-h-[75vh]"
+        className="w-full max-w-2xl bg-paper-bg-subtle border-2 border-paper-border-strong rounded shadow-2xl overflow-hidden flex flex-col max-h-[75vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Search Input Bar */}
-        <div className="flex items-center px-4 py-3 border-b border-border-subtle bg-bg-elevated">
-          <Search className="w-5 h-5 text-amber-500 mr-3 flex-shrink-0" />
+        {/* Masthead Concordance Title Strip */}
+        <div className="px-4 py-2 border-b border-paper-border-subtle bg-paper-bg-base flex items-center justify-between text-[11px] font-mono text-ink-muted">
+          <span className="font-serif italic font-semibold text-academic-seal uppercase tracking-wider text-[10px]">
+            Bibliographic Concordance &amp; Research Index
+          </span>
+          <span className="text-[10px]">
+            Acta Mathematica &amp; Computatoria
+          </span>
+        </div>
+
+        {/* Classical Search Input Bar */}
+        <div className="flex items-center px-4 py-3.5 border-b-2 border-paper-border-strong bg-paper-bg-subtle">
+          <Search className="w-5 h-5 text-academic-amber mr-3 flex-shrink-0" />
           <input
             type="text"
-            placeholder="Type a command, project, research area, or section..."
+            placeholder="Type a command, treatise, research monograph, or section..."
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
               setSelectedIndex(0);
             }}
             autoFocus
-            className="w-full bg-transparent text-text-primary placeholder:text-text-muted focus:outline-none text-sm font-mono"
+            className="w-full bg-transparent text-ink-primary placeholder:text-ink-muted placeholder:font-serif focus:outline-none text-sm font-serif"
             aria-autocomplete="list"
           />
           <button
             onClick={() => setCommandPaletteOpen(false)}
             aria-label="Close command palette"
-            className="p-1 text-text-muted hover:text-text-primary rounded"
+            className="p-1 text-ink-muted hover:text-ink-primary rounded transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Results List */}
-        <div className="overflow-y-auto divide-y divide-border-subtle p-2">
+        {/* Results List — Academic Concordance Entries */}
+        <div className="overflow-y-auto divide-y divide-paper-border-subtle p-2">
           {filteredItems.length === 0 ? (
-            <div className="py-8 text-center text-text-muted text-sm font-mono">
-              No matching commands or projects found.
+            <div className="py-10 text-center text-ink-muted text-sm font-serif italic">
+              No matching treatises, manuscripts, or sections found in concordance.
             </div>
           ) : (
             filteredItems.map((item, idx) => {
@@ -351,31 +366,39 @@ export const CommandPalette: React.FC = () => {
                   ref={(el) => { itemRefs.current[idx] = el; }}
                   onClick={item.action}
                   onMouseEnter={() => setSelectedIndex(idx)}
-                  className={`w-full text-left px-3 py-2.5 rounded flex items-center justify-between group transition-colors ${
+                  className={`w-full text-left px-3.5 py-2.5 rounded transition-all flex items-center justify-between group ${
                     isSelected
-                      ? 'bg-amber-500/15 border-l-2 border-amber-500 text-amber-400 font-semibold'
-                      : 'hover:bg-bg-cardHover text-text-primary'
+                      ? 'bg-paper-bg-elevated border-l-3 border-academic-amber text-ink-primary font-semibold shadow-xs'
+                      : 'hover:bg-paper-bg-base text-ink-secondary'
                   }`}
                 >
-                  <div className="flex items-center space-x-3 min-w-0 pr-2">
-                    <div className={`p-1.5 rounded bg-bg-base border ${
-                      isSelected ? 'border-amber-500/60' : 'border-border-subtle group-hover:border-amber-500/40'
+                  <div className="flex items-center space-x-3 min-w-0 pr-3">
+                    <div className={`p-1.5 rounded border ${
+                      isSelected
+                        ? 'border-academic-amber bg-paper-bg-base text-academic-amber'
+                        : 'border-paper-border-subtle bg-paper-bg-subtle text-ink-muted group-hover:border-paper-border-strong'
                     }`}>
                       {item.icon}
                     </div>
                     <div className="min-w-0">
-                      <div className={`text-sm truncate ${
-                        isSelected ? 'text-amber-400 font-bold' : 'group-hover:text-amber-400'
+                      <div className={`text-sm truncate font-serif ${
+                        isSelected ? 'text-ink-primary font-bold' : 'group-hover:text-ink-primary'
                       }`}>
                         {item.title}
                       </div>
-                      <div className="text-xs text-text-muted truncate">
+                      <div className="text-xs text-ink-muted truncate font-serif italic">
                         {item.subtitle}
                       </div>
                     </div>
                   </div>
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-text-dim px-2 py-0.5 rounded bg-bg-base border border-border-subtle flex-shrink-0">
-                    {item.category}
+                  <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded border flex-shrink-0 ${
+                    item.category === 'Treatise'
+                      ? 'bg-paper-bg-base border-academic-seal text-academic-seal font-semibold'
+                      : item.category === 'Preprint'
+                      ? 'bg-paper-bg-base border-academic-amber text-academic-amber font-semibold'
+                      : 'bg-paper-bg-base border-paper-border-strong text-ink-muted'
+                  }`}>
+                    [{item.category}]
                   </span>
                 </button>
               );
@@ -383,10 +406,21 @@ export const CommandPalette: React.FC = () => {
           )}
         </div>
 
-        {/* Footer shortcuts helper */}
-        <div className="px-4 py-2 border-t border-border-subtle bg-bg-elevated flex items-center justify-between text-[11px] text-text-muted font-mono">
-          <span>Press ESC or click outside to exit</span>
-          <span className="hidden sm:inline">Use ↑ ↓ to navigate, Enter to select</span>
+        {/* Footer shortcuts helper — Oxford Frame Footer */}
+        <div className="px-4 py-2.5 border-t border-paper-border-strong bg-paper-bg-base flex items-center justify-between text-[11px] text-ink-muted font-mono">
+          <div className="flex items-center space-x-3">
+            <span><kbd className="px-1 py-0.5 rounded border border-paper-border-strong bg-paper-bg-subtle text-[10px]">ESC</kbd> Dismiss</span>
+            <span className="hidden sm:inline">•</span>
+            <span className="hidden sm:inline"><kbd className="px-1 py-0.5 rounded border border-paper-border-strong bg-paper-bg-subtle text-[10px]">↑ / ↓</kbd> Traverse Index</span>
+            <span className="hidden sm:inline">•</span>
+            <span className="hidden sm:inline"><kbd className="px-1 py-0.5 rounded border border-paper-border-strong bg-paper-bg-subtle text-[10px]">↵</kbd> Inspect Record</span>
+          </div>
+          {copiedEmail && (
+            <span className="text-academic-seal font-semibold flex items-center space-x-1">
+              <Check className="w-3.5 h-3.5" />
+              <span>Email Copied!</span>
+            </span>
+          )}
         </div>
       </div>
     </div>

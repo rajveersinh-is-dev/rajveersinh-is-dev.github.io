@@ -1,93 +1,95 @@
 import React from 'react';
 import { educationData } from '../../data';
-import { GraduationCap, BookOpen, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { GraduationCap, ShieldCheck, CheckCircle2 } from 'lucide-react';
 
 export const EducationSection: React.FC = () => {
   return (
-    <section id="education" className="py-20 border-t border-border-subtle relative bg-bg-surface/25">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <section id="education" className="py-20 border-t border-paper-border-subtle relative bg-paper-bg-subtle/30">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2 text-xs font-mono text-amber-500 uppercase tracking-widest">
-              <span>07 // Academic Enrolment</span>
+          <div className="space-y-3">
+            <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-academic-seal font-semibold">
+              Archival Dossier • Section VII
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold font-mono text-text-primary uppercase tracking-tight">
-              Education & Institutional Credentials
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-ink-primary tracking-tight">
+              § 7. Academic Enrolment &amp; Institutional Credentials
             </h2>
+            <p className="font-serif italic text-ink-muted text-sm sm:text-base">
+              Education &amp; Institutional Credentials — Official Academic Registry &amp; Verified Matriculation
+            </p>
           </div>
 
-          <div className="px-3.5 py-1.5 rounded-lg bg-bg-surface border border-border-subtle text-text-muted font-mono text-xs flex items-center space-x-2 self-start md:self-auto">
-            <ShieldCheck className="w-4 h-4 text-amber-500" />
+          <div className="px-3.5 py-1.5 rounded border border-academic-seal/40 bg-academic-seal/10 text-academic-seal font-mono text-xs flex items-center space-x-2 self-start md:self-auto font-semibold">
+            <ShieldCheck className="w-4 h-4" />
             <span>Strictly Verified Enrolment Data</span>
           </div>
         </div>
 
         {/* Institutional Integrity Notice */}
-        <p className="text-xs text-text-secondary font-mono max-w-3xl leading-relaxed">
+        <p className="font-serif text-sm text-ink-secondary leading-relaxed max-w-3xl">
           Academic credentials are strictly bounded by confirmed institutional enrolment records. Consistent with research portfolio integrity standards, no unverified graduation dates, admission years, or synthetic grades are claimed.
         </p>
 
-        {/* Education Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {educationData.map((edu) => {
-            const isHigher = edu.type === 'higher-education';
-            return (
-              <div
-                key={edu.id}
-                className="p-6 sm:p-8 rounded-lg bg-bg-surface border border-border-medium hover:border-amber-500/50 transition-all flex flex-col justify-between space-y-6 shadow-lg"
-              >
-                <div className="space-y-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400">
-                        {isHigher ? (
-                          <GraduationCap className="w-5 h-5" />
-                        ) : (
-                          <BookOpen className="w-5 h-5" />
-                        )}
-                      </div>
-                      <div>
-                        <span className="text-[10px] font-mono uppercase tracking-wider text-amber-500 font-semibold block">
-                          {isHigher ? 'Higher Education' : 'School Education'}
-                        </span>
-                        <h3 className="font-mono text-lg sm:text-xl font-bold text-text-primary">
-                          {edu.institution}
-                        </h3>
-                      </div>
+        {/* Oxford Rule Divider */}
+        <hr className="oxford-rule" />
+
+        {/* Formal Academic Dossier Table */}
+        <div className="overflow-x-auto border border-paper-border-strong rounded bg-paper-bg-base shadow-sm">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b-2 border-paper-border-strong bg-paper-bg-subtle font-mono text-xs text-ink-primary uppercase tracking-wider">
+                <th className="py-3.5 px-4 sm:px-6 font-bold">Academic Institution</th>
+                <th className="py-3.5 px-4 sm:px-6 font-bold">Degree / Programme Stage</th>
+                <th className="py-3.5 px-4 sm:px-6 font-bold">Status</th>
+                <th className="py-3.5 px-4 sm:px-6 font-bold hidden sm:table-cell">Institutional Verification</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-paper-border-subtle font-serif text-sm text-ink-secondary">
+              {educationData.map((edu) => (
+                <tr key={edu.id} className="hover:bg-paper-bg-subtle/50 transition-colors">
+                  <td className="py-4 px-4 sm:px-6 align-top">
+                    <div className="font-bold text-ink-primary text-base">
+                      {edu.institution}
                     </div>
-
-                    <span className="text-[11px] font-mono px-2.5 py-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 font-semibold flex-shrink-0">
-                      {edu.status}
-                    </span>
-                  </div>
-
-                  <div className="p-4 rounded-lg bg-bg-elevated border border-border-subtle space-y-1">
-                    <span className="text-[10px] font-mono text-text-dim uppercase tracking-wider block">
-                      Programme / Academic Stage:
-                    </span>
-                    <div className="font-mono text-sm text-text-primary font-bold">
+                    <div className="text-xs font-mono text-ink-muted pt-1">
+                      {edu.type === 'higher-education' ? 'Higher Education Institution' : 'Secondary School Education'}
+                    </div>
+                  </td>
+                  <td className="py-4 px-4 sm:px-6 align-top">
+                    <div className="font-serif text-ink-primary font-medium">
                       {edu.programmeOrStage}
                     </div>
-                  </div>
+                    {edu.notes && (
+                      <div className="text-xs font-serif italic text-ink-muted pt-1">
+                        {edu.notes}
+                      </div>
+                    )}
+                  </td>
+                  <td className="py-4 px-4 sm:px-6 align-top">
+                    <span className="inline-block px-2.5 py-1 rounded border border-academic-seal/30 bg-academic-seal/10 font-mono text-xs text-academic-seal font-semibold whitespace-nowrap">
+                      {edu.status}
+                    </span>
+                  </td>
+                  <td className="py-4 px-4 sm:px-6 align-top hidden sm:table-cell">
+                    <div className="flex items-center space-x-1.5 text-xs font-mono text-ink-secondary">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-academic-seal flex-shrink-0" />
+                      <span>Confirmed Enrolment Record</span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-                  {edu.notes && (
-                    <p className="text-xs text-text-secondary leading-relaxed font-sans">
-                      {edu.notes}
-                    </p>
-                  )}
-                </div>
-
-                <div className="pt-3 border-t border-border-subtle flex items-center justify-between text-xs font-mono text-text-muted">
-                  <span className="flex items-center space-x-1.5 text-amber-400/80">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-amber-500" />
-                    <span>Authoritatively Confirmed Record</span>
-                  </span>
-                  <span className="text-[10px] text-text-dim">Editable Configuration</span>
-                </div>
-              </div>
-            );
-          })}
+        {/* Verification Footnote & Institutional Registry Seal */}
+        <div className="p-4 rounded border border-paper-border-subtle bg-paper-bg-subtle flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono text-ink-muted">
+          <div className="flex items-center space-x-2">
+            <GraduationCap className="w-4 h-4 text-academic-seal" />
+            <span>Archive Classification: Certified Institutional Matriculation Record</span>
+          </div>
+          <span className="text-academic-seal font-semibold">IIT Madras BS Aerospace &amp; Eon Gyanankur Class XII</span>
         </div>
       </div>
     </section>

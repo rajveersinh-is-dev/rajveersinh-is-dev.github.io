@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Pause, RotateCcw, Info } from 'lucide-react';
+import { Play, Pause, RotateCcw, Info, Sliders, Compass, Activity, Layers } from 'lucide-react';
 
 type PlaygroundTab = 'lorenz' | 'cellular' | 'fractal' | 'homology';
 
@@ -7,74 +7,84 @@ export const PlaygroundSection: React.FC = () => {
   const [activeTab, setActiveTab] = useState<PlaygroundTab>('lorenz');
 
   return (
-    <section id="playground" className="py-20 border-t border-border-subtle relative bg-bg-base/70">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <section id="playground" className="py-20 border-t border-paper-border-subtle relative bg-paper-bg-base">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2 text-xs font-mono text-amber-500 uppercase tracking-widest">
-              <span>09 // Computational Laboratory</span>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-3">
+            <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-academic-seal font-semibold">
+              Laboratorium Mathematicum • Section III
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold font-mono text-text-primary uppercase tracking-tight">
-              Mathematical Visual Playground
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-ink-primary tracking-tight">
+              § 3. The Computational Workbench / Laboratorium Mathematicum
             </h2>
+            <p className="font-serif italic text-ink-muted text-sm sm:text-base">
+              Mathematical Visual Playground — Continuous Chaos, Cellular Automata, Complex Dynamics &amp; Simplicial Homology
+            </p>
           </div>
 
-          {/* Tab Selector */}
-          <div className="flex flex-wrap gap-1.5 p-1 rounded-lg bg-bg-surface border border-border-subtle self-start md:self-auto font-mono text-xs">
+          {/* Tab Selector — Engraved Plate Navigation */}
+          <div className="flex flex-wrap gap-1.5 p-1 rounded border border-paper-border-strong bg-paper-bg-subtle self-start md:self-auto font-mono text-xs shadow-sm">
             <button
               onClick={() => setActiveTab('lorenz')}
-              className={`px-3 py-1.5 rounded transition-colors ${
+              className={`px-3 py-1.5 rounded transition-all flex items-center space-x-1.5 ${
                 activeTab === 'lorenz'
-                  ? 'bg-amber-500 text-bg-void font-bold'
-                  : 'text-text-muted hover:text-text-primary'
+                  ? 'bg-academic-amber text-paper-bg-base font-bold shadow-xs'
+                  : 'text-ink-secondary hover:text-ink-primary hover:bg-paper-bg-elevated'
               }`}
             >
-              1. Lorenz Attractor
+              <Compass className="w-3.5 h-3.5" />
+              <span>Plate I: 1. Lorenz Attractor</span>
             </button>
             <button
               onClick={() => setActiveTab('cellular')}
-              className={`px-3 py-1.5 rounded transition-colors ${
+              className={`px-3 py-1.5 rounded transition-all flex items-center space-x-1.5 ${
                 activeTab === 'cellular'
-                  ? 'bg-amber-500 text-bg-void font-bold'
-                  : 'text-text-muted hover:text-text-primary'
+                  ? 'bg-academic-amber text-paper-bg-base font-bold shadow-xs'
+                  : 'text-ink-secondary hover:text-ink-primary hover:bg-paper-bg-elevated'
               }`}
             >
-              2. Cellular Automata
+              <Activity className="w-3.5 h-3.5" />
+              <span>Plate II: 2. Cellular Automata</span>
             </button>
             <button
               onClick={() => setActiveTab('fractal')}
-              className={`px-3 py-1.5 rounded transition-colors ${
+              className={`px-3 py-1.5 rounded transition-all flex items-center space-x-1.5 ${
                 activeTab === 'fractal'
-                  ? 'bg-amber-500 text-bg-void font-bold'
-                  : 'text-text-muted hover:text-text-primary'
+                  ? 'bg-academic-amber text-paper-bg-base font-bold shadow-xs'
+                  : 'text-ink-secondary hover:text-ink-primary hover:bg-paper-bg-elevated'
               }`}
             >
-              3. Complex Fractal
+              <Sliders className="w-3.5 h-3.5" />
+              <span>Plate III: 3. Complex Fractal</span>
             </button>
             <button
               onClick={() => setActiveTab('homology')}
-              className={`px-3 py-1.5 rounded transition-colors ${
+              className={`px-3 py-1.5 rounded transition-all flex items-center space-x-1.5 ${
                 activeTab === 'homology'
-                  ? 'bg-amber-500 text-bg-void font-bold'
-                  : 'text-text-muted hover:text-text-primary'
+                  ? 'bg-academic-amber text-paper-bg-base font-bold shadow-xs'
+                  : 'text-ink-secondary hover:text-ink-primary hover:bg-paper-bg-elevated'
               }`}
             >
-              4. Simplicial Homology
+              <Layers className="w-3.5 h-3.5" />
+              <span>Plate IV: 4. Simplicial Homology</span>
             </button>
           </div>
         </div>
 
-        {/* Educational Disclaimer Banner */}
-        <div className="p-3.5 rounded-lg bg-bg-surface border border-border-subtle flex items-start space-x-2 text-xs font-mono text-text-muted">
-          <Info className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
-          <span>
-            Demonstration Notice: These interactive mathematical models illustrate canonical non-linear dynamics, cellular emergence, complex fractals, and topological simplicial filtrations. They are educational demonstrations, not original research discoveries.
-          </span>
+        {/* Scholarly Pedagogical Colophon */}
+        <div className="p-4 rounded border-l-4 border-academic-amber bg-paper-bg-subtle border border-paper-border-subtle flex items-start space-x-3 text-xs font-mono text-ink-secondary">
+          <Info className="w-4 h-4 text-academic-amber mt-0.5 flex-shrink-0" />
+          <div className="space-y-1">
+            <span className="text-ink-primary font-bold">Laboratorium Pedagogical Notice:</span>
+            <p>
+              These interactive mathematical instruments demonstrate canonical non-linear dynamical chaos, discrete Turing-complete cellular emergence, quadratic complex polynomial maps, and Vietoris-Rips simplicial homology filtrations. They function as genuine pedagogical testbeds and numerical experiments.
+            </p>
+          </div>
         </div>
 
-        {/* Tab Content Panels */}
-        <div className="bg-bg-surface rounded-xl border border-border-medium overflow-hidden shadow-2xl p-6">
+        {/* Tab Content Panels — Archival Folio Container */}
+        <div className="bg-paper-bg-subtle rounded border border-paper-border-strong shadow-sm p-6 sm:p-8">
           {activeTab === 'lorenz' && <LorenzSimulator />}
           {activeTab === 'cellular' && <CellularSimulator />}
           {activeTab === 'fractal' && <FractalSimulator />}
@@ -86,7 +96,7 @@ export const PlaygroundSection: React.FC = () => {
 };
 
 /* =========================================================================
-   1. Lorenz Attractor Simulation Component
+   1. Lorenz Attractor Simulation Component (Plate I)
    ========================================================================= */
 const LorenzSimulator: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -132,8 +142,8 @@ const LorenzSimulator: React.FC = () => {
       const w = canvas.width;
       const h = canvas.height;
 
-      // Dark translucent fade for continuous motion trail
-      ctx.fillStyle = 'rgba(7, 8, 10, 0.12)';
+      // Deep archival slate wash for motion trail persistence
+      ctx.fillStyle = 'rgba(18, 17, 16, 0.14)';
       ctx.fillRect(0, 0, w, h);
 
       if (isRunning) {
@@ -161,7 +171,7 @@ const LorenzSimulator: React.FC = () => {
         stateRef.current.angle += 0.005;
       }
 
-      // 3D Isometric projection
+      // 3D Isometric projection onto viewing manifold
       const cx = w / 2;
       const cy = h / 2 + 30;
       const scale = Math.min(w, h) * 0.016;
@@ -172,7 +182,7 @@ const LorenzSimulator: React.FC = () => {
       const tLen = trail.length;
 
       if (tLen > 1) {
-        ctx.lineWidth = 1.2;
+        ctx.lineWidth = 1.3;
         for (let i = 1; i < tLen; i++) {
           const p1 = trail[i - 1];
           const p2 = trail[i];
@@ -189,7 +199,8 @@ const LorenzSimulator: React.FC = () => {
           const py2 = cy - (p2.z - 25) * scale + ry2 * scale * 0.3;
 
           const alpha = i / tLen;
-          ctx.strokeStyle = `rgba(245, 158, 11, ${alpha * 0.9})`;
+          // Gold / ochre archival trajectory ink
+          ctx.strokeStyle = `rgba(217, 119, 6, ${alpha * 0.92})`;
           ctx.beginPath();
           ctx.moveTo(px1, py1);
           ctx.lineTo(px2, py2);
@@ -200,9 +211,9 @@ const LorenzSimulator: React.FC = () => {
         const last = trail[tLen - 1];
         const lx = cx + (last.x * cosA - last.y * sinA) * scale;
         const ly = cy - (last.z - 25) * scale + (last.x * sinA + last.y * cosA) * scale * 0.3;
-        ctx.fillStyle = '#ff7700';
+        ctx.fillStyle = '#f59e0b';
         ctx.beginPath();
-        ctx.arc(lx, ly, 3, 0, Math.PI * 2);
+        ctx.arc(lx, ly, 3.5, 0, Math.PI * 2);
         ctx.fill();
       }
 
@@ -215,12 +226,16 @@ const LorenzSimulator: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Plate Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-paper-border-subtle">
         <div>
-          <h3 className="font-mono text-lg font-bold text-text-primary">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-academic-seal font-semibold">
+            Plate I • Continuous Dynamical Chaos
+          </div>
+          <h3 className="font-serif text-xl sm:text-2xl font-bold text-ink-primary">
             Lorenz Strange Attractor (Non-Linear ODE System)
           </h3>
-          <p className="text-xs text-text-secondary font-mono">
+          <p className="text-xs text-ink-muted font-mono mt-1">
             dx/dt = σ(y - x) &nbsp;|&nbsp; dy/dt = x(ρ - z) - y &nbsp;|&nbsp; dz/dt = xy - βz
           </p>
         </div>
@@ -228,14 +243,14 @@ const LorenzSimulator: React.FC = () => {
         <div className="flex items-center space-x-2">
           <button
             onClick={() => setIsRunning(!isRunning)}
-            className="px-3 py-1.5 rounded bg-bg-elevated border border-border-subtle hover:border-amber-500/50 text-xs font-mono flex items-center space-x-1.5 text-text-primary"
+            className="px-3.5 py-1.5 rounded border border-paper-border-strong bg-paper-bg-base hover:bg-paper-bg-elevated text-xs font-mono flex items-center space-x-1.5 text-ink-primary transition-colors font-semibold"
           >
-            {isRunning ? <Pause className="w-3.5 h-3.5 text-amber-500" /> : <Play className="w-3.5 h-3.5 text-amber-500" />}
+            {isRunning ? <Pause className="w-3.5 h-3.5 text-academic-seal" /> : <Play className="w-3.5 h-3.5 text-academic-amber" />}
             <span>{isRunning ? 'Pause' : 'Resume'}</span>
           </button>
           <button
             onClick={resetSimulation}
-            className="px-3 py-1.5 rounded bg-bg-elevated border border-border-subtle hover:border-amber-500/50 text-xs font-mono flex items-center space-x-1.5 text-text-secondary hover:text-text-primary"
+            className="px-3.5 py-1.5 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-xs font-mono flex items-center space-x-1.5 text-ink-secondary hover:text-ink-primary transition-colors"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Reset</span>
@@ -243,9 +258,19 @@ const LorenzSimulator: React.FC = () => {
         </div>
       </div>
 
+      {/* Mathematical Formulation Display Plate */}
+      <div className="math-display text-xs sm:text-sm">
+        <span className="font-math">
+          \frac&#123;dx&#125;&#123;dt&#125; = \sigma (y - x) \quad\Big|\quad \frac&#123;dy&#125;&#123;dt&#125; = x(\rho - z) - y \quad\Big|\quad \frac&#123;dz&#125;&#123;dt&#125; = xy - \beta z
+        </span>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-        {/* Canvas Display */}
-        <div className="lg:col-span-8 bg-bg-void rounded-lg border border-border-subtle overflow-hidden relative aspect-video flex items-center justify-center">
+        {/* Canvas Display with Coordinate Framing */}
+        <div className="lg:col-span-8 bg-[#121110] rounded border-2 border-paper-border-strong overflow-hidden relative aspect-video flex items-center justify-center math-grid shadow-inner">
+          <div className="absolute top-2 left-2 text-[9px] font-mono text-[#a8a29e] tracking-widest uppercase pointer-events-none bg-[#121110]/80 px-1.5 py-0.5 rounded border border-[#38332d]">
+            R³ Phase Space • \dot&#123;x&#125; = F(x)
+          </div>
           <canvas
             ref={canvasRef}
             width={640}
@@ -254,17 +279,20 @@ const LorenzSimulator: React.FC = () => {
           />
         </div>
 
-        {/* Controls Slider Panel */}
+        {/* Controls Slider Panel — Archival Instrument Calibration */}
         <div className="lg:col-span-4 space-y-4 font-mono text-xs">
-          <div className="p-4 rounded-lg bg-bg-elevated border border-border-subtle space-y-3">
-            <div className="text-amber-500 font-bold uppercase tracking-wider text-[11px]">
-              Attractor Parameters
+          <div className="p-4 rounded border border-paper-border-strong bg-paper-bg-base space-y-3.5 shadow-xs">
+            <div className="flex items-center justify-between border-b border-paper-border-subtle pb-2">
+              <span className="text-academic-amber font-bold uppercase tracking-wider text-[11px] font-serif">
+                Attractor Parameters
+              </span>
+              <span className="text-[10px] text-ink-muted">Runge-Kutta / Euler</span>
             </div>
 
             <div className="space-y-1">
-              <div className="flex justify-between text-text-secondary">
-                <span>Prandtl Number (σ):</span>
-                <span className="text-amber-400 font-bold">{sigma.toFixed(1)}</span>
+              <div className="flex justify-between text-ink-secondary">
+                <span className="font-serif">Prandtl Number (σ):</span>
+                <span className="text-academic-amber font-bold">{sigma.toFixed(1)}</span>
               </div>
               <input
                 type="range"
@@ -273,14 +301,14 @@ const LorenzSimulator: React.FC = () => {
                 step="0.5"
                 value={sigma}
                 onChange={(e) => setSigma(parseFloat(e.target.value))}
-                className="w-full accent-amber-500 bg-bg-base"
+                className="w-full accent-amber-600 bg-paper-bg-elevated cursor-pointer"
               />
             </div>
 
             <div className="space-y-1">
-              <div className="flex justify-between text-text-secondary">
-                <span>Rayleigh Number (ρ):</span>
-                <span className="text-amber-400 font-bold">{rho.toFixed(1)}</span>
+              <div className="flex justify-between text-ink-secondary">
+                <span className="font-serif">Rayleigh Number (ρ):</span>
+                <span className="text-academic-amber font-bold">{rho.toFixed(1)}</span>
               </div>
               <input
                 type="range"
@@ -289,14 +317,14 @@ const LorenzSimulator: React.FC = () => {
                 step="0.5"
                 value={rho}
                 onChange={(e) => setRho(parseFloat(e.target.value))}
-                className="w-full accent-amber-500 bg-bg-base"
+                className="w-full accent-amber-600 bg-paper-bg-elevated cursor-pointer"
               />
             </div>
 
             <div className="space-y-1">
-              <div className="flex justify-between text-text-secondary">
-                <span>Geometric Ratio (β):</span>
-                <span className="text-amber-400 font-bold">{beta.toFixed(2)}</span>
+              <div className="flex justify-between text-ink-secondary">
+                <span className="font-serif">Geometric Ratio (β):</span>
+                <span className="text-academic-amber font-bold">{beta.toFixed(2)}</span>
               </div>
               <input
                 type="range"
@@ -305,14 +333,14 @@ const LorenzSimulator: React.FC = () => {
                 step="0.1"
                 value={beta}
                 onChange={(e) => setBeta(parseFloat(e.target.value))}
-                className="w-full accent-amber-500 bg-bg-base"
+                className="w-full accent-amber-600 bg-paper-bg-elevated cursor-pointer"
               />
             </div>
 
             <div className="space-y-1">
-              <div className="flex justify-between text-text-secondary">
-                <span>Integration Step (dt):</span>
-                <span className="text-amber-400 font-bold">{dt.toFixed(3)}</span>
+              <div className="flex justify-between text-ink-secondary">
+                <span className="font-serif">Integration Step (dt):</span>
+                <span className="text-academic-amber font-bold">{dt.toFixed(3)}</span>
               </div>
               <input
                 type="range"
@@ -321,8 +349,12 @@ const LorenzSimulator: React.FC = () => {
                 step="0.001"
                 value={dt}
                 onChange={(e) => setDt(parseFloat(e.target.value))}
-                className="w-full accent-amber-500 bg-bg-base"
+                className="w-full accent-amber-600 bg-paper-bg-elevated cursor-pointer"
               />
+            </div>
+
+            <div className="pt-2 border-t border-paper-border-subtle text-[10px] text-ink-muted font-serif italic">
+              Canonical chaotic regime at σ = 10, ρ = 28, β = 8/3 ≈ 2.666.
             </div>
           </div>
         </div>
@@ -332,7 +364,7 @@ const LorenzSimulator: React.FC = () => {
 };
 
 /* =========================================================================
-   2. Cellular Automata (Conway's Game of Life) Component
+   2. Cellular Automata (Conway's Game of Life) Component (Plate II)
    ========================================================================= */
 const CellularSimulator: React.FC = () => {
   const COLS = 48;
@@ -359,7 +391,7 @@ const CellularSimulator: React.FC = () => {
 
   const loadPresetGlider = () => {
     const next = createEmptyGrid(ROWS, COLS);
-    // Glider
+    // Glider structure
     const midR = Math.floor(ROWS / 2);
     const midC = Math.floor(COLS / 2);
     next[midR][midC + 1] = 1;
@@ -367,7 +399,6 @@ const CellularSimulator: React.FC = () => {
     next[midR + 2][midC] = 1;
     next[midR + 2][midC + 1] = 1;
     next[midR + 2][midC + 2] = 1;
-    // Pulsar nearby
     setGrid(next);
     setGeneration(0);
   };
@@ -416,39 +447,43 @@ const CellularSimulator: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Plate Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-paper-border-subtle">
         <div>
-          <h3 className="font-mono text-lg font-bold text-text-primary">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-academic-seal font-semibold">
+            Plate II • Emergent Discrete Complexity
+          </div>
+          <h3 className="font-serif text-xl sm:text-2xl font-bold text-ink-primary">
             Cellular Automata (Conway Emergence Engine)
           </h3>
-          <p className="text-xs text-text-secondary font-mono">
-            Deterministic discrete lattice updates generating Turing-complete emergent structures.
+          <p className="text-xs text-ink-muted font-mono mt-1">
+            Deterministic discrete lattice updates generating Turing-complete emergent structures (Rule B3/S23).
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setIsRunning(!isRunning)}
-            className="px-3 py-1.5 rounded bg-amber-500 hover:bg-amber-600 text-bg-void text-xs font-mono font-bold flex items-center space-x-1"
+            className="px-3.5 py-1.5 rounded border border-paper-border-strong bg-academic-amber text-paper-bg-base text-xs font-mono font-bold flex items-center space-x-1 shadow-xs hover:opacity-90 transition-opacity"
           >
             {isRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
             <span>{isRunning ? 'Pause' : 'Run'}</span>
           </button>
           <button
             onClick={stepSimulation}
-            className="px-3 py-1.5 rounded bg-bg-elevated border border-border-subtle text-xs font-mono text-text-secondary hover:text-text-primary"
+            className="px-3 py-1.5 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-xs font-mono text-ink-secondary hover:text-ink-primary transition-colors"
           >
             Step
           </button>
           <button
             onClick={randomizeGrid}
-            className="px-3 py-1.5 rounded bg-bg-elevated border border-border-subtle text-xs font-mono text-text-secondary hover:text-text-primary"
+            className="px-3 py-1.5 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-xs font-mono text-ink-secondary hover:text-ink-primary transition-colors"
           >
             Randomize
           </button>
           <button
             onClick={loadPresetGlider}
-            className="px-3 py-1.5 rounded bg-bg-elevated border border-border-subtle text-xs font-mono text-text-secondary hover:text-text-primary"
+            className="px-3 py-1.5 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-xs font-mono text-ink-secondary hover:text-ink-primary transition-colors"
           >
             Preset Glider
           </button>
@@ -458,7 +493,7 @@ const CellularSimulator: React.FC = () => {
               setGeneration(0);
               setIsRunning(false);
             }}
-            className="px-2.5 py-1.5 rounded bg-bg-elevated border border-border-subtle text-xs font-mono text-text-dim hover:text-text-primary"
+            className="px-2.5 py-1.5 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-xs font-mono text-ink-dim hover:text-ink-primary transition-colors"
           >
             Clear
           </button>
@@ -466,17 +501,18 @@ const CellularSimulator: React.FC = () => {
       </div>
 
       <div className="space-y-2">
-        <div className="flex justify-between text-xs font-mono text-text-muted">
-          <span>Click grid cells to draw or toggle states</span>
-          <span>Generation: {generation}</span>
+        <div className="flex justify-between text-xs font-mono text-ink-muted px-1">
+          <span className="font-serif italic">Discrete lattice \mathbb&#123;Z&#125;² — Click cells to toggle state</span>
+          <span className="font-bold text-academic-amber">Generation: {generation}</span>
         </div>
 
-        <div className="bg-bg-void p-3 rounded-lg border border-border-subtle overflow-x-auto">
+        {/* Lattice Grid with Archival Frame */}
+        <div className="bg-[#121110] p-4 rounded border-2 border-paper-border-strong overflow-x-auto shadow-inner">
           <div
             className="grid gap-0.5 mx-auto"
             style={{
               gridTemplateColumns: `repeat(${COLS}, minmax(10px, 1fr))`,
-              maxWidth: '800px',
+              maxWidth: '820px',
             }}
           >
             {grid.map((row, r) =>
@@ -484,11 +520,12 @@ const CellularSimulator: React.FC = () => {
                 <div
                   key={`${r}-${c}`}
                   onClick={() => toggleCell(r, c)}
-                  className={`aspect-square rounded-sm cursor-pointer transition-colors ${
+                  className={`aspect-square rounded-xs cursor-pointer transition-colors ${
                     val
-                      ? 'bg-amber-500 shadow-sm shadow-amber-500/50'
-                      : 'bg-[#12161f] hover:bg-[#1a212e]'
+                      ? 'bg-amber-600 border border-amber-400/40 shadow-xs'
+                      : 'bg-[#1e1c19] hover:bg-[#2e2a25] border border-[#2a2622]'
                   }`}
+                  title={`Cell (${r}, ${c}): ${val ? 'Alive' : 'Dead'}`}
                 />
               ))
             )}
@@ -500,7 +537,7 @@ const CellularSimulator: React.FC = () => {
 };
 
 /* =========================================================================
-   3. Complex Fractal (Julia / Mandelbrot Parameter Tweaker) Component
+   3. Complex Fractal (Julia / Mandelbrot Parameter Tweaker) (Plate III)
    ========================================================================= */
 const FractalSimulator: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -539,16 +576,16 @@ const FractalSimulator: React.FC = () => {
 
         const idx = (py * w + px) * 4;
         if (iter === maxIter) {
-          data[idx] = 7;
-          data[idx + 1] = 8;
-          data[idx + 2] = 10;
+          data[idx] = 18;
+          data[idx + 1] = 17;
+          data[idx + 2] = 16;
           data[idx + 3] = 255;
         } else {
-          // Color based on escape iteration (Monochromatic amber gradient)
+          // Color based on escape iteration (Archival amber / terracotta gradient)
           const norm = iter / maxIter;
-          data[idx] = Math.floor(norm * 245);
-          data[idx + 1] = Math.floor(norm * 158);
-          data[idx + 2] = Math.floor(norm * 11);
+          data[idx] = Math.floor(norm * 217);
+          data[idx + 1] = Math.floor(norm * 119);
+          data[idx + 2] = Math.floor(norm * 6);
           data[idx + 3] = 255;
         }
       }
@@ -559,12 +596,16 @@ const FractalSimulator: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Plate Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-paper-border-subtle">
         <div>
-          <h3 className="font-mono text-lg font-bold text-text-primary">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-academic-seal font-semibold">
+            Plate III • Complex Quadratic Dynamics
+          </div>
+          <h3 className="font-serif text-xl sm:text-2xl font-bold text-ink-primary">
             Complex Julia Dynamics: z_(n+1) = z_n^2 + c
           </h3>
-          <p className="text-xs text-text-secondary font-mono">
+          <p className="text-xs text-ink-muted font-mono mt-1">
             Quadratic polynomial map on the complex plane with varying constant parameter c = cr + i·ci.
           </p>
         </div>
@@ -576,28 +617,41 @@ const FractalSimulator: React.FC = () => {
             setMaxIter(48);
             setZoom(1.0);
           }}
-          className="px-3 py-1.5 rounded bg-bg-elevated border border-border-subtle text-xs font-mono text-text-secondary hover:text-text-primary flex items-center space-x-1"
+          className="px-3.5 py-1.5 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-xs font-mono text-ink-secondary hover:text-ink-primary flex items-center space-x-1.5 transition-colors"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           <span>Reset</span>
         </button>
       </div>
 
+      {/* Mathematical Display Formula */}
+      <div className="math-display text-xs sm:text-sm">
+        <span className="font-math">
+          f_c(z) = z^2 + c, \quad c = c_r + i \cdot c_i \in \mathbb&#123;C&#125;, \quad J(f_c) = \partial K(f_c)
+        </span>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-        <div className="lg:col-span-8 bg-bg-void rounded-lg border border-border-subtle overflow-hidden relative aspect-video flex items-center justify-center">
+        <div className="lg:col-span-8 bg-[#121110] rounded border-2 border-paper-border-strong overflow-hidden relative aspect-video flex items-center justify-center math-grid shadow-inner">
+          <div className="absolute top-2 left-2 text-[9px] font-mono text-[#a8a29e] tracking-widest uppercase pointer-events-none bg-[#121110]/80 px-1.5 py-0.5 rounded border border-[#38332d]">
+            \mathbb&#123;C&#125; Argand Plane • |z| \le 2
+          </div>
           <canvas ref={canvasRef} width={400} height={250} className="w-full h-full block" />
         </div>
 
         <div className="lg:col-span-4 space-y-4 font-mono text-xs">
-          <div className="p-4 rounded-lg bg-bg-elevated border border-border-subtle space-y-3">
-            <div className="text-amber-500 font-bold uppercase tracking-wider text-[11px]">
-              Complex Coordinates
+          <div className="p-4 rounded border border-paper-border-strong bg-paper-bg-base space-y-3.5 shadow-xs">
+            <div className="flex items-center justify-between border-b border-paper-border-subtle pb-2">
+              <span className="text-academic-amber font-bold uppercase tracking-wider text-[11px] font-serif">
+                Complex Coordinates
+              </span>
+              <span className="text-[10px] text-ink-muted">c \in \mathbb&#123;C&#125;</span>
             </div>
 
             <div className="space-y-1">
-              <div className="flex justify-between text-text-secondary">
-                <span>Real component (cr):</span>
-                <span className="text-amber-400 font-bold">{cr.toFixed(3)}</span>
+              <div className="flex justify-between text-ink-secondary">
+                <span className="font-serif">Real component (cr):</span>
+                <span className="text-academic-amber font-bold">{cr.toFixed(3)}</span>
               </div>
               <input
                 type="range"
@@ -606,14 +660,14 @@ const FractalSimulator: React.FC = () => {
                 step="0.01"
                 value={cr}
                 onChange={(e) => setCr(parseFloat(e.target.value))}
-                className="w-full accent-amber-500 bg-bg-base"
+                className="w-full accent-amber-600 bg-paper-bg-elevated cursor-pointer"
               />
             </div>
 
             <div className="space-y-1">
-              <div className="flex justify-between text-text-secondary">
-                <span>Imaginary component (ci):</span>
-                <span className="text-amber-400 font-bold">{ci.toFixed(3)}</span>
+              <div className="flex justify-between text-ink-secondary">
+                <span className="font-serif">Imaginary component (ci):</span>
+                <span className="text-academic-amber font-bold">{ci.toFixed(3)}</span>
               </div>
               <input
                 type="range"
@@ -622,14 +676,14 @@ const FractalSimulator: React.FC = () => {
                 step="0.01"
                 value={ci}
                 onChange={(e) => setCi(parseFloat(e.target.value))}
-                className="w-full accent-amber-500 bg-bg-base"
+                className="w-full accent-amber-600 bg-paper-bg-elevated cursor-pointer"
               />
             </div>
 
             <div className="space-y-1">
-              <div className="flex justify-between text-text-secondary">
-                <span>Max Iterations:</span>
-                <span className="text-amber-400 font-bold">{maxIter}</span>
+              <div className="flex justify-between text-ink-secondary">
+                <span className="font-serif">Max Iterations:</span>
+                <span className="text-academic-amber font-bold">{maxIter}</span>
               </div>
               <input
                 type="range"
@@ -638,14 +692,14 @@ const FractalSimulator: React.FC = () => {
                 step="4"
                 value={maxIter}
                 onChange={(e) => setMaxIter(parseInt(e.target.value))}
-                className="w-full accent-amber-500 bg-bg-base"
+                className="w-full accent-amber-600 bg-paper-bg-elevated cursor-pointer"
               />
             </div>
 
             <div className="space-y-1">
-              <div className="flex justify-between text-text-secondary">
-                <span>Zoom Scale:</span>
-                <span className="text-amber-400 font-bold">{zoom.toFixed(1)}x</span>
+              <div className="flex justify-between text-ink-secondary">
+                <span className="font-serif">Zoom Scale:</span>
+                <span className="text-academic-amber font-bold">{zoom.toFixed(1)}x</span>
               </div>
               <input
                 type="range"
@@ -654,8 +708,12 @@ const FractalSimulator: React.FC = () => {
                 step="0.1"
                 value={zoom}
                 onChange={(e) => setZoom(parseFloat(e.target.value))}
-                className="w-full accent-amber-500 bg-bg-base"
+                className="w-full accent-amber-600 bg-paper-bg-elevated cursor-pointer"
               />
+            </div>
+
+            <div className="pt-2 border-t border-paper-border-subtle text-[10px] text-ink-muted font-serif italic">
+              Connected Julia set occurs when critical point 0 does not escape under iteration.
             </div>
           </div>
         </div>
@@ -665,7 +723,7 @@ const FractalSimulator: React.FC = () => {
 };
 
 /* =========================================================================
-   4. Simplicial Homology & Topological Filtration Component
+   4. Simplicial Homology & Topological Filtration Component (Plate IV)
    ========================================================================= */
 const HomologySimulator: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -747,8 +805,8 @@ const HomologySimulator: React.FC = () => {
         for (let k = j + 1; k < n; k++) {
           if (adj[i].includes(k) && adj[j].includes(k)) {
             triangles++;
-            // Draw filled triangle simplex
-            ctx.fillStyle = 'rgba(245, 158, 11, 0.14)';
+            // Draw filled triangle simplex in warm ochre wash
+            ctx.fillStyle = 'rgba(217, 119, 6, 0.16)';
             ctx.beginPath();
             ctx.moveTo(points[i].x, points[i].y);
             ctx.lineTo(points[j].x, points[j].y);
@@ -761,8 +819,8 @@ const HomologySimulator: React.FC = () => {
     }
 
     // Draw 1-simplices (Edges)
-    ctx.strokeStyle = 'rgba(245, 158, 11, 0.65)';
-    ctx.lineWidth = 1.2;
+    ctx.strokeStyle = 'rgba(217, 119, 6, 0.75)';
+    ctx.lineWidth = 1.3;
     edgePairs.forEach(([i, j]) => {
       ctx.beginPath();
       ctx.moveTo(points[i].x, points[i].y);
@@ -772,19 +830,19 @@ const HomologySimulator: React.FC = () => {
 
     // Draw 0-simplices (Vertices) & epsilon balls
     points.forEach((pt) => {
-      // Epsilon neighborhood circle
-      ctx.strokeStyle = 'rgba(148, 163, 184, 0.08)';
+      // Epsilon neighborhood metric ball
+      ctx.strokeStyle = 'rgba(184, 173, 150, 0.22)';
       ctx.beginPath();
       ctx.arc(pt.x, pt.y, epsilon / 2, 0, Math.PI * 2);
       ctx.stroke();
 
-      // Vertex
-      ctx.fillStyle = '#f8fafc';
+      // Vertex point
+      ctx.fillStyle = '#faf7f0';
       ctx.beginPath();
-      ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2);
+      ctx.arc(pt.x, pt.y, 4.5, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = '#f59e0b';
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = '#92400e';
+      ctx.lineWidth = 1.4;
       ctx.stroke();
     });
 
@@ -862,14 +920,20 @@ const HomologySimulator: React.FC = () => {
     draggingIdxRef.current = null;
   };
 
+  const eulerChi = points.length - stats.edgesCount + stats.trianglesCount;
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Plate Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-paper-border-subtle">
         <div>
-          <h3 className="font-mono text-lg font-bold text-text-primary">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-academic-seal font-semibold">
+            Plate IV • Algebraic Topology &amp; Filtration
+          </div>
+          <h3 className="font-serif text-xl sm:text-2xl font-bold text-ink-primary">
             Vietoris-Rips Simplicial Complex Filtration
           </h3>
-          <p className="text-xs text-text-secondary font-mono">
+          <p className="text-xs text-ink-muted font-mono mt-1">
             Topological Data Analysis tracking homology invariants across varying filtration scale ε.
           </p>
         </div>
@@ -880,34 +944,45 @@ const HomologySimulator: React.FC = () => {
               setPoints(createDualCavities());
               setEpsilon(65);
             }}
-            className="px-2.5 py-1.5 rounded bg-bg-elevated border border-border-subtle text-xs font-mono text-text-secondary hover:text-text-primary flex items-center space-x-1"
+            className="px-3 py-1.5 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-xs font-mono text-ink-secondary hover:text-ink-primary flex items-center space-x-1.5 transition-colors"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Dual Cavities</span>
           </button>
           <button
             onClick={loadSingleRing}
-            className="px-2.5 py-1.5 rounded bg-bg-elevated border border-border-subtle text-xs font-mono text-text-secondary hover:text-text-primary"
+            className="px-3 py-1.5 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-xs font-mono text-ink-secondary hover:text-ink-primary transition-colors"
           >
             Single Ring
           </button>
           <button
             onClick={loadRandomCloud}
-            className="px-2.5 py-1.5 rounded bg-bg-elevated border border-border-subtle text-xs font-mono text-text-secondary hover:text-text-primary"
+            className="px-3 py-1.5 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-xs font-mono text-ink-secondary hover:text-ink-primary transition-colors"
           >
             Random Cloud
           </button>
           <button
             onClick={() => setPoints([])}
-            className="px-2 py-1.5 rounded bg-bg-elevated border border-border-subtle text-xs font-mono text-text-dim hover:text-text-primary"
+            className="px-2.5 py-1.5 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-xs font-mono text-ink-dim hover:text-ink-primary transition-colors"
           >
             Clear
           </button>
         </div>
       </div>
 
+      {/* Mathematical Homology Definition */}
+      <div className="math-display text-xs sm:text-sm">
+        <span className="font-math">
+          \mathrm&#123;VR&#125;_\epsilon(X) = \Big\&#123; \sigma \subseteq X : \operatorname&#123;diam&#125;(\sigma) \le \epsilon \Big\&#125;, \quad \chi = V - E + F = \beta_0 - \beta_1
+        </span>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-        <div className="lg:col-span-8 bg-bg-void rounded-lg border border-border-subtle overflow-hidden relative aspect-video flex items-center justify-center">
+        {/* Interactive Topological Coordinate Canvas */}
+        <div className="lg:col-span-8 bg-[#121110] rounded border-2 border-paper-border-strong overflow-hidden relative aspect-video flex items-center justify-center math-grid shadow-inner">
+          <div className="absolute top-2 left-2 text-[9px] font-mono text-[#a8a29e] tracking-widest uppercase pointer-events-none bg-[#121110]/80 px-1.5 py-0.5 rounded border border-[#38332d]">
+            Topological Manifold • Drag to deform • Click to insert
+          </div>
           <canvas
             ref={canvasRef}
             width={560}
@@ -920,16 +995,20 @@ const HomologySimulator: React.FC = () => {
           />
         </div>
 
+        {/* Filtration Modulation Panel */}
         <div className="lg:col-span-4 space-y-4 font-mono text-xs">
-          <div className="p-4 rounded-lg bg-bg-elevated border border-border-subtle space-y-3">
-            <div className="text-amber-500 font-bold uppercase tracking-wider text-[11px]">
-              Filtration Parameter
+          <div className="p-4 rounded border border-paper-border-strong bg-paper-bg-base space-y-3.5 shadow-xs">
+            <div className="flex items-center justify-between border-b border-paper-border-subtle pb-2">
+              <span className="text-academic-amber font-bold uppercase tracking-wider text-[11px] font-serif">
+                Filtration Parameter
+              </span>
+              <span className="text-[10px] text-ink-muted">\epsilon \in [20, 130]</span>
             </div>
 
             <div className="space-y-1">
-              <div className="flex justify-between text-text-secondary">
-                <span>Filtration Distance (ε):</span>
-                <span className="text-amber-400 font-bold">{epsilon} px</span>
+              <div className="flex justify-between text-ink-secondary">
+                <span className="font-serif">Filtration Distance (ε):</span>
+                <span className="text-academic-amber font-bold">{epsilon} px</span>
               </div>
               <input
                 type="range"
@@ -938,35 +1017,39 @@ const HomologySimulator: React.FC = () => {
                 step="1"
                 value={epsilon}
                 onChange={(e) => setEpsilon(parseInt(e.target.value))}
-                className="w-full accent-amber-500 bg-bg-base"
+                className="w-full accent-amber-600 bg-paper-bg-elevated cursor-pointer"
               />
             </div>
 
-            <div className="pt-2 border-t border-border-subtle space-y-2">
-              <div className="text-text-primary font-bold">Topological Invariants:</div>
-              <div className="flex justify-between py-1 border-b border-border-subtle text-text-secondary">
-                <span>Betti 0 (Components):</span>
-                <span className="text-amber-400 font-bold">{stats.b0}</span>
+            <div className="pt-2 border-t border-paper-border-subtle space-y-2">
+              <div className="text-ink-primary font-bold font-serif">Topological Invariants:</div>
+              <div className="flex justify-between py-1 border-b border-paper-border-subtle text-ink-secondary">
+                <span className="font-serif">Betti 0 (Components):</span>
+                <span className="text-academic-amber font-bold">{stats.b0}</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-border-subtle text-text-secondary">
-                <span>Betti 1 (Independent Cycles):</span>
-                <span className="text-amber-400 font-bold">{stats.b1}</span>
+              <div className="flex justify-between py-1 border-b border-paper-border-subtle text-ink-secondary">
+                <span className="font-serif">Betti 1 (Independent Cycles):</span>
+                <span className="text-academic-amber font-bold">{stats.b1}</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-border-subtle text-text-secondary">
+              <div className="flex justify-between py-1 border-b border-paper-border-subtle text-ink-secondary">
+                <span className="font-serif">Euler Characteristic (χ):</span>
+                <span className="text-academic-seal font-bold">{eulerChi}</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-paper-border-subtle text-ink-secondary">
                 <span>0-simplices (Vertices):</span>
-                <span className="text-text-primary">{points.length}</span>
+                <span className="text-ink-primary font-bold">{points.length}</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-border-subtle text-text-secondary">
+              <div className="flex justify-between py-1 border-b border-paper-border-subtle text-ink-secondary">
                 <span>1-simplices (Edges):</span>
-                <span className="text-text-primary">{stats.edgesCount}</span>
+                <span className="text-ink-primary">{stats.edgesCount}</span>
               </div>
-              <div className="flex justify-between py-1 text-text-secondary">
+              <div className="flex justify-between py-1 text-ink-secondary">
                 <span>2-simplices (Triangles):</span>
-                <span className="text-text-primary">{stats.trianglesCount}</span>
+                <span className="text-ink-primary">{stats.trianglesCount}</span>
               </div>
             </div>
 
-            <div className="pt-2 border-t border-border-subtle text-[10px] text-text-dim">
+            <div className="pt-2 border-t border-paper-border-subtle text-[10px] text-ink-muted font-serif italic">
               Tip: Click empty space to add vertices • Drag vertices to manipulate cycles.
             </div>
           </div>

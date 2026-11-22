@@ -14,7 +14,11 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [readingMode, setReadingModeState] = useState<boolean>(() => {
     try {
       const stored = localStorage.getItem('rvp_reading_mode');
-      return stored !== null ? JSON.parse(stored) : false;
+      if (stored !== null) return JSON.parse(stored);
+      const theme = localStorage.getItem('rvp_theme');
+      if (theme === 'light') return true;
+      if (theme === 'dark') return false;
+      return false; // Default: Night Study (false = dark mode)
     } catch {
       return false;
     }
@@ -37,6 +41,7 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
     setReadingModeState(val);
     try {
       localStorage.setItem('rvp_reading_mode', JSON.stringify(val));
+      localStorage.setItem('rvp_theme', val ? 'light' : 'dark');
     } catch {}
   };
 
@@ -63,12 +68,20 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [commandPaletteOpen]);
 
-  // Sync reading mode class to html document
+  // Sync reading mode and dark mode classes to html document
   useEffect(() => {
     if (readingMode) {
       document.documentElement.classList.add('reading-mode');
+      document.documentElement.classList.remove('dark');
+      try {
+        localStorage.setItem('rvp_theme', 'light');
+      } catch {}
     } else {
       document.documentElement.classList.remove('reading-mode');
+      document.documentElement.classList.add('dark');
+      try {
+        localStorage.setItem('rvp_theme', 'dark');
+      } catch {}
     }
   }, [readingMode]);
 

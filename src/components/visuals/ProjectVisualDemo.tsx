@@ -37,10 +37,10 @@ const NumLangPipelineVisualizer: React.FC = () => {
     {
       id: 0,
       title: 'Source Recurrence AST',
-      badge: 'Frontend',
-      desc: 'High-level mathematical recursive term with algebraic type constraints.',
+      badge: 'Frontend AST',
+      desc: 'High-level mathematical recursive term with algebraic type constraints and inductive definitions.',
       code: 'fn fib(n: u64) -> u64 {\n  match n {\n    0 => 0,\n    1 => 1,\n    k => fib(k - 1) + fib(k - 2)\n  }\n}',
-      notes: 'Parsed into abstract syntax tree; equational signatures registered.'
+      notes: 'Parsed into abstract syntax tree; equational signatures registered in environment.'
     },
     {
       id: 1,
@@ -77,12 +77,12 @@ const NumLangPipelineVisualizer: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-4 p-4 rounded-lg bg-bg-void border border-border-subtle font-mono text-xs">
-      <div className="flex items-center justify-between border-b border-border-subtle pb-2">
-        <span className="text-amber-500 font-bold uppercase tracking-wider text-[11px]">
+    <div className="space-y-4 p-4 rounded border border-paper-border-strong bg-paper-bg-base font-mono text-xs shadow-xs">
+      <div className="flex items-center justify-between border-b border-paper-border-subtle pb-2">
+        <span className="text-academic-seal font-bold uppercase tracking-wider text-[11px] font-mono">
           [INTERACTIVE COMPILER PIPELINE STAGES]
         </span>
-        <span className="text-text-muted text-[10px]">
+        <span className="text-ink-muted text-[10px] font-serif italic">
           Click stage node to inspect transformation
         </span>
       </div>
@@ -93,41 +93,41 @@ const NumLangPipelineVisualizer: React.FC = () => {
           <button
             key={stage.id}
             onClick={() => setActiveStage(stage.id)}
-            className={`p-2 rounded text-left border transition-all ${
+            className={`p-2.5 rounded text-left border transition-all ${
               activeStage === stage.id
-                ? 'bg-amber-500/10 border-amber-500 text-amber-400 font-bold'
-                : 'bg-bg-surface border-border-subtle text-text-muted hover:text-text-primary'
+                ? 'bg-paper-bg-subtle border-academic-amber text-academic-amber font-bold shadow-xs'
+                : 'bg-paper-bg-base border-paper-border-subtle text-ink-secondary hover:text-ink-primary hover:bg-paper-bg-elevated'
             }`}
           >
-            <div className="text-[9px] uppercase tracking-wider text-amber-500/80 font-bold">
+            <div className="text-[9px] uppercase tracking-wider text-academic-seal font-bold">
               {stage.badge}
             </div>
-            <div className="text-[11px] truncate mt-0.5">{stage.title}</div>
+            <div className="text-[11px] truncate mt-0.5 font-serif font-semibold">{stage.title}</div>
           </button>
         ))}
       </div>
 
       {/* Active Stage Detail */}
-      <div className="p-3.5 rounded bg-bg-surface border border-border-medium space-y-2.5">
-        <div className="flex items-center justify-between">
-          <span className="text-text-primary font-bold text-xs">
+      <div className="p-4 rounded border border-paper-border-strong bg-paper-bg-subtle space-y-3 shadow-xs">
+        <div className="flex items-center justify-between border-b border-paper-border-subtle pb-2">
+          <span className="text-ink-primary font-serif font-bold text-sm">
             {stages[activeStage].title}
           </span>
-          <span className="text-[10px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold">
+          <span className="text-[10px] px-2 py-0.5 rounded border border-paper-border-strong bg-paper-bg-base text-academic-amber font-bold font-mono">
             Stage {activeStage + 1} of 5
           </span>
         </div>
 
-        <p className="text-xs text-text-secondary leading-relaxed font-sans">
+        <p className="text-xs text-ink-secondary leading-relaxed font-serif">
           {stages[activeStage].desc}
         </p>
 
-        <pre className="p-3 rounded bg-bg-base border border-border-subtle text-text-primary text-[11px] overflow-x-auto whitespace-pre font-mono leading-relaxed">
+        <pre className="p-3.5 rounded bg-paper-bg-base border border-paper-border-subtle text-ink-primary text-[11px] overflow-x-auto whitespace-pre font-mono leading-relaxed">
           {stages[activeStage].code}
         </pre>
 
-        <div className="text-[10px] text-text-dim flex items-center space-x-1 pt-1">
-          <CheckCircle2 className="w-3 h-3 text-amber-500 flex-shrink-0" />
+        <div className="text-[10px] text-ink-muted flex items-center space-x-1.5 pt-1 font-serif">
+          <CheckCircle2 className="w-3.5 h-3.5 text-academic-amber flex-shrink-0" />
           <span>{stages[activeStage].notes}</span>
         </div>
       </div>
@@ -175,7 +175,7 @@ const TerrainErosionSimulator: React.FC = () => {
     const render = () => {
       const w = canvas.width;
       const h = canvas.height;
-      ctx.fillStyle = '#07080a';
+      ctx.fillStyle = '#121110';
       ctx.fillRect(0, 0, w, h);
 
       const map = heightmapRef.current;
@@ -183,7 +183,7 @@ const TerrainErosionSimulator: React.FC = () => {
       if (len === 0) return;
 
       // Draw grid lines
-      ctx.strokeStyle = '#1a212e';
+      ctx.strokeStyle = '#2a2622';
       ctx.lineWidth = 0.5;
       for (let y = 30; y < h; y += 30) {
         ctx.beginPath();
@@ -236,16 +236,16 @@ const TerrainErosionSimulator: React.FC = () => {
       ctx.lineTo(w, h);
       ctx.closePath();
 
-      // Terrain gradient fill
+      // Terrain gradient fill in warm ochre tones
       const grad = ctx.createLinearGradient(0, 0, 0, h);
-      grad.addColorStop(0, 'rgba(245, 158, 11, 0.4)');
-      grad.addColorStop(0.5, 'rgba(180, 83, 9, 0.25)');
-      grad.addColorStop(1, 'rgba(15, 23, 42, 0.9)');
+      grad.addColorStop(0, 'rgba(217, 119, 6, 0.45)');
+      grad.addColorStop(0.5, 'rgba(146, 64, 14, 0.3)');
+      grad.addColorStop(1, 'rgba(26, 24, 22, 0.95)');
       ctx.fillStyle = grad;
       ctx.fill();
 
       // Terrain surface stroke
-      ctx.strokeStyle = '#f59e0b';
+      ctx.strokeStyle = '#d97706';
       ctx.lineWidth = 2;
       ctx.beginPath();
       for (let i = 0; i < len; i++) {
@@ -264,28 +264,28 @@ const TerrainErosionSimulator: React.FC = () => {
   }, [isSimulating]);
 
   return (
-    <div className="space-y-4 p-4 rounded-lg bg-bg-void border border-border-subtle font-mono text-xs">
-      <div className="flex items-center justify-between border-b border-border-subtle pb-2">
+    <div className="space-y-4 p-4 rounded border border-paper-border-strong bg-paper-bg-base font-mono text-xs shadow-xs">
+      <div className="flex items-center justify-between border-b border-paper-border-subtle pb-2">
         <div>
-          <span className="text-amber-500 font-bold uppercase tracking-wider text-[11px] block">
+          <span className="text-academic-seal font-bold uppercase tracking-wider text-[11px] block font-mono">
             [INTERACTIVE HYDRAULIC EROSION CANVAS]
           </span>
-          <span className="text-text-muted text-[10px]">
-            Real-time particle weathering: Dissolution kinetics & sediment deposition
+          <span className="text-ink-muted text-[10px] font-serif italic">
+            Real-time particle weathering: Dissolution kinetics &amp; sediment transport
           </span>
         </div>
 
         <div className="flex items-center space-x-2">
           <button
             onClick={() => setIsSimulating(!isSimulating)}
-            className="px-2.5 py-1 rounded bg-bg-elevated border border-border-subtle text-amber-400 hover:text-amber-300 flex items-center space-x-1"
+            className="px-3 py-1 rounded border border-paper-border-strong bg-paper-bg-subtle hover:bg-paper-bg-elevated text-academic-amber font-semibold flex items-center space-x-1.5 transition-colors"
           >
             <Play className="w-3 h-3" />
             <span>{isSimulating ? 'Pause' : 'Erode'}</span>
           </button>
           <button
             onClick={resetHeightmap}
-            className="px-2 py-1 rounded bg-bg-elevated border border-border-subtle text-text-muted hover:text-text-primary"
+            className="px-2 py-1 rounded border border-paper-border-subtle bg-paper-bg-subtle hover:bg-paper-bg-elevated text-ink-muted hover:text-ink-primary transition-colors"
             title="Reset Heightfield"
           >
             <RotateCcw className="w-3 h-3" />
@@ -293,13 +293,13 @@ const TerrainErosionSimulator: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-bg-base rounded border border-border-subtle overflow-hidden">
+      <div className="bg-[#121110] rounded border-2 border-paper-border-strong overflow-hidden math-grid">
         <canvas ref={canvasRef} width={500} height={180} className="w-full h-auto block" />
       </div>
 
-      <div className="flex justify-between text-[11px] text-text-muted">
+      <div className="flex justify-between text-[11px] text-ink-muted font-mono">
         <span>Discrete Simulation Steps: {iterations}</span>
-        <span className="text-amber-400">Total Mass Conserved: 100%</span>
+        <span className="text-academic-amber font-semibold">Total Mass Conserved: 100%</span>
       </div>
     </div>
   );
@@ -324,23 +324,23 @@ const DualPruningHullVisualizer: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-4 p-4 rounded-lg bg-bg-void border border-border-subtle font-mono text-xs">
-      <div className="flex items-center justify-between border-b border-border-subtle pb-2">
-        <span className="text-amber-500 font-bold uppercase tracking-wider text-[11px]">
+    <div className="space-y-4 p-4 rounded border border-paper-border-strong bg-paper-bg-base font-mono text-xs shadow-xs">
+      <div className="flex items-center justify-between border-b border-paper-border-subtle pb-2">
+        <span className="text-academic-seal font-bold uppercase tracking-wider text-[11px] font-mono">
           [LAGRANGIAN HULL PRUNING ON DECODING LATTICE]
         </span>
-        <span className="text-text-muted text-[10px]">
-          Pareto frontier minimization: L(x, λ) = NLL(x) + λ·Cost(x)
+        <span className="text-ink-muted text-[10px] font-math">
+          \mathcal&#123;L&#125;(x, \lambda) = \mathrm&#123;NLL&#125;(x) + \lambda \cdot \mathrm&#123;Cost&#125;(x)
         </span>
       </div>
 
-      <div className="p-3 rounded bg-bg-surface border border-border-subtle space-y-2">
-        <div className="flex justify-between text-text-secondary">
-          <span className="flex items-center space-x-1.5">
-            <Sliders className="w-3.5 h-3.5 text-amber-500" />
+      <div className="p-3.5 rounded border border-paper-border-strong bg-paper-bg-subtle space-y-2">
+        <div className="flex justify-between text-ink-secondary">
+          <span className="flex items-center space-x-1.5 font-serif font-semibold">
+            <Sliders className="w-3.5 h-3.5 text-academic-amber" />
             <span>Lagrange Multiplier (λ):</span>
           </span>
-          <span className="text-amber-400 font-bold">{lambda.toFixed(2)}</span>
+          <span className="text-academic-amber font-bold font-mono">{lambda.toFixed(2)}</span>
         </div>
         <input
           type="range"
@@ -349,15 +349,15 @@ const DualPruningHullVisualizer: React.FC = () => {
           step="0.05"
           value={lambda}
           onChange={(e) => setLambda(parseFloat(e.target.value))}
-          className="w-full accent-amber-500 bg-bg-base"
+          className="w-full accent-amber-600 bg-paper-bg-elevated cursor-pointer"
         />
       </div>
 
       {/* Hull Diagram Representation */}
-      <div className="p-3 bg-bg-base rounded border border-border-subtle space-y-3">
-        <div className="text-[11px] text-text-dim flex justify-between">
+      <div className="p-3.5 bg-paper-bg-subtle rounded border border-paper-border-strong space-y-3">
+        <div className="text-[11px] text-ink-muted flex justify-between font-serif">
           <span>Cost vs Score Pruning Matrix</span>
-          <span className="text-amber-400">Lower Convex Hull Active</span>
+          <span className="text-academic-amber font-semibold">Lower Convex Hull Active</span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -367,18 +367,22 @@ const DualPruningHullVisualizer: React.FC = () => {
             return (
               <div
                 key={p.id}
-                className={`p-2 rounded border text-center transition-all ${
+                className={`p-2.5 rounded border text-center transition-all ${
                   isPruned
-                    ? 'bg-bg-void/60 border-border-subtle text-text-dim line-through opacity-50'
-                    : 'bg-amber-500/10 border-amber-500/50 text-amber-300 font-bold'
+                    ? 'bg-paper-bg-base/60 border-paper-border-subtle text-ink-dim line-through opacity-50'
+                    : 'bg-paper-bg-base border-academic-amber text-academic-amber font-bold shadow-xs'
                 }`}
               >
-                <div className="text-[10px]">{p.id}</div>
-                <div className="text-[9px] mt-0.5">
+                <div className="text-[10px] font-mono">{p.id}</div>
+                <div className="text-[9px] mt-0.5 font-mono text-ink-secondary">
                   C: {p.cost} | NLL: {p.nll}
                 </div>
-                <div className="text-[8px] text-amber-500 font-normal">
-                  {isPruned ? 'PRUNED' : 'SURVIVOR'}
+                <div className="text-[8px] uppercase tracking-wider font-semibold mt-1">
+                  {isPruned ? (
+                    <span className="text-ink-dim">PRUNED</span>
+                  ) : (
+                    <span className="text-academic-seal">SURVIVOR</span>
+                  )}
                 </div>
               </div>
             );
@@ -394,52 +398,52 @@ const DualPruningHullVisualizer: React.FC = () => {
    -------------------------------------------------------------------------- */
 const EarlyWarningDynamicsVisualizer: React.FC = () => {
   return (
-    <div className="space-y-4 p-4 rounded-lg bg-bg-void border border-border-subtle font-mono text-xs">
-      <div className="border-b border-border-subtle pb-2">
-        <span className="text-amber-500 font-bold uppercase tracking-wider text-[11px] block">
+    <div className="space-y-4 p-4 rounded border border-paper-border-strong bg-paper-bg-base font-mono text-xs shadow-xs">
+      <div className="border-b border-paper-border-subtle pb-2">
+        <span className="text-academic-seal font-bold uppercase tracking-wider text-[11px] block font-mono">
           [CRITICAL SLOWING DOWN DYNAMICAL INDICATORS]
         </span>
-        <span className="text-text-muted text-[10px]">
+        <span className="text-ink-muted text-[10px] font-serif italic">
           Dominant eigenvalue λ_dom → 1, Autocorrelation AR(1) and Permutation Entropy
         </span>
       </div>
 
-      <div className="p-3.5 rounded bg-bg-surface border border-border-subtle space-y-3">
+      <div className="p-4 rounded border border-paper-border-strong bg-paper-bg-subtle space-y-3.5">
         <div className="flex justify-between items-center text-[11px]">
-          <span className="text-text-secondary">Simulated State Transition:</span>
-          <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold">
+          <span className="text-ink-secondary font-serif font-semibold">Simulated State Transition:</span>
+          <span className="px-2.5 py-0.5 rounded border border-paper-border-strong bg-paper-bg-base text-academic-seal font-bold font-mono">
             Approaching Fold Bifurcation
           </span>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           <div>
-            <div className="flex justify-between text-[10px] text-text-muted mb-1">
+            <div className="flex justify-between text-[10px] text-ink-muted mb-1 font-serif">
               <span>Lag-1 Autocorrelation AR(1):</span>
-              <span className="text-amber-400 font-bold">0.89 (High Persistence)</span>
+              <span className="text-academic-amber font-bold font-mono">0.89 (High Persistence)</span>
             </div>
-            <div className="h-1.5 w-full bg-bg-base rounded-full overflow-hidden">
-              <div className="h-full bg-amber-500 rounded-full" style={{ width: '89%' }} />
+            <div className="h-1.5 w-full bg-paper-bg-base rounded border border-paper-border-subtle overflow-hidden">
+              <div className="h-full bg-academic-amber rounded" style={{ width: '89%' }} />
             </div>
           </div>
 
           <div>
-            <div className="flex justify-between text-[10px] text-text-muted mb-1">
+            <div className="flex justify-between text-[10px] text-ink-muted mb-1 font-serif">
               <span>Variance Scaling (σ²):</span>
-              <span className="text-amber-400 font-bold">4.2x Baseline</span>
+              <span className="text-academic-seal font-bold font-mono">4.2x Baseline</span>
             </div>
-            <div className="h-1.5 w-full bg-bg-base rounded-full overflow-hidden">
-              <div className="h-full bg-orange-500 rounded-full" style={{ width: '78%' }} />
+            <div className="h-1.5 w-full bg-paper-bg-base rounded border border-paper-border-subtle overflow-hidden">
+              <div className="h-full bg-academic-seal rounded" style={{ width: '78%' }} />
             </div>
           </div>
 
           <div>
-            <div className="flex justify-between text-[10px] text-text-muted mb-1">
+            <div className="flex justify-between text-[10px] text-ink-muted mb-1 font-serif">
               <span>Permutation Entropy H_p:</span>
-              <span className="text-text-primary font-bold">0.61 (Structural Loss)</span>
+              <span className="text-ink-primary font-bold font-mono">0.61 (Structural Loss)</span>
             </div>
-            <div className="h-1.5 w-full bg-bg-base rounded-full overflow-hidden">
-              <div className="h-full bg-slate-400 rounded-full" style={{ width: '61%' }} />
+            <div className="h-1.5 w-full bg-paper-bg-base rounded border border-paper-border-subtle overflow-hidden">
+              <div className="h-full bg-paper-border-strong rounded" style={{ width: '61%' }} />
             </div>
           </div>
         </div>
@@ -453,44 +457,44 @@ const EarlyWarningDynamicsVisualizer: React.FC = () => {
    -------------------------------------------------------------------------- */
 const PersistentHomologyHypergraphVisualizer: React.FC = () => {
   return (
-    <div className="space-y-4 p-4 rounded-lg bg-bg-void border border-border-subtle font-mono text-xs">
-      <div className="border-b border-border-subtle pb-2">
-        <span className="text-amber-500 font-bold uppercase tracking-wider text-[11px] block">
-          [PATH-CROSSING FUNCTORS & PERSISTENCE BARCODES]
+    <div className="space-y-4 p-4 rounded border border-paper-border-strong bg-paper-bg-base font-mono text-xs shadow-xs">
+      <div className="border-b border-paper-border-subtle pb-2">
+        <span className="text-academic-seal font-bold uppercase tracking-wider text-[11px] block font-mono">
+          [PATH-CROSSING FUNCTORS &amp; PERSISTENCE BARCODES]
         </span>
-        <span className="text-text-muted text-[10px]">
-          Functor F: TempHyperGraph → ChComplex; Invariant barcode filtration intervals
+        <span className="text-ink-muted text-[10px] font-math">
+          \mathcal&#123;F&#125;: \mathbf&#123;TempHyperGraph&#125; \to \mathbf&#123;ChComplex&#125;; \quad H_1 \text&#123; Invariant Intervals&#125;
         </span>
       </div>
 
-      <div className="p-3.5 rounded bg-bg-surface border border-border-subtle space-y-3">
-        <div className="text-text-secondary text-[11px]">
+      <div className="p-4 rounded border border-paper-border-strong bg-paper-bg-subtle space-y-3">
+        <div className="text-ink-secondary text-[11px] font-serif font-semibold">
           Persistence Barcode Intervals (H₁ Cycles):
         </div>
 
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <div className="flex items-center space-x-2 text-[10px]">
-            <span className="w-8 text-amber-500 font-bold">β₁ #1</span>
-            <div className="flex-1 bg-bg-base h-2 rounded relative">
-              <div className="absolute left-[15%] right-[20%] h-full bg-amber-500 rounded" />
+            <span className="w-10 text-academic-seal font-bold font-mono">β₁ #1</span>
+            <div className="flex-1 bg-paper-bg-base h-2.5 rounded border border-paper-border-subtle relative overflow-hidden">
+              <div className="absolute left-[15%] right-[20%] h-full bg-academic-seal rounded" />
             </div>
-            <span className="text-text-dim text-[9px]">[t=0.15, t=0.80]</span>
+            <span className="text-ink-muted text-[9px] font-mono">[t=0.15, t=0.80]</span>
           </div>
 
           <div className="flex items-center space-x-2 text-[10px]">
-            <span className="w-8 text-amber-500 font-bold">β₁ #2</span>
-            <div className="flex-1 bg-bg-base h-2 rounded relative">
-              <div className="absolute left-[30%] right-[35%] h-full bg-amber-400 rounded" />
+            <span className="w-10 text-academic-amber font-bold font-mono">β₁ #2</span>
+            <div className="flex-1 bg-paper-bg-base h-2.5 rounded border border-paper-border-subtle relative overflow-hidden">
+              <div className="absolute left-[30%] right-[35%] h-full bg-academic-amber rounded" />
             </div>
-            <span className="text-text-dim text-[9px]">[t=0.30, t=0.65]</span>
+            <span className="text-ink-muted text-[9px] font-mono">[t=0.30, t=0.65]</span>
           </div>
 
           <div className="flex items-center space-x-2 text-[10px]">
-            <span className="w-8 text-text-muted">β₁ #3</span>
-            <div className="flex-1 bg-bg-base h-2 rounded relative">
-              <div className="absolute left-[40%] right-[52%] h-full bg-slate-500 rounded" />
+            <span className="w-10 text-ink-muted font-mono">β₁ #3</span>
+            <div className="flex-1 bg-paper-bg-base h-2.5 rounded border border-paper-border-subtle relative overflow-hidden">
+              <div className="absolute left-[40%] right-[52%] h-full bg-paper-border-strong rounded" />
             </div>
-            <span className="text-text-dim text-[9px]">[t=0.40, t=0.48] (Noise)</span>
+            <span className="text-ink-dim text-[9px] font-mono">[t=0.40, t=0.48] (Noise)</span>
           </div>
         </div>
       </div>
@@ -503,25 +507,25 @@ const PersistentHomologyHypergraphVisualizer: React.FC = () => {
    -------------------------------------------------------------------------- */
 const UmbraAuditCoverageVisualizer: React.FC = () => {
   return (
-    <div className="space-y-4 p-4 rounded-lg bg-bg-void border border-border-subtle font-mono text-xs">
-      <div className="border-b border-border-subtle pb-2">
-        <span className="text-amber-500 font-bold uppercase tracking-wider text-[11px] block">
+    <div className="space-y-4 p-4 rounded border border-paper-border-strong bg-paper-bg-base font-mono text-xs shadow-xs">
+      <div className="border-b border-paper-border-subtle pb-2">
+        <span className="text-academic-seal font-bold uppercase tracking-wider text-[11px] block font-mono">
           [REPORTED AUDIT METRIC DASHBOARD]
         </span>
-        <span className="text-text-muted text-[10px]">
+        <span className="text-ink-muted text-[10px] font-serif italic">
           Boundary checks, branch coverage, and invariant enforcement
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <div className="p-3 rounded bg-bg-surface border border-border-subtle text-center space-y-1">
-          <div className="text-xl font-bold text-amber-400">70 / 70</div>
-          <div className="text-[10px] text-text-muted uppercase">Passing Audit Checks</div>
+        <div className="p-4 rounded border border-paper-border-strong bg-paper-bg-subtle text-center space-y-1">
+          <div className="text-2xl font-bold text-academic-amber font-serif">70 / 70</div>
+          <div className="text-[10px] text-ink-muted uppercase font-mono">Passing Audit Checks</div>
         </div>
 
-        <div className="p-3 rounded bg-bg-surface border border-border-subtle text-center space-y-1">
-          <div className="text-xl font-bold text-green-400">88.67%</div>
-          <div className="text-[10px] text-text-muted uppercase">Branch Coverage (&gt;85% req)</div>
+        <div className="p-4 rounded border border-paper-border-strong bg-paper-bg-subtle text-center space-y-1">
+          <div className="text-2xl font-bold text-academic-seal font-serif">88.67%</div>
+          <div className="text-[10px] text-ink-muted uppercase font-mono">Branch Coverage (&gt;85% req)</div>
         </div>
       </div>
     </div>
@@ -533,21 +537,24 @@ const UmbraAuditCoverageVisualizer: React.FC = () => {
    -------------------------------------------------------------------------- */
 const SunflowerHypergraphVisualizer: React.FC = () => {
   return (
-    <div className="space-y-4 p-4 rounded-lg bg-bg-void border border-border-subtle font-mono text-xs">
-      <div className="border-b border-border-subtle pb-2">
-        <span className="text-amber-500 font-bold uppercase tracking-wider text-[11px] block">
+    <div className="space-y-4 p-4 rounded border border-paper-border-strong bg-paper-bg-base font-mono text-xs shadow-xs">
+      <div className="border-b border-paper-border-subtle pb-2">
+        <span className="text-academic-seal font-bold uppercase tracking-wider text-[11px] block font-mono">
           [ERDŐS-RADO SUNFLOWER STRUCTURE SCHEMATIC]
         </span>
-        <span className="text-text-muted text-[10px]">
+        <span className="text-ink-muted text-[10px] font-serif italic">
           r-sunflower with shared central kernel Y and mutually disjoint petals P_i
         </span>
       </div>
 
-      <div className="p-3 rounded bg-bg-surface border border-border-subtle text-center space-y-2">
-        <div className="text-amber-400 text-xs font-bold">
+      <div className="p-4 rounded border border-paper-border-strong bg-paper-bg-subtle text-center space-y-2.5">
+        <div className="text-academic-amber text-xs font-bold font-math">
+          A_i \cap A_j = Y \quad (\text&#123;for all distinct &#125; i \ne j)
+        </div>
+        <div className="text-xs text-ink-muted font-mono">
           A_i ∩ A_j = Y &nbsp;(for all distinct i ≠ j)
         </div>
-        <p className="text-[11px] text-text-secondary leading-relaxed font-sans">
+        <p className="text-[11px] text-ink-secondary leading-relaxed font-serif">
           Audit harness tests uniform set systems under fractional spreadness bounds, systematically verifying absence of pairwise intersecting petals outside kernel Y.
         </p>
       </div>
@@ -560,30 +567,30 @@ const SunflowerHypergraphVisualizer: React.FC = () => {
    -------------------------------------------------------------------------- */
 const DefaultSystemArchitectureVisualizer: React.FC<{ project: ProjectEntry }> = ({ project }) => {
   return (
-    <div className="space-y-3 p-4 rounded-lg bg-bg-void border border-border-subtle font-mono text-xs">
-      <div className="flex items-center justify-between border-b border-border-subtle pb-2">
-        <span className="text-amber-500 font-bold uppercase tracking-wider text-[11px]">
-          [SYSTEM ARCHITECTURE & INVARIANT CONTRACT]
+    <div className="space-y-3 p-4 rounded border border-paper-border-strong bg-paper-bg-base font-mono text-xs shadow-xs">
+      <div className="flex items-center justify-between border-b border-paper-border-subtle pb-2">
+        <span className="text-academic-seal font-bold uppercase tracking-wider text-[11px] font-mono">
+          [SYSTEM ARCHITECTURE &amp; INVARIANT CONTRACT]
         </span>
-        <span className="text-text-muted text-[10px]">
+        <span className="text-ink-muted text-[10px] font-serif italic">
           {project.category}
         </span>
       </div>
 
-      <div className="p-3 rounded bg-bg-surface border border-border-subtle space-y-2">
-        <div className="text-text-primary font-bold text-xs">
+      <div className="p-4 rounded border border-paper-border-strong bg-paper-bg-subtle space-y-2.5">
+        <div className="text-ink-primary font-serif font-bold text-xs">
           Modular Pipeline Flow:
         </div>
-        <div className="flex flex-wrap items-center gap-2 pt-1">
-          <span className="px-2 py-1 rounded bg-bg-base border border-border-subtle text-amber-400">
+        <div className="flex flex-wrap items-center gap-2 pt-1 font-mono text-xs">
+          <span className="px-2.5 py-1 rounded border border-paper-border-subtle bg-paper-bg-base text-academic-amber">
             Input Formulation
           </span>
-          <span className="text-text-dim">→</span>
-          <span className="px-2 py-1 rounded bg-bg-base border border-border-subtle text-text-primary">
+          <span className="text-ink-muted">→</span>
+          <span className="px-2.5 py-1 rounded border border-paper-border-subtle bg-paper-bg-base text-ink-primary">
             Mathematical Transformation
           </span>
-          <span className="text-text-dim">→</span>
-          <span className="px-2 py-1 rounded bg-bg-base border border-border-subtle text-amber-500">
+          <span className="text-ink-muted">→</span>
+          <span className="px-2.5 py-1 rounded border border-paper-border-subtle bg-paper-bg-base text-academic-seal font-semibold">
             Verified Invariant Bound
           </span>
         </div>

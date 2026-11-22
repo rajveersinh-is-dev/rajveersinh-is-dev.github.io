@@ -1,85 +1,79 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { profileData } from '../../data';
-import { AsciiDitherCanvas } from '../visuals/AsciiDitherCanvas';
-import type { VisualMode } from '../visuals/AsciiDitherCanvas';
-import { usePreferences } from '../../context';
 import { downloadPdfCv } from '../../utils/generatePdfCv';
-import { ArrowDown, FileDown, Sparkles, Compass, MapPin, Calendar } from 'lucide-react';
+import { ArrowDown, FileDown, BookOpen, Cpu, Sparkles } from 'lucide-react';
 
 export const HeroSection: React.FC = () => {
-  const { visualEffectsEnabled } = usePreferences();
-  const [activeVisualMode, setActiveVisualMode] = useState<VisualMode>('hybrid');
-
-  const modes: { id: VisualMode; label: string }[] = [
-    { id: 'hybrid', label: 'Hybrid Mesh' },
-    { id: 'ascii-field', label: 'ASCII Tensor' },
-    { id: 'dither-distortion', label: 'Bayer Dither' },
-    { id: 'hidden-structures', label: 'Manifold Core' },
-  ];
-
   return (
-    <section id="hero" className="relative min-h-[92vh] flex items-center justify-center pt-24 pb-16 overflow-hidden">
-      {/* Interactive ASCII / Dither Background */}
-      {visualEffectsEnabled && (
-        <div className="absolute inset-0 z-0 opacity-75">
-          <AsciiDitherCanvas mode={activeVisualMode} density="normal" opacity={0.8} />
-          {/* Subtle gradient vignette so text remains razor sharp */}
-          <div className="absolute inset-0 bg-gradient-to-b from-bg-void/70 via-bg-void/40 to-bg-void pointer-events-none" />
-        </div>
-      )}
-
-      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
-        {/* Meta badges */}
-        <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-4 px-3.5 py-1.5 rounded-full border border-border-medium bg-bg-surface/80 backdrop-blur-md text-xs font-mono text-text-secondary">
-          <span className="flex items-center space-x-1 text-amber-400 font-semibold">
-            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse inline-block" />
-            <span>{profileData.professionalIdentity}</span>
-          </span>
-          <span className="text-border-medium">•</span>
-          <span className="flex items-center space-x-1">
-            <Calendar className="w-3 h-3 text-text-muted" />
-            <span>Age {profileData.age}</span>
-          </span>
-          <span className="text-border-medium">•</span>
-          <span className="flex items-center space-x-1">
-            <MapPin className="w-3 h-3 text-text-muted" />
-            <span>{profileData.location}</span>
-          </span>
+    <section id="hero" className="relative min-h-[92vh] flex items-center justify-center pt-28 pb-16 px-4 sm:px-6 lg:px-8">
+      {/* Frontispiece Title Plate */}
+      <div className="relative z-10 max-w-4xl mx-auto w-full text-center space-y-8 p-6 sm:p-10 md:p-12 border-2 border-paper-border-strong bg-paper-bg-subtle/80 shadow-sm">
+        {/* Archival Journal Header */}
+        <div className="pb-3 border-b border-paper-border-subtle flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] font-mono tracking-[0.2em] uppercase text-academic-seal font-semibold">
+          <span>Acta Mathematica &amp; Computatoria</span>
+          <span>Vol. I, Fasc. 2026 • Satara, Maharashtra, India</span>
         </div>
 
-        {/* Hero Title */}
-        <div className="space-y-4">
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-text-primary uppercase font-mono">
+        {/* Scholarly Metadata Strip */}
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs font-mono text-ink-muted">
+          <span className="text-academic-seal font-bold uppercase tracking-wider">
+            {profileData.professionalIdentity}
+          </span>
+          <span>•</span>
+          <span>Age {profileData.age}</span>
+          <span>•</span>
+          <span>{profileData.location}</span>
+          <span>•</span>
+          <span>MSC2020: 55N31, 90C27, 68N20</span>
+        </div>
+
+        {/* Main Title & Role */}
+        <div className="space-y-3 pt-2">
+          <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-ink-primary uppercase">
             {profileData.fullName}
           </h1>
-          <p className="text-xl sm:text-2xl md:text-3xl text-amber-500 font-serif italic max-w-3xl mx-auto font-normal tracking-wide">
+          <p className="font-serif text-base sm:text-lg text-ink-secondary tracking-widest uppercase font-medium">
+            {profileData.professionalIdentity}
+          </p>
+        </div>
+
+        {/* Classical Oxford Double Rule */}
+        <hr className="oxford-rule my-4" />
+
+        {/* Research Epigraph */}
+        <div className="py-1">
+          <blockquote className="font-serif italic text-lg sm:text-2xl text-academic-amber max-w-2xl mx-auto font-normal leading-relaxed">
             "{profileData.tagline}"
+          </blockquote>
+        </div>
+
+        {/* Scholarly Abstract Block */}
+        <div className="max-w-3xl mx-auto text-left p-5 sm:p-6 border-l-3 border-academic-seal bg-paper-bg-base border border-paper-border-subtle space-y-2">
+          <div className="font-serif font-bold text-xs uppercase tracking-widest text-academic-seal flex items-center space-x-1.5">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Abstract of Research Program</span>
+          </div>
+          <p className="font-serif text-sm sm:text-base text-ink-secondary leading-relaxed">
+            An independent research program in theoretical mathematics, algorithm engineering, mechanized proof verification, and combinatorial structures. Primary treatises address persistent homology on temporal hypergraphs, Lagrangian dual relaxation with provable bounds for constrained shortest paths, and certified supercompilation via SSA lowering in Lean 4 with Cranelift code generation. Dedicated to <span className="text-ink-primary font-medium italic">"{profileData.targetImpression}"</span>
           </p>
         </div>
 
-        {/* Core Impression Quote */}
-        <div className="max-w-2xl mx-auto pt-2">
-          <p className="text-sm sm:text-base text-text-secondary leading-relaxed font-mono">
-            Independent research bridging theoretical mathematics, algorithm design, formal verification in Lean 4, and computational structures. Driven by <span className="text-text-primary font-semibold">"{profileData.targetImpression}"</span>
-          </p>
-        </div>
-
-        {/* Primary Call to Action buttons */}
-        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 pt-4">
+        {/* Dignified Archival Action Ribbon */}
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 pt-2">
           <a
-            href="#research-interests"
-            className="px-6 py-3 rounded bg-amber-500 hover:bg-amber-600 text-bg-void font-mono font-semibold text-xs tracking-wider uppercase transition-all shadow-lg shadow-amber-500/20 flex items-center space-x-2"
+            href="#preprints"
+            className="px-5 py-2.5 rounded border border-academic-seal bg-academic-seal/10 hover:bg-academic-seal text-academic-seal hover:text-white font-mono font-medium text-xs tracking-wider uppercase transition-colors flex items-center space-x-2"
           >
-            <Compass className="w-4 h-4" />
-            <span>Explore Research</span>
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>Archival Preprints</span>
           </a>
 
           <a
             href="#projects"
-            className="px-6 py-3 rounded bg-bg-surface hover:bg-bg-elevated border border-border-medium hover:border-amber-500/50 text-text-primary font-mono text-xs tracking-wider uppercase transition-all flex items-center space-x-2"
+            className="px-5 py-2.5 rounded border border-paper-border-strong bg-paper-bg-elevated hover:bg-paper-border-subtle text-ink-primary font-mono font-medium text-xs tracking-wider uppercase transition-colors flex items-center space-x-2"
           >
-            <span>View Projects</span>
-            <ArrowDown className="w-3.5 h-3.5 text-amber-500" />
+            <Cpu className="w-3.5 h-3.5" />
+            <span>Computational Treatises</span>
           </a>
 
           <a
@@ -91,45 +85,20 @@ export const HeroSection: React.FC = () => {
                 e.preventDefault();
               } catch {}
             }}
-            className="px-5 py-3 rounded bg-bg-surface hover:bg-bg-elevated border border-border-subtle hover:border-border-highlight text-text-secondary hover:text-amber-400 font-mono text-xs tracking-wider uppercase transition-all flex items-center space-x-2 cursor-pointer"
-            title="Download locally generated Curriculum Vitae PDF"
+            className="px-5 py-2.5 rounded border border-paper-border-subtle hover:border-paper-border-strong bg-paper-bg-base text-ink-secondary hover:text-ink-primary font-mono text-xs tracking-wider uppercase transition-colors flex items-center space-x-2 cursor-pointer"
+            title="Download locally compiled Curriculum Vitae vector PDF"
           >
-            <FileDown className="w-4 h-4 text-amber-500" />
+            <FileDown className="w-3.5 h-3.5 text-academic-amber" />
             <span>Curriculum Vitae</span>
           </a>
         </div>
-
-        {/* Visual Engine Mode Selector Pill */}
-        {visualEffectsEnabled && (
-          <div className="pt-8">
-            <div className="inline-flex items-center space-x-1 p-1 rounded-lg bg-bg-surface/90 border border-border-subtle backdrop-blur-md">
-              <span className="text-[10px] font-mono text-text-muted px-2 hidden sm:inline flex items-center space-x-1">
-                <Sparkles className="w-3 h-3 text-amber-500" />
-                <span>CANVAS MODE:</span>
-              </span>
-              {modes.map((m) => (
-                <button
-                  key={m.id}
-                  onClick={() => setActiveVisualMode(m.id)}
-                  className={`px-2.5 py-1 text-[11px] font-mono rounded transition-colors ${
-                    activeVisualMode === m.id
-                      ? 'bg-amber-500 text-bg-void font-bold shadow-sm'
-                      : 'text-text-muted hover:text-text-primary'
-                  }`}
-                >
-                  {m.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* Subtle bottom scroll indicator */}
+      {/* Subtle bottom scroll link to § 1 */}
       <a
         href="#about"
         aria-label="Scroll down to About section"
-        className="absolute bottom-4 left-1/2 -translate-x-1/2 p-2 text-text-muted hover:text-amber-400 transition-colors"
+        className="absolute bottom-4 left-1/2 -translate-x-1/2 p-2 text-ink-muted hover:text-academic-seal transition-colors"
       >
         <ArrowDown className="w-4 h-4 animate-bounce" />
       </a>

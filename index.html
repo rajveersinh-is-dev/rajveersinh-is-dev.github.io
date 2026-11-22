@@ -4,37 +4,118 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rajveersinh Vishal Pardeshi — Independent Mathematical Researcher</title>
+    <title>Acta Mathematica &amp; Computatoria — Research Archive of Rajveersinh Vishal Pardeshi</title>
     
-    <!-- SEO & Metadata -->
-    <meta name="description" content="Official research portfolio of Rajveersinh Vishal Pardeshi, Independent Mathematical Researcher. Discovering Structure. Proving Ideas. Building the Future." />
+    <!-- Scholarly Metadata & Invariant Preservation -->
+    <meta name="description" content="Acta Mathematica &amp; Computatoria: Official research archive and computational workbench of Rajveersinh Vishal Pardeshi. Theoretical mathematics, mechanized verification in Lean 4, and combinatorial optimization." />
     <meta name="author" content="Rajveersinh Vishal Pardeshi" />
-    <meta name="theme-color" content="#07080a" />
+    <meta name="theme-color" content="#121110" />
     <link rel="manifest" href="./manifest.json" />
 
-    <!-- Open Graph / Meta -->
+    <!-- Open Graph / Scholarly Bibliographic Metadata -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Rajveersinh Vishal Pardeshi — Independent Mathematical Researcher" />
-    <meta property="og:description" content="Discovering Structure. Proving Ideas. Building the Future. Research in theoretical mathematics, algorithms, scientific computing, and formal verification." />
+    <meta property="og:title" content="Acta Mathematica &amp; Computatoria — Research Archive of Rajveersinh Vishal Pardeshi" />
+    <meta property="og:description" content="Official research archive and computational workbench of Rajveersinh Vishal Pardeshi. Theoretical mathematics, mechanized verification in Lean 4, and combinatorial optimization." />
     <meta property="og:image" content="./favicon.svg" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Rajveersinh Vishal Pardeshi — Independent Mathematical Researcher" />
-    <meta name="twitter:description" content="Independent Mathematical Researcher. Theoretical mathematics, algorithms, and computational structures." />
+    <meta name="twitter:title" content="Acta Mathematica &amp; Computatoria — Research Archive of Rajveersinh Vishal Pardeshi" />
+    <meta name="twitter:description" content="Official research archive and computational workbench of Rajveersinh Vishal Pardeshi. Theoretical mathematics, mechanized verification in Lean 4, and combinatorial optimization." />
 
-    <script>
-      // Service worker registration (safe check, works offline and gracefully handles file:// protocol)
-      if ('serviceWorker' in navigator && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js').catch(() => {
-            // Service worker optional fallback
-          });
-        });
+    <!-- Zero Flash Baseline Styles (Immediate Non-White Canvas) -->
+    <style>
+      html {
+        background-color: #121110;
+        color: #ede8df;
       }
+      html.reading-mode {
+        background-color: #faf7f0;
+        color: #1c1917;
+      }
+      body {
+        background-color: inherit;
+        color: inherit;
+        margin: 0;
+        min-height: 100vh;
+      }
+    </style>
+
+    <!-- Theme Preference Restoration (Zero Remote Dependencies) -->
+    <script>
+      (function () {
+        try {
+          const readingMode = localStorage.getItem('rvp_reading_mode');
+          const theme = localStorage.getItem('rvp_theme');
+          if (readingMode === 'true' || theme === 'light') {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('reading-mode');
+          } else {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('reading-mode');
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <!-- Offline Service Worker Registration & Dev Hygiene -->
+    <script>
+      (function () {
+        if ('serviceWorker' in navigator) {
+          const port = window.location.port;
+          const host = window.location.hostname;
+          const isDevHost = Boolean(
+            (port && port !== '80' && port !== '443') ||
+            host === 'localhost' ||
+            host === '127.0.0.1' ||
+            host === '[::1]' ||
+            host.endsWith('.local') ||
+            host.startsWith('192.168.') ||
+            host.startsWith('10.') ||
+            host.startsWith('172.')
+          );
+          if (isDevHost) {
+            // Unregister any stale service workers and clear caches in development to prevent 404 blank screens
+            navigator.serviceWorker.getRegistrations().then(function (registrations) {
+              for (const r of registrations) {
+                r.unregister();
+              }
+            });
+            if ('caches' in window) {
+              caches.keys().then(function (names) {
+                for (const name of names) {
+                  caches.delete(name);
+                }
+              });
+            }
+          } else if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+            window.addEventListener('load', function () {
+              navigator.serviceWorker.register('./sw.js').catch(function () {});
+            });
+          }
+        }
+
+        // Diagnostic fallback if user opened index.html directly from desktop file explorer (file:// protocol)
+        if (window.location.protocol === 'file:') {
+          window.addEventListener('DOMContentLoaded', function () {
+            setTimeout(function () {
+              const root = document.getElementById('root');
+              if (root && root.children.length === 0) {
+                root.innerHTML = '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#121110;color:#ede8df;font-family:serif;"><div style="max-width:560px;border:1px solid #5c5449;background:#1a1816;padding:32px;text-align:center;"><h2 style="font-size:22px;font-weight:bold;margin-bottom:12px;color:#be123c;">Acta Mathematica &amp; Computatoria</h2><p style="font-size:14px;color:#bab2a4;line-height:1.6;margin-bottom:16px;">This research archive requires a local HTTP web server to load modern ES modules.<br/>Please launch the server using:<br/><code style="display:inline-block;background:#121110;border:1px solid #38332d;color:#d97706;padding:8px 16px;margin-top:12px;font-family:monospace;font-size:13px;border-radius:3px;">npm run dev -- --host</code></p><p style="font-size:13px;color:#7a7266;">Then visit <a href="http://localhost:5173" style="color:#60a5fa;text-decoration:underline;">http://localhost:5173</a> in your browser.</p></div></div>';
+              }
+            }, 600);
+          });
+        }
+      })();
     </script>
   </head>
-  <body class="bg-bg-void text-text-primary antialiased selection:bg-amber-500/20 selection:text-amber-400 min-h-screen overflow-x-hidden">
+  <body class="bg-paper-bg-base dark:bg-night-bg-base text-ink-primary dark:text-night-ink-primary font-serif antialiased selection:bg-academic-amber/20 selection:text-academic-amber min-h-screen overflow-x-hidden">
+    <noscript>
+      <div style="font-family:serif;max-width:600px;margin:80px auto;padding:24px;border:1px solid #5c5449;background:#1a1816;color:#ede8df;text-align:center;">
+        <h2 style="color:#be123c;font-size:20px;font-weight:bold;">JavaScript Required</h2>
+        <p style="font-size:14px;color:#bab2a4;margin-top:8px;">Acta Mathematica &amp; Computatoria requires JavaScript to execute the computational research workbench.</p>
+      </div>
+    </noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
