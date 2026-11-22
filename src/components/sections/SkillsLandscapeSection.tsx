@@ -3,10 +3,66 @@ import { skillsData } from '../../data';
 import type { SkillEntry } from '../../types/content';
 import { useIntersectionObserver } from '../../utils/intersectionObserver';
 
+// Helper to format long constellation node labels into balanced lines
+function splitSkillLabel(name: string): string[] {
+  if (name.length <= 16) return [name];
+  if (name.includes(' & ')) {
+    const parts = name.split(' & ');
+    return [parts[0], `& ${parts[1]}`];
+  }
+  if (name.includes(' / ')) {
+    const parts = name.split(' / ');
+    return [parts[0], `/ ${parts[1]}`];
+  }
+  const words = name.split(' ');
+  if (words.length >= 2) {
+    const mid = Math.ceil(words.length / 2);
+    return [words.slice(0, mid).join(' '), words.slice(mid).join(' ')];
+  }
+  return [name];
+}
+
+// Deterministic celestial background stars for astronomical map atmosphere
+const CELESTIAL_STARS = [
+  { x: 45, y: 38, r: 0.8, op: 0.2 },
+  { x: 92, y: 75, r: 1.1, op: 0.25 },
+  { x: 135, y: 32, r: 0.9, op: 0.18 },
+  { x: 180, y: 60, r: 1.2, op: 0.28 },
+  { x: 230, y: 28, r: 0.7, op: 0.15 },
+  { x: 285, y: 52, r: 1.0, op: 0.22 },
+  { x: 435, y: 42, r: 0.9, op: 0.2 },
+  { x: 490, y: 26, r: 1.2, op: 0.3 },
+  { x: 545, y: 62, r: 0.8, op: 0.18 },
+  { x: 605, y: 40, r: 1.0, op: 0.24 },
+  { x: 670, y: 72, r: 1.1, op: 0.25 },
+  { x: 38, y: 145, r: 1.0, op: 0.2 },
+  { x: 80, y: 190, r: 0.8, op: 0.18 },
+  { x: 50, y: 260, r: 1.2, op: 0.26 },
+  { x: 110, y: 310, r: 0.9, op: 0.22 },
+  { x: 165, y: 280, r: 1.1, op: 0.25 },
+  { x: 225, y: 315, r: 0.8, op: 0.18 },
+  { x: 290, y: 295, r: 1.0, op: 0.22 },
+  { x: 430, y: 305, r: 1.1, op: 0.24 },
+  { x: 495, y: 320, r: 0.8, op: 0.18 },
+  { x: 560, y: 285, r: 1.2, op: 0.28 },
+  { x: 625, y: 310, r: 0.9, op: 0.2 },
+  { x: 680, y: 260, r: 1.0, op: 0.22 },
+  { x: 665, y: 185, r: 1.1, op: 0.25 },
+  { x: 685, y: 130, r: 0.8, op: 0.18 },
+  { x: 250, y: 120, r: 0.7, op: 0.15 },
+  { x: 470, y: 115, r: 0.8, op: 0.18 },
+  { x: 260, y: 220, r: 0.8, op: 0.16 },
+  { x: 465, y: 225, r: 0.7, op: 0.15 },
+  { x: 360, y: 65, r: 1.0, op: 0.2 },
+  { x: 360, y: 275, r: 1.0, op: 0.2 }
+];
+
 export const SkillsLandscapeSection: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<number>(0);
   const [hoveredSkillName, setHoveredSkillName] = useState<string | null>(null);
-  const [activeSkillName, setActiveSkillName] = useState<string | null>(null);
+  const [activeSkillName, setActiveSkillName] = useState<string | null>(
+    () => skillsData[0]?.skills[0]?.name || null
+  );
   const [sectionRef, isVisible] = useIntersectionObserver<HTMLElement>();
 
   const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(() => {
@@ -25,34 +81,84 @@ export const SkillsLandscapeSection: React.FC = () => {
   const currentCategory = skillsData[selectedCategory] || skillsData[0];
   const skills = currentCategory.skills;
 
-  // Polar coordinate layout for constellation nodes with ample margin for wide labels
+  const width = 720;
+  const height = 340;
+  const cx = width / 2; // 360
+  const cy = height / 2; // 170
+
+  // Staggered multi-orbit coordinate calculation ensuring clear spacing & zero label collision
   const nodes = useMemo(() => {
-    const width = 720;
-    const height = 340;
-    const cx = width / 2;
-    const cy = height / 2;
     const total = skills.length;
-    const rx = width * 0.32;
-    const ry = height * 0.30;
+    // Outer and inner orbit radii calibrated for 720x340 canvas
+    const rxOuter = 215;
+    const ryOuter = 105;
+    const rxInner = 125;
+    const ryInner = 60;
 
     return skills.map((skill, idx) => {
-      // Angular spacing with alternating radius offset for natural constellation pacing
-      const angle = (idx / total) * 2 * Math.PI - Math.PI / 2 + (idx % 2 === 1 ? 0.15 : -0.1);
-      const rMult = total <= 3 ? 0.85 : idx % 2 === 0 ? 0.95 : 0.78;
-      const x = Math.round(cx + rx * rMult * Math.cos(angle));
-      const y = Math.round(cy + ry * rMult * Math.sin(angle));
+      // Angular spacing starting at the zenith (-PI/2)
+      const angle = (idx / total) * 2 * Math.PI - Math.PI / 2;
+      // Alternate between outer orbit and inner orbit for rich celestial depth
+      const isOuter = idx % 2 === 0;
+      const rx = isOuter ? rxOuter : rxInner;
+      const ry = isOuter ? ryOuter : ryInner;
+
+      const x = Math.round(cx + rx * Math.cos(angle));
+      const y = Math.round(cy + ry * Math.sin(angle));
+
+      const lines = splitSkillLabel(skill.name);
+      const dx = x - cx;
+      const dy = y - cy;
+
+      let labelX = x;
+      let labelY = y;
+      let textAnchor: 'start' | 'middle' | 'end' = 'middle';
+
+      if (Math.abs(dx) <= 25) {
+        labelX = x;
+        textAnchor = 'middle';
+        if (dy < 0) {
+          labelY = y - (lines.length > 1 ? 19 : 11);
+        } else {
+          labelY = y + 17;
+        }
+      } else if (dx > 25) {
+        labelX = x + 10;
+        labelY = y + (lines.length > 1 ? -2 : 3);
+        textAnchor = 'start';
+      } else {
+        labelX = x - 10;
+        labelY = y + (lines.length > 1 ? -2 : 3);
+        textAnchor = 'end';
+      }
+
       return {
         ...skill,
         x,
         y,
+        labelX,
+        labelY,
+        labelLines: lines,
+        textAnchor,
+        isOuter,
         idx,
       };
     });
-  }, [skills]);
+  }, [skills, cx, cy]);
 
-  // Determine connections between related skills using associatedTopics and structural neighbors
+  // Determine constellation connections: shared topics, structural perimeter ring, and cross chords
   const edges = useMemo(() => {
-    const edgeList: { from: string; to: string; x1: number; y1: number; x2: number; y2: number }[] = [];
+    const edgeList: {
+      from: string;
+      to: string;
+      x1: number;
+      y1: number;
+      x2: number;
+      y2: number;
+      sharedTopics: string[];
+      isStructural: boolean;
+    }[] = [];
+
     const total = nodes.length;
 
     for (let i = 0; i < total; i++) {
@@ -60,11 +166,12 @@ export const SkillsLandscapeSection: React.FC = () => {
         const a = nodes[i];
         const b = nodes[j];
 
-        const sharedTopic = a.associatedTopics.some((t) => b.associatedTopics.includes(t));
-        // Connect if shared topic, or form a ring/spanning structure in the constellation
-        const isNeighbor = Math.abs(i - j) === 1 || (i === 0 && j === total - 1) || total <= 3;
+        const shared = a.associatedTopics.filter((t) => b.associatedTopics.includes(t));
+        // Connect sequential nodes in perimeter ring, cross-ties, or shared topic nodes
+        const isRingNeighbor = j === i + 1 || (i === 0 && j === total - 1);
+        const isCrossChord = (j === i + 2 && total >= 6) || (i === 0 && j === total - 2 && total >= 6);
 
-        if (sharedTopic || isNeighbor) {
+        if (shared.length > 0 || isRingNeighbor || isCrossChord) {
           edgeList.push({
             from: a.name,
             to: b.name,
@@ -72,6 +179,8 @@ export const SkillsLandscapeSection: React.FC = () => {
             y1: a.y,
             x2: b.x,
             y2: b.y,
+            sharedTopics: shared,
+            isStructural: isRingNeighbor || isCrossChord,
           });
         }
       }
@@ -79,7 +188,7 @@ export const SkillsLandscapeSection: React.FC = () => {
     return edgeList;
   }, [nodes]);
 
-  // Selected or hovered skill takes precedence for highlighting
+  // Active or hovered skill takes precedence for highlighting
   const highlightedSkillName = hoveredSkillName || activeSkillName;
 
   // Find which skills are connected to the highlighted skill
@@ -98,6 +207,8 @@ export const SkillsLandscapeSection: React.FC = () => {
     skills.find((s) => s.name === activeSkillName) ||
     skills.find((s) => s.name === hoveredSkillName) ||
     skills[0];
+
+  const isFocused = Boolean(activeSkillName || hoveredSkillName);
 
   return (
     <section
@@ -136,7 +247,7 @@ export const SkillsLandscapeSection: React.FC = () => {
               key={cat.categoryName}
               onClick={() => {
                 setSelectedCategory(idx);
-                setActiveSkillName(null);
+                setActiveSkillName(skillsData[idx]?.skills[0]?.name || null);
                 setHoveredSkillName(null);
               }}
               className={`px-4 py-2 rounded-xs font-mono text-xs transition-colors cursor-pointer ${
@@ -153,7 +264,7 @@ export const SkillsLandscapeSection: React.FC = () => {
         {/* Competency Node Chips for Fast Inspection & Mobile Access */}
         <div className="flex flex-wrap gap-1.5 pt-1">
           {skills.map((skill) => {
-            const isSelected = (activeSkillName || inspectionSkill.name) === skill.name;
+            const isSelected = isFocused && inspectionSkill.name === skill.name;
             return (
               <button
                 key={skill.name}
@@ -183,10 +294,136 @@ export const SkillsLandscapeSection: React.FC = () => {
           >
             <svg
               viewBox="0 0 720 340"
-              className="w-full h-auto max-h-[380px] mx-auto block overflow-visible"
+              className="w-full h-auto max-h-[420px] mx-auto block overflow-visible"
               role="img"
               aria-label={`Skill constellation graph for ${currentCategory.categoryName}`}
             >
+              {/* Celestial Background Grid & Coordinate Ticks */}
+              <g className="celestial-grid pointer-events-none">
+                {/* Fixed Background Stars */}
+                {CELESTIAL_STARS.map((star, i) => (
+                  <circle
+                    key={`star-${i}`}
+                    cx={star.x}
+                    cy={star.y}
+                    r={star.r}
+                    fill="currentColor"
+                    className="text-ink-muted"
+                    opacity={star.op}
+                  />
+                ))}
+
+                {/* Concentric Orbital Ellipses */}
+                <ellipse
+                  cx={cx}
+                  cy={cy}
+                  rx={75}
+                  ry={36}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={0.6}
+                  strokeDasharray="2 4"
+                  className="text-paper-border-strong opacity-20"
+                />
+                <ellipse
+                  cx={cx}
+                  cy={cy}
+                  rx={125}
+                  ry={60}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={0.7}
+                  strokeDasharray="3 4"
+                  className="text-paper-border-strong opacity-30"
+                />
+                <ellipse
+                  cx={cx}
+                  cy={cy}
+                  rx={215}
+                  ry={105}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={0.8}
+                  strokeDasharray="4 5"
+                  className="text-paper-border-strong opacity-35"
+                />
+
+                {/* Polar Coordinate Crosshairs */}
+                <line
+                  x1={75}
+                  y1={cy}
+                  x2={645}
+                  y2={cy}
+                  stroke="currentColor"
+                  strokeWidth={0.5}
+                  strokeDasharray="2 6"
+                  className="text-paper-border-strong opacity-20"
+                />
+                <line
+                  x1={cx}
+                  y1={30}
+                  x2={cx}
+                  y2={310}
+                  stroke="currentColor"
+                  strokeWidth={0.5}
+                  strokeDasharray="2 6"
+                  className="text-paper-border-strong opacity-20"
+                />
+
+                {/* Coordinate Markers */}
+                <text
+                  x={80}
+                  y={cy - 4}
+                  className="font-mono text-[8px] fill-ink-muted opacity-40 select-none"
+                >
+                  180°
+                </text>
+                <text
+                  x={640}
+                  y={cy - 4}
+                  textAnchor="end"
+                  className="font-mono text-[8px] fill-ink-muted opacity-40 select-none"
+                >
+                  0°
+                </text>
+                <text
+                  x={cx + 6}
+                  y={36}
+                  className="font-mono text-[8px] fill-ink-muted opacity-40 select-none"
+                >
+                  90°
+                </text>
+                <text
+                  x={cx + 6}
+                  y={304}
+                  className="font-mono text-[8px] fill-ink-muted opacity-40 select-none"
+                >
+                  270°
+                </text>
+              </g>
+
+              {/* Radial Spokes to Center Hub */}
+              <g className="hub-spokes pointer-events-none">
+                {nodes.map((node) => {
+                  const isNodeHighlighted = highlightedSkillName === node.name;
+                  return (
+                    <line
+                      key={`hub-${node.name}`}
+                      x1={cx}
+                      y1={cy}
+                      x2={node.x}
+                      y2={node.y}
+                      stroke={isNodeHighlighted ? '#d97706' : 'currentColor'}
+                      strokeWidth={isNodeHighlighted ? 1.4 : 0.6}
+                      strokeDasharray={isNodeHighlighted ? undefined : '2 4'}
+                      className={`text-paper-border-strong ${
+                        isNodeHighlighted ? 'opacity-85' : 'opacity-25'
+                      }`}
+                    />
+                  );
+                })}
+              </g>
+
               {/* Constellation Edge Lines */}
               <g className="edges">
                 {edges.map((edge, idx) => {
@@ -203,14 +440,52 @@ export const SkillsLandscapeSection: React.FC = () => {
                       x2={edge.x2}
                       y2={edge.y2}
                       stroke={isHighlighted ? '#d97706' : 'currentColor'}
-                      strokeWidth={isHighlighted ? 1.5 : 0.6}
-                      strokeDasharray={isHighlighted ? undefined : '2 2'}
-                      className={`${prefersReducedMotion ? '' : 'transition-opacity duration-200'} text-paper-border-strong ${
-                        isHighlighted ? 'opacity-90' : isDimmed ? 'opacity-15' : 'opacity-40'
+                      strokeWidth={isHighlighted ? 2.0 : edge.sharedTopics.length > 0 ? 1.0 : 0.7}
+                      strokeDasharray={isHighlighted ? undefined : edge.sharedTopics.length > 0 ? '4 2' : '2 3'}
+                      className={`${
+                        prefersReducedMotion ? '' : 'transition-all duration-200'
+                      } text-paper-border-strong ${
+                        isHighlighted ? 'opacity-95' : isDimmed ? 'opacity-15' : 'opacity-40'
                       }`}
                     />
                   );
                 })}
+              </g>
+
+              {/* Central Category Hub Node */}
+              <g className="hub-center select-none pointer-events-none">
+                <circle
+                  cx={cx}
+                  cy={cy}
+                  r={24}
+                  fill="none"
+                  stroke="#d97706"
+                  strokeWidth={0.8}
+                  strokeDasharray="2 3"
+                  opacity={0.4}
+                />
+                <circle
+                  cx={cx}
+                  cy={cy}
+                  r={15}
+                  fill="var(--paper-bg-base, #121110)"
+                  stroke="#d97706"
+                  strokeWidth={1.5}
+                />
+                <circle
+                  cx={cx}
+                  cy={cy}
+                  r={4}
+                  fill="#d97706"
+                />
+                <text
+                  x={cx}
+                  y={cy + 24}
+                  textAnchor="middle"
+                  className="font-mono text-[8px] font-bold tracking-[0.2em] uppercase fill-ink-muted select-none"
+                >
+                  CLUSTER CORE
+                </text>
               </g>
 
               {/* Constellation Nodes */}
@@ -231,43 +506,79 @@ export const SkillsLandscapeSection: React.FC = () => {
                       }}
                       onPointerEnter={() => setHoveredSkillName(node.name)}
                       onPointerLeave={() => setHoveredSkillName(null)}
-                      className={`cursor-pointer ${prefersReducedMotion ? '' : 'transition-opacity duration-200'} ${
-                        isDimmed ? 'opacity-20' : 'opacity-100'
-                      }`}
+                      className={`cursor-pointer outline-none ${
+                        prefersReducedMotion ? '' : 'transition-opacity duration-200'
+                      } ${isDimmed ? 'opacity-20' : 'opacity-100'}`}
                     >
-                      {/* Outer pulse/focus ring */}
+                      {/* Outer pulse/focus ring on selection/hover */}
                       {isPrimary && (
-                        <circle
-                          cx={node.x}
-                          cy={node.y}
-                          r={12}
-                          fill="none"
-                          stroke="#d97706"
-                          strokeWidth={1}
-                          strokeOpacity={0.4}
-                          className={prefersReducedMotion ? '' : 'animate-pulse'}
-                        />
+                        <>
+                          <circle
+                            cx={node.x}
+                            cy={node.y}
+                            r={18}
+                            fill="none"
+                            stroke="#d97706"
+                            strokeWidth={1}
+                            strokeDasharray="3 3"
+                            opacity={0.5}
+                            className={prefersReducedMotion ? '' : 'animate-pulse'}
+                          />
+                          <circle
+                            cx={node.x}
+                            cy={node.y}
+                            r={13}
+                            fill="#d97706"
+                            fillOpacity={0.15}
+                            stroke="#d97706"
+                            strokeWidth={1.2}
+                          />
+                        </>
                       )}
 
                       {/* Main Node Circle */}
                       <circle
                         cx={node.x}
                         cy={node.y}
-                        r={isPrimary ? 6 : 5}
-                        fill={isPrimary ? '#d97706' : isConnected ? '#bab2a4' : '#5c5449'}
+                        r={isPrimary ? 7 : node.isOuter ? 6 : 5}
+                        fill={isPrimary ? '#d97706' : isConnected ? '#e2d9cc' : '#736b5e'}
                         stroke="#121110"
-                        strokeWidth={1.5}
+                        strokeWidth={1.8}
                       />
 
-                      {/* Monospace Node Label */}
+                      {/* Specular Highlight Dot */}
+                      <circle
+                        cx={node.x - 1.5}
+                        cy={node.y - 1.5}
+                        r={isPrimary ? 2 : 1.2}
+                        fill={isPrimary ? '#fff7ed' : '#ffffff'}
+                        opacity={0.8}
+                        pointerEvents="none"
+                      />
+
+                      {/* Boundary-Safe Monospace Node Label with Multi-Line Support and Halo Contrast */}
                       <text
-                        x={node.x}
-                        y={node.y + (node.y > 170 ? 18 : -12)}
-                        textAnchor="middle"
+                        x={node.labelX}
+                        y={node.labelY}
+                        textAnchor={node.textAnchor}
                         fill={isPrimary ? '#d97706' : 'currentColor'}
-                        className="font-mono text-[11px] font-semibold text-ink-primary select-none pointer-events-none"
+                        stroke="var(--paper-bg-base, #121110)"
+                        strokeWidth="3.5"
+                        strokeLinejoin="round"
+                        paintOrder="stroke fill"
+                        className={`font-mono text-[10px] font-semibold select-none pointer-events-none transition-colors ${
+                          isPrimary ? 'fill-academic-amber font-bold' : 'text-ink-primary'
+                        }`}
                       >
-                        {node.name}
+                        {node.labelLines.map((line, lIdx) => (
+                          <tspan
+                            key={`${node.name}-line-${lIdx}`}
+                            x={node.labelX}
+                            dy={lIdx === 0 ? 0 : 11}
+                          >
+                            {line}
+                          </tspan>
+                        ))}
                       </text>
                     </g>
                   );
@@ -277,36 +588,96 @@ export const SkillsLandscapeSection: React.FC = () => {
           </div>
 
           {/* Interactive Inspection Tooltip / Panel Below Constellation */}
-          <div className="pt-4 border-t border-paper-border-subtle space-y-3">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div className="flex items-center space-x-2">
-                <span className="w-2 h-2 rounded-full bg-academic-amber" />
-                <h3 className="font-serif text-lg font-bold text-ink-primary">
-                  {inspectionSkill.name}
-                </h3>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-paper-border-subtle bg-paper-bg-subtle text-ink-muted">
-                  Intermediate
-                </span>
+          <div className="pt-4 border-t border-paper-border-subtle space-y-4">
+            {isFocused ? (
+              <>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center space-x-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-academic-amber shadow-xs" />
+                    <h3 className="font-serif text-lg font-bold text-ink-primary">
+                      {inspectionSkill.name}
+                    </h3>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-paper-border-subtle bg-paper-bg-subtle text-ink-muted">
+                      Intermediate
+                    </span>
+                  </div>
+                  <span className="text-xs font-mono text-ink-muted">
+                    {currentCategory.categoryName}
+                  </span>
+                </div>
+
+                <p className="font-serif text-xs sm:text-sm text-ink-secondary leading-relaxed">
+                  {inspectionSkill.description}
+                </p>
+
+                <div className="space-y-2">
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-ink-muted">
+                    Associated Specialization Areas:
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {inspectionSkill.associatedTopics.map((topic: string) => (
+                      <span
+                        key={topic}
+                        className="text-[10px] font-mono px-2 py-0.5 rounded border border-paper-border-subtle bg-paper-bg-subtle text-ink-muted"
+                      >
+                        {topic}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Direct Connected Skills in Constellation */}
+                {connectedSkillNames.size > 1 && (
+                  <div className="pt-2 border-t border-paper-border-subtle/50 flex flex-wrap items-center gap-2">
+                    <span className="text-[10px] font-mono text-ink-muted uppercase tracking-wider">
+                      Graph Neighbors:
+                    </span>
+                    {Array.from(connectedSkillNames)
+                      .filter((name) => name !== inspectionSkill.name)
+                      .map((connectedName) => (
+                        <button
+                          key={connectedName}
+                          onClick={() => setActiveSkillName(connectedName)}
+                          className="text-[10px] font-mono px-2 py-0.5 rounded border border-academic-amber/30 bg-academic-amber/5 text-academic-amber hover:bg-academic-amber/15 transition-colors cursor-pointer"
+                        >
+                          {connectedName} →
+                        </button>
+                      ))}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center space-x-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-paper-border-strong" />
+                    <h3 className="font-serif text-lg font-bold text-ink-primary">
+                      {currentCategory.categoryName} Overview
+                    </h3>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-paper-border-subtle bg-paper-bg-subtle text-ink-muted">
+                      Intermediate Proficiency
+                    </span>
+                  </div>
+                  <span className="text-xs font-mono text-ink-muted">
+                    {skills.length} Competency Nodes
+                  </span>
+                </div>
+                <p className="font-serif text-xs sm:text-sm text-ink-secondary leading-relaxed">
+                  Topological graph view active. Click or hover any node in the constellation or select a chip above to inspect its formal invariants, algorithmic passes, and graph neighbor connections.
+                </p>
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {skills.map((s) => (
+                    <button
+                      key={s.name}
+                      onClick={() => setActiveSkillName(s.name)}
+                      className="text-[10px] font-mono px-2 py-0.5 rounded border border-academic-amber/30 bg-academic-amber/5 text-academic-amber hover:bg-academic-amber/15 transition-colors cursor-pointer"
+                    >
+                      Inspect {s.name} →
+                    </button>
+                  ))}
+                </div>
               </div>
-              <span className="text-xs font-mono text-ink-muted">
-                {currentCategory.categoryName}
-              </span>
-            </div>
-
-            <p className="font-serif text-xs sm:text-sm text-ink-secondary leading-relaxed">
-              {inspectionSkill.description}
-            </p>
-
-            <div className="flex flex-wrap gap-1.5 pt-1">
-              {inspectionSkill.associatedTopics.map((topic: string) => (
-                <span
-                  key={topic}
-                  className="text-[10px] font-mono px-2 py-0.5 rounded border border-paper-border-subtle bg-paper-bg-subtle text-ink-muted"
-                >
-                  {topic}
-                </span>
-              ))}
-            </div>
+            )}
           </div>
         </div>
       </div>

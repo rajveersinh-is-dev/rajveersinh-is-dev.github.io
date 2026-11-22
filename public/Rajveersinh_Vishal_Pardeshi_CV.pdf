@@ -430,7 +430,7 @@ endobj
 endobj
 6 0 obj
 <<
-/Length 5894
+/Length 7933
 >>
 stream
 0.5 w
@@ -560,92 +560,118 @@ BT
 9.7749999999999986 TL
 0.851 0.467 0.024 rg
 40. 587.8899999999999864 Td
-(Core Languages:) Tj
+(Core & Systems Languages:) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
 48. 577.8899999999999864 Td
-(Rust \(Memory Safety, Zero-Cost Abstractions, Iterators\)  •  Python \(NumPy, SciPy, Mathematical Modeling\)  •  TypeScript \(Type Safety,) Tj
-T* (Numerical Canvas, Modular Systems\)) Tj
+(Rust \(Systems Programming, Zero-Cost Abstractions, Memory Safety\)  •  Python \(Scientific Computing, Numerical Algorithms,) Tj
+T* (Data-Parallel Concurrency\)  •  TypeScript \(Web Runtimes, Type Invariants, Interactive Graphics\)  •  C / C++ \(Systems Programming,) Tj
+T* (Memory Safety, Native Bindings\)  •  WebAssembly \(Wasm\) \(Web Runtimes, Systems Programming, Zero-Cost Abstractions\)  •  Shell &) Tj
+T* (POSIX Scripting \(Toolchain Automation, Reproducibility, Pipeline Scripting\)  •  SQL & Relational Engines \(Relational Algebra, ACID) Tj
+T* (Invariants, B-Tree Indexing\)) Tj
 ET
 BT
 /F2 8.5 Tf
 9.7749999999999986 TL
 0.851 0.467 0.024 rg
-40. 553.8899999999999864 Td
-(Specialized Mathematical & Compiler Tooling:) Tj
+40. 523.8899999999999864 Td
+(Formal Verification & Compiler Architecture:) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 543.8899999999999864 Td
-(Lean 4 \(Formal Verification, Dependent Types, Equational Reasoning\)  •  LLVM \(SSA Form, Optimization Passes, Target Machine) Tj
-T* (Lowering\)  •  Cranelift \(Fast JIT, Instruction Selection, Register Allocation\)  •  Git & GitHub \(Version Control, Rebasing, Repository) Tj
-T* (Architecture\)) Tj
+48. 513.8899999999999864 Td
+(Lean 4 \(Dependent Types, Formal Verification, Equational Reasoning\)  •  SSA IR Construction \(SSA Form, Control Flow Graphs,) Tj
+T* (Dominance Frontiers\)  •  LLVM \(Compiler Backends, Control Flow Graphs, Machine Codegen\)  •  Cranelift \(JIT Compilation, SSA Form,) Tj
+T* (Machine Codegen\)  •  Algorithmic Supercompilation \(Supercompilation, Operational Semantics, Homeomorphic Embedding\)  • ) Tj
+T* (Polyhedral Analysis \(Polyhedral Model, Loop Restructuring, IR Optimization\)  •  Term Rewriting & Invariants \(Term Rewriting, Equational) Tj
+T* (Reasoning, Formal Verification\)  •  Abstract Syntax Trees \(AST Lowering, Static Analysis, Pattern Matching\)) Tj
 ET
 BT
 /F2 8.5 Tf
 9.7749999999999986 TL
 0.851 0.467 0.024 rg
-40. 509.8899999999999864 Td
-(Computational & Systems Competencies:) Tj
+40. 459.8899999999999864 Td
+(Topological & Mathematical Formalisms:) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 499.8899999999999864 Td
-(GPU & Parallel Computing \(SIMD, Thread Scheduling, Memory Coalescing\)  •  Distributed Systems \(Message Passing, State) Tj
-T* (Machines, Network Invariants\)  •  Neural Networks & Deep Learning \(Gradient Descent, Lattice Pruning, Tensor Operations\)  • ) Tj
-T* (Cybersecurity & Penetration Testing \(Threat Modeling, Input Validation, Defensive Systems\)  •  Databases & Storage Engines) Tj
-T* (\(Relational Models, Index Structures, Query Semantics\)) Tj
+48. 449.8899999999999864 Td
+(Persistent Homology \(Persistent Homology, Chain Complexes, Topological Invariants\)  •  Simplicial Complexes \(Simplicial Complexes,) Tj
+T* (Chain Complexes, Triangulations\)  •  Path-Crossing Functors \(Category Theory, Functorial Invariants, Persistent Homology\)  •  Extremal) Tj
+T* (Combinatorics \(Sunflower Conjecture, Combinatorial Bounds, Hypergraph Filtrations\)  •  Dynamical Systems & ODEs \(Runge-Kutta) Tj
+T* (ODEs, Phase Space, Bifurcation Analysis\)  •  Lagrangian Dual Relaxation \(Lagrangian Relaxation, Subgradient Methods, Dual) Tj
+T* (Decomposition\)  •  Stochastic Dynamics & Entropy \(Permutation Entropy, Stochastic SDEs, Spectral Drift\)  •  Recurrence Sequences &) Tj
+T* (OEIS \(Berlekamp-Massey, Holonomic Sequences, Generating Functions\)) Tj
+ET
+BT
+/F2 8.5 Tf
+9.7749999999999986 TL
+0.851 0.467 0.024 rg
+40. 385.8899999999999864 Td
+(Scientific Computing & Systems Engineering:) Tj
+ET
+BT
+/F1 8.5 Tf
+9.7749999999999986 TL
+0.2 0.255 0.333 rg
+48. 375.8899999999999864 Td
+(Numerical Fluid & Hydraulics \(Hydraulic Modeling, Sediment Kinetics, Numerical Integration\)  •  Procedural Heightfields \(Heightfield) Tj
+T* (Dynamics, Thermal Talus, Discretized Grids\)  •  WebGL & Canvas Graphics \(Shader Programming, Discrete Differential Geometry,) Tj
+T* (Bayer Dithering\)  •  Property-Based Verification \(Invariant Fuzzing, Branch Coverage, Boundary Stress\)  •  Hypergraph Algorithms) Tj
+T* (\(Temporal Hypergraphs, Incidence Matrices, Combinatorial Lattices\)  •  Computational Geometry & Packing \(Separating Axis Theorem,) Tj
+T* (Spatial Partitioning, Augmented Lagrangian\)  •  Cybersecurity & Security Auditing \(Threat Modeling, Input Sanitization, Vulnerability) Tj
+T* (Analysis\)) Tj
 ET
 BT
 /F2 11 Tf
 12.6499999999999986 TL
 0.078 0.094 0.129 rg
-40. 443.8899999999999864 Td
+40. 299.8899999999999864 Td
 (PRACTICAL & TECHNICAL EXPERIENCE) Tj
 ET
 0.85 0.47 0.02 RG
 1.2 w
-40. 439.8899999999999864 m
-68. 439.8899999999999864 l
+40. 295.8899999999999864 m
+68. 295.8899999999999864 l
 S
 0.86 0.88 0.9 RG
 0.5 w
-72. 439.8899999999999864 m
-555.2799999999999727 439.8899999999999864 l
+72. 295.8899999999999864 m
+555.2799999999999727 295.8899999999999864 l
 S
 BT
 /F2 9 Tf
 10.3499999999999996 TL
 0.059 0.09 0.165 rg
-40. 427.8899999999999864 Td
+40. 283.8899999999999864 Td
 (Website Manager — OnlineAirgun.com \(Rajput Gun House / Rajput Arms\)) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 416.8899999999999864 Td
+48. 272.8899999999999864 Td
 (• Technical website management and platform operations for the family-owned commercial platform.) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 406.8899999999999864 Td
+48. 262.8899999999999864 Td
 (• Conducted web security testing and systematic penetration audits to identify configuration flaws and fortify site resilience.) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 396.8899999999999864 Td
+48. 252.8899999999999864 Td
 (• Managed digital inventory infrastructure, technical maintenance, and operational integrity.) Tj
 ET
 BT
@@ -827,7 +853,7 @@ endobj
 21 0 obj
 <<
 /Producer (jsPDF 4.2.1)
-/CreationDate (D:20261122133112+05'30')
+/CreationDate (D:20261122140128+05'30')
 >>
 endobj
 22 0 obj
@@ -841,35 +867,35 @@ endobj
 xref
 0 23
 0000000000 65535 f 
-0000016351 00000 n 
-0000018176 00000 n 
+0000018390 00000 n 
+0000020215 00000 n 
 0000000015 00000 n 
 0000000152 00000 n 
 0000010268 00000 n 
 0000010405 00000 n 
-0000016414 00000 n 
-0000016539 00000 n 
-0000016669 00000 n 
-0000016802 00000 n 
-0000016940 00000 n 
-0000017064 00000 n 
-0000017193 00000 n 
-0000017325 00000 n 
-0000017461 00000 n 
-0000017589 00000 n 
-0000017716 00000 n 
-0000017845 00000 n 
-0000017978 00000 n 
-0000018080 00000 n 
-0000018426 00000 n 
-0000018512 00000 n 
+0000018453 00000 n 
+0000018578 00000 n 
+0000018708 00000 n 
+0000018841 00000 n 
+0000018979 00000 n 
+0000019103 00000 n 
+0000019232 00000 n 
+0000019364 00000 n 
+0000019500 00000 n 
+0000019628 00000 n 
+0000019755 00000 n 
+0000019884 00000 n 
+0000020017 00000 n 
+0000020119 00000 n 
+0000020465 00000 n 
+0000020551 00000 n 
 trailer
 <<
 /Size 23
 /Root 22 0 R
 /Info 21 0 R
-/ID [ <44683AE45B8609EB0EEBE812E6904192> <44683AE45B8609EB0EEBE812E6904192> ]
+/ID [ <4B6BF4F61AEED5367CF1F6A54166A352> <4B6BF4F61AEED5367CF1F6A54166A352> ]
 >>
 startxref
-18616
+20655
 %%EOF

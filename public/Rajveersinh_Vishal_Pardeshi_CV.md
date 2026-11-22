@@ -106,9 +106,10 @@ I believe in approaching difficult problems with curiosity, persistence, and int
 ---
 
 ## TECHNICAL COMPETENCIES (Intermediate Proficiency Across All Domains)
-- **Programming Languages:** Rust, Python, TypeScript
-- **Specialized Tooling:** Git, GitHub, Lean 4, LLVM, Cranelift
-- **Computational Areas:** GPU & Parallel Computing, Distributed Systems, Neural Networks & Deep Learning, Cybersecurity & Penetration Testing, Databases & Storage Engines
+- **Core & Systems Languages:** Rust, Python, TypeScript, C/C++, WebAssembly (Wasm), Shell/Bash Scripting, SQL & Relational Engines
+- **Formal Verification & Compiler Architecture:** Lean 4, SSA IR Construction, LLVM, Cranelift, Algorithmic Supercompilation, Polyhedral Analysis, Term Rewriting, Abstract Syntax Trees
+- **Topological & Mathematical Formalisms:** Persistent Homology, Simplicial Complexes, Path-Crossing Functors, Extremal Combinatorics (Erdős-Rado Sunflowers), Dynamical Systems & Runge-Kutta ODEs, Lagrangian Dual Relaxation, Stochastic Dynamics & Entropy, Recurrence Sequences (OEIS)
+- **Scientific Computing & Systems Engineering:** Numerical Fluid Integration, Procedural Heightfields, WebGL/HTML5 Graphics, Property-Based Verification, Hypergraph Algorithms, Computational Geometry & Exact Packing, Cybersecurity & Security Auditing
 *(Note: No cloud infrastructure experience reported or claimed).*
 
 ---
