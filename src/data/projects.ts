@@ -147,7 +147,7 @@ export const projectsData: ProjectEntry[] = [
       "Finite-window detectability analysis under additive white and colored noise"
     ],
     status: "Research Repository",
-    githubUrl: "https://github.com/Raj123-0/early-warning-complex-systems",
+    githubUrl: "https://github.com/rajveersinh-is-dev/early-warning-complex-systems",
     isFeatured: false,
     priority: 8,
     verified: true,
@@ -165,7 +165,7 @@ export const projectsData: ProjectEntry[] = [
       "Lean 4 mechanized verification of persistence diagram stability bounds"
     ],
     status: "Research Manuscript & Code",
-    githubUrl: "https://github.com/Raj123-0/certified-dose",
+    githubUrl: "https://github.com/rajveersinh-is-dev/certified-dose",
     isFeatured: false,
     priority: 9,
     verified: true,

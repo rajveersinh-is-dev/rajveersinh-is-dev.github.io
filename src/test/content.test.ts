@@ -112,6 +112,15 @@ describe('Authoritative Content & Strict Honesty Validation', () => {
     expect(airgun?.subsidiaryOrFamilyBusiness).toContain('Rajput Gun House / Rajput Arms');
   });
 
+  it('verifies all projects have consistent GitHub URLs with rajveersinh-is-dev username', () => {
+    projectsData.forEach((project) => {
+      if (project.githubUrl) {
+        expect(project.githubUrl).toMatch(/^https:\/\/github\.com\/rajveersinh-is-dev(\/[a-z0-9-_]+)?$/);
+        expect(project.githubUrl).not.toContain('Raj123-0');
+      }
+    });
+  });
+
   it('verifies approved contact details and profiles', () => {
     expect(contactData.email).toBe('rajveer28dec@gmail.com');
     expect(contactData.githubUrl).toBe('https://github.com/rajveersinh-is-dev');

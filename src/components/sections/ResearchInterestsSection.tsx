@@ -32,35 +32,33 @@ export const ResearchInterestsSection: React.FC = () => {
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
       }`}
     >
-      {/* Oversized Low-Contrast Display Numeral */}
-      <div
-        aria-hidden="true"
-        className="text-8xl sm:text-9xl md:text-[11rem] font-serif font-black text-ink-primary/[0.04] dark:text-ink-primary/[0.06] select-none pointer-events-none absolute -top-12 sm:-top-16 right-4 sm:right-12 leading-none"
-      >
-        02
-      </div>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 relative">
+        {/* Oversized Low-Contrast Display Numeral */}
+        <div
+          aria-hidden="true"
+          className="text-8xl sm:text-9xl md:text-[11rem] font-serif font-black text-ink-dim/10 dark:text-ink-dim/15 select-none pointer-events-none absolute -top-10 sm:-top-14 right-4 sm:right-8 z-0 leading-none"
+        >
+          02
+        </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 relative z-10">
-        {/* Typographic Section Header Moment */}
-        <div className="flex items-start space-x-6 sm:space-x-8">
-          <div className="text-6xl sm:text-8xl font-serif font-bold text-ink-dim select-none leading-none flex-shrink-0">
-            §2
+        {/* Section Header */}
+        <div className="space-y-3 relative z-10">
+          <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-ink-muted">
+            § 2
           </div>
-          <div className="space-y-2 pt-1 sm:pt-2">
-            <MaskedReveal>
-              <h2
-                aria-label="§ 2. Theoretical Program &amp; Axiomatic Classification"
-                className="font-serif text-2xl sm:text-3xl font-bold text-ink-primary tracking-tight"
-              >
-                Theoretical Program &amp; Axiomatic Classification
-              </h2>
-            </MaskedReveal>
-            <MaskedReveal delayMs={150}>
-              <p className="font-serif italic text-ink-muted text-sm sm:text-base">
-                Theoretical Mathematics &amp; Research Directions — Interconnected Axiomatic Lattice
-              </p>
-            </MaskedReveal>
-          </div>
+          <MaskedReveal>
+            <h2
+              aria-label="§ 2. Theoretical Program &amp; Axiomatic Classification"
+              className="font-serif text-2xl sm:text-3xl font-bold text-ink-primary tracking-tight"
+            >
+              § 2. Theoretical Program &amp; Axiomatic Classification
+            </h2>
+          </MaskedReveal>
+          <MaskedReveal delayMs={150}>
+            <p className="font-serif italic text-ink-muted text-sm sm:text-base">
+              Theoretical Mathematics &amp; Research Directions — Interconnected Axiomatic Lattice
+            </p>
+          </MaskedReveal>
         </div>
 
         {/* Introduction text */}

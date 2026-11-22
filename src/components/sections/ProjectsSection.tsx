@@ -166,7 +166,7 @@ export const ProjectsSection: React.FC = () => {
         {/* Oversized Low-Contrast Display Numeral */}
         <div
           aria-hidden="true"
-          className="text-8xl sm:text-9xl md:text-[11rem] font-serif font-black text-ink-primary/[0.04] dark:text-ink-primary/[0.06] select-none pointer-events-none absolute -top-12 sm:-top-16 right-4 sm:right-12 leading-none"
+          className="text-8xl sm:text-9xl md:text-[11rem] font-serif font-black text-ink-dim/10 dark:text-ink-dim/15 select-none pointer-events-none absolute -top-10 sm:-top-14 right-4 sm:right-8 z-0 leading-none"
         >
           03
         </div>
@@ -235,7 +235,7 @@ export const ProjectsSection: React.FC = () => {
                     handleOpenProject(numlangProject);
                   }
                 }}
-                className="col-span-1 md:col-span-2 lg:col-span-2 rounded border-2 border-academic-amber/60 bg-paper-bg-subtle hover:border-academic-amber transition-all flex flex-col justify-between overflow-hidden group shadow-md cursor-pointer focus:outline-none focus:ring-1 focus:ring-academic-amber"
+                className="col-span-1 md:col-span-2 lg:col-span-2 rounded border-2 border-academic-amber/60 bg-paper-bg-subtle hover:border-academic-amber transition-all flex flex-col justify-between overflow-visible group shadow-md cursor-pointer focus:outline-none focus:ring-1 focus:ring-academic-amber"
               >
                 <div className="p-6 sm:p-8 space-y-5">
                   <div className="flex items-start justify-between gap-4">
@@ -283,16 +283,18 @@ export const ProjectsSection: React.FC = () => {
                   </p>
 
                   {/* Theoretical Invariant & Motivation with Academic Popover */}
-                  <div className="p-4 rounded border-l-3 border-academic-amber bg-paper-bg-base border border-paper-border-subtle font-mono text-xs text-ink-muted space-y-1.5">
+                  <div className="p-4 rounded border-l-3 border-academic-amber bg-paper-bg-base border border-paper-border-subtle font-mono text-xs space-y-2.5">
                     <span className="text-academic-amber font-semibold uppercase tracking-wider text-[10px] block font-serif">
                       Formal Specification &amp; Inductive Invariant:
                     </span>
-                    <p className="leading-relaxed text-ink-secondary">
-                      {numlangProject.motivation}{' '}
-                      <AcademicPopover type="theorem" id="thm-supercompilation">
+                    <p className="leading-relaxed text-ink-secondary font-serif text-xs sm:text-sm">
+                      {numlangProject.motivation}
+                    </p>
+                    <div className="pt-1 flex items-center">
+                      <AcademicPopover type="theorem" id="thm-supercompilation" align="left">
                         [Supercompilation Contract]
                       </AcademicPopover>
-                    </p>
+                    </div>
                   </div>
 
                   {/* NumLang Lowering Pipeline Quick Launch Teaser */}
@@ -326,7 +328,7 @@ export const ProjectsSection: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="px-6 sm:px-8 py-3.5 border-t border-paper-border-subtle bg-paper-bg-base flex items-center justify-between">
+                <div className="px-6 sm:px-8 py-3.5 border-t border-paper-border-subtle bg-paper-bg-base flex items-center justify-between rounded-b">
                   <div className="flex items-center space-x-1.5 text-xs font-mono text-ink-muted">
                     <ShieldCheck className="w-4 h-4 text-emerald-500" />
                     <span>{numlangProject.status}</span>

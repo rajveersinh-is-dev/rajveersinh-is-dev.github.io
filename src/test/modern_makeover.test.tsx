@@ -129,28 +129,26 @@ describe('Modern Makeover Specification & Feature Verification', () => {
 
   // 6. Oversized Low-Contrast Display Numerals
   describe('6. Oversized Low-Contrast Display Numerals', () => {
-    it('renders display numerals across section headers in App', () => {
+    it('renders display numerals across section headers in App with standardized styling', () => {
       render(<App />);
 
-      // Section numerals
-      expect(screen.getByText('01')).toBeTruthy();
-      expect(screen.getByText('02')).toBeTruthy();
-      expect(screen.getByText('03')).toBeTruthy();
-      expect(screen.getByText('04')).toBeTruthy();
-      expect(screen.getByText('05')).toBeTruthy();
-      expect(screen.getByText('06')).toBeTruthy();
-      expect(screen.getByText('07')).toBeTruthy();
-      expect(screen.getByText('08')).toBeTruthy();
-      expect(screen.getByText('09')).toBeTruthy();
-      expect(screen.getByText('10')).toBeTruthy();
-      expect(screen.getByText('11')).toBeTruthy();
-      expect(screen.getByText('12')).toBeTruthy();
+      // Section numerals from 01 to 12
+      const numerals = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+      numerals.forEach((num) => {
+        const el = screen.getByText(num);
+        expect(el).toBeTruthy();
+        expect(el.className).toContain('z-0');
+        expect(el.className).toContain('text-ink-dim/10');
+      });
+
+      // Section 2 header consistency
+      expect(screen.getByText('§ 2. Theoretical Program & Axiomatic Classification')).toBeTruthy();
     });
   });
 
   // 7. Asymmetric Bento Grid with NumLang as Primary Anchor
   describe('7. Asymmetric Bento Grid with NumLang Anchor', () => {
-    it('renders NumLang with primary research anchor badge and Bento span', () => {
+    it('renders NumLang with primary research anchor badge, popover trigger, and Bento span', () => {
       render(
         <PreferencesProvider>
           <App />
@@ -158,8 +156,25 @@ describe('Modern Makeover Specification & Feature Verification', () => {
       );
 
       expect(screen.getByText(/PRIMARY RESEARCH ANCHOR • MONOGRAPH I/i)).toBeTruthy();
+      expect(screen.getByText(/Formal Specification & Inductive Invariant:/i)).toBeTruthy();
+      const contractTrigger = screen.getByText(/\[Supercompilation Contract\]/i);
+      expect(contractTrigger).toBeTruthy();
       expect(screen.getByText(/Interactive Step-by-Step Lowering Walkthrough Available/i)).toBeTruthy();
       expect(screen.getByRole('button', { name: /Launch Lowering Walkthrough/i })).toBeTruthy();
+
+      // Verify NumLang card container is overflow-visible to prevent clipping popovers
+      const numlangCard = document.getElementById('project-numlang');
+      expect(numlangCard?.className).toContain('overflow-visible');
+
+      // Hover trigger and verify opaque popover displays contract details
+      fireEvent.mouseEnter(contractTrigger.parentElement!);
+      const tooltip = screen.getByRole('tooltip');
+      expect(tooltip).toBeTruthy();
+      expect(tooltip.className).toContain('bg-paper-bg-elevated');
+      expect(tooltip.className).toContain('left-0');
+      expect(tooltip.className).toContain('shadow-2xl');
+      expect(screen.getByText(/Supercompilation Induction Contract/i)).toBeTruthy();
+      expect(screen.getByText(/NumLang Research Specification/i)).toBeTruthy();
     });
   });
 
@@ -361,7 +376,7 @@ describe('Modern Makeover Specification & Feature Verification', () => {
 
   // 11. Rich Academic Popovers
   describe('11. Rich Academic Popover Tooltips', () => {
-    it('displays formal tooltip on hover/focus for MSC classification', () => {
+    it('displays formal tooltip on hover/focus for MSC classification with opaque background', () => {
       render(
         <AcademicPopover type="msc" id="55N31">
           55N31
@@ -372,8 +387,28 @@ describe('Modern Makeover Specification & Feature Verification', () => {
       expect(trigger).toBeTruthy();
 
       fireEvent.mouseEnter(trigger.parentElement!);
+      const tooltip = screen.getByRole('tooltip');
+      expect(tooltip).toBeTruthy();
+      expect(tooltip.className).toContain('bg-paper-bg-elevated');
+      expect(tooltip.className).toContain('shadow-2xl');
+      expect(tooltip.className).toContain('z-50');
       expect(screen.getByText(/MSC 55N31: Persistent Homology/i)).toBeTruthy();
       expect(screen.getByText(/Algebraic Topology & Topological Data Analysis/i)).toBeTruthy();
+    });
+
+    it('supports custom alignment (left, right, center) and viewport boundary containment', () => {
+      render(
+        <AcademicPopover type="theorem" id="thm-supercompilation" align="left">
+          Left Popover
+        </AcademicPopover>
+      );
+
+      const trigger = screen.getByText('Left Popover');
+      fireEvent.mouseEnter(trigger.parentElement!);
+      const tooltip = screen.getByRole('tooltip');
+      expect(tooltip).toBeTruthy();
+      expect(tooltip.className).toContain('left-0');
+      expect(tooltip.className).toContain('max-w-[calc(100vw-2.5rem)]');
     });
 
     it('handles keyboard toggle and stops event propagation inside interactive cards', () => {

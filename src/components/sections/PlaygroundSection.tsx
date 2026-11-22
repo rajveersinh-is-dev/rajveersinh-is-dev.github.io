@@ -21,7 +21,7 @@ export const PlaygroundSection: React.FC = () => {
         {/* Oversized Low-Contrast Display Numeral */}
         <div
           aria-hidden="true"
-          className="text-8xl sm:text-9xl md:text-[11rem] font-serif font-black text-ink-primary/[0.04] dark:text-ink-primary/[0.06] select-none pointer-events-none absolute -top-12 sm:-top-16 right-4 sm:right-12 leading-none"
+          className="text-8xl sm:text-9xl md:text-[11rem] font-serif font-black text-ink-dim/10 dark:text-ink-dim/15 select-none pointer-events-none absolute -top-10 sm:-top-14 right-4 sm:right-8 z-0 leading-none"
         >
           11
         </div>

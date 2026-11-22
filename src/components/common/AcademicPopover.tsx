@@ -6,6 +6,7 @@ interface AcademicPopoverProps {
   id: string;
   children: React.ReactNode;
   className?: string;
+  align?: 'left' | 'center' | 'right';
 }
 
 interface MetadataItem {
@@ -109,6 +110,7 @@ export const AcademicPopover: React.FC<AcademicPopoverProps> = ({
   id,
   children,
   className = '',
+  align = 'center',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLSpanElement | null>(null);
@@ -186,7 +188,16 @@ export const AcademicPopover: React.FC<AcademicPopoverProps> = ({
           role="tooltip"
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => e.stopPropagation()}
-          className="absolute z-50 left-1/2 -translate-x-1/2 bottom-full mb-2 w-72 sm:w-80 p-3.5 rounded-xs border-2 border-paper-border-strong bg-paper-bg-base/98 text-ink-primary shadow-xl backdrop-blur-xs select-none pointer-events-auto animate-fade-in"
+          className={`absolute z-50 bottom-full mb-2 w-72 sm:w-80 max-w-[calc(100vw-2.5rem)] p-3.5 rounded border border-paper-border-strong bg-paper-bg-elevated text-ink-primary shadow-2xl select-none pointer-events-auto animate-fade-in ${
+            align === 'left'
+              ? 'left-0'
+              : align === 'right'
+              ? 'right-0'
+              : 'left-1/2 -translate-x-1/2'
+          }`}
+          style={{
+            backgroundColor: 'var(--paper-bg-elevated, #24211e)',
+          }}
         >
           <div className="space-y-1.5">
             <div className="flex items-center space-x-1.5 text-[10px] font-mono text-ink-muted uppercase tracking-wider border-b border-paper-border-subtle pb-1.5">
@@ -221,7 +232,27 @@ export const AcademicPopover: React.FC<AcademicPopoverProps> = ({
           </div>
 
           {/* Bottom Tooltip Arrow */}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-paper-border-strong" />
+          <div
+            className={`absolute top-full border-4 border-transparent border-t-paper-border-strong ${
+              align === 'left'
+                ? 'left-6'
+                : align === 'right'
+                ? 'right-6'
+                : 'left-1/2 -translate-x-1/2'
+            }`}
+          />
+          <div
+            className={`absolute top-full -mt-[1px] border-4 border-transparent border-t-paper-bg-elevated ${
+              align === 'left'
+                ? 'left-6'
+                : align === 'right'
+                ? 'right-6'
+                : 'left-1/2 -translate-x-1/2'
+            }`}
+            style={{
+              borderTopColor: 'var(--paper-bg-elevated, #24211e)',
+            }}
+          />
         </div>
       )}
     </span>
