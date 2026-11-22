@@ -4,7 +4,7 @@ export const profileData: ProfileData = {
   fullName: "Rajveersinh Vishal Pardeshi",
   professionalIdentity: "Independent Mathematical Researcher",
   age: 16,
-  location: "Satara, Maharashtra, India",
+  location: "Pune, Maharashtra, India",
   tagline: "Discovering Structure. Proving Ideas. Building the Future.",
   writingPerspective: "first-person",
   targetImpression: "The determination to bring about change.",

@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { PreferencesContext } from './preferences-context';
+import { audioService } from '../utils/audioFeedback';
 
 export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [visualEffectsEnabled, setVisualEffectsEnabledState] = useState<boolean>(() => {
@@ -24,7 +25,22 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
   });
 
+  const [soundEnabled, setSoundEnabledState] = useState<boolean>(() => {
+    try {
+      const stored = localStorage.getItem('rvp_audio_feedback');
+      return stored !== null ? JSON.parse(stored) : true; // Default sound enabled
+    } catch {
+      return true;
+    }
+  });
+
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [terminalOpen, setTerminalOpen] = useState(false);
+
+  // Sync audio service mute state
+  useEffect(() => {
+    audioService.setMuted(!soundEnabled);
+  }, [soundEnabled]);
 
   const setVisualEffectsEnabled = (val: boolean) => {
     setVisualEffectsEnabledState(val);
@@ -35,6 +51,7 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   const toggleVisualEffects = () => {
     setVisualEffectsEnabled(!visualEffectsEnabled);
+    if (soundEnabled) audioService.playToggle(!visualEffectsEnabled);
   };
 
   const setReadingMode = (val: boolean) => {
@@ -46,27 +63,81 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
   };
 
   const toggleReadingMode = () => {
-    setReadingMode(!readingMode);
+    const next = !readingMode;
+    setReadingMode(next);
+    if (soundEnabled) audioService.playToggle(next);
+  };
+
+  const setSoundEnabled = (val: boolean) => {
+    setSoundEnabledState(val);
+    try {
+      localStorage.setItem('rvp_audio_feedback', JSON.stringify(val));
+    } catch {}
+    audioService.setMuted(!val);
+    if (val) audioService.playClick(920);
+  };
+
+  const toggleSound = () => {
+    setSoundEnabled(!soundEnabled);
   };
 
   const toggleCommandPalette = () => {
+    if (soundEnabled) audioService.playClick(780);
     setCommandPaletteOpen((prev) => !prev);
   };
 
-  // Keyboard shortcut Ctrl+K / Cmd+K listener
+  const toggleTerminal = () => {
+    if (soundEnabled) audioService.playClick(880);
+    setTerminalOpen((prev) => !prev);
+  };
+
+  const playClick = useCallback((pitch?: number) => {
+    if (soundEnabled) audioService.playClick(pitch);
+  }, [soundEnabled]);
+
+  const playToggle = useCallback((active: boolean) => {
+    if (soundEnabled) audioService.playToggle(active);
+  }, [soundEnabled]);
+
+  // Global Keyboard shortcuts: Ctrl+K (Concordance), Backtick or Ctrl+\ (Terminal), Esc (Close dialogs)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const activeEl = document.activeElement;
+      const isInput =
+        activeEl instanceof HTMLInputElement ||
+        activeEl instanceof HTMLTextAreaElement ||
+        (activeEl instanceof HTMLElement && activeEl.isContentEditable);
+
+      // Backtick (`) or Ctrl+\ for Terminal REPL (when not typing in an input field)
+      if ((e.key === '`' && !isInput && !e.ctrlKey && !e.metaKey && !e.altKey) ||
+          ((e.ctrlKey || e.metaKey) && e.key === '\\')) {
+        e.preventDefault();
+        if (soundEnabled) audioService.playClick(880);
+        setTerminalOpen((prev) => !prev);
+        return;
+      }
+
+      // Ctrl+K / Cmd+K for Command Palette
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
+        if (soundEnabled) audioService.playClick(780);
         setCommandPaletteOpen((prev) => !prev);
-      } else if (e.key === 'Escape' && commandPaletteOpen) {
-        setCommandPaletteOpen(false);
+        return;
+      }
+
+      // Escape to close open overlays
+      if (e.key === 'Escape') {
+        if (terminalOpen) {
+          setTerminalOpen(false);
+        } else if (commandPaletteOpen) {
+          setCommandPaletteOpen(false);
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [commandPaletteOpen]);
+  }, [commandPaletteOpen, terminalOpen, soundEnabled]);
 
   // Sync reading mode and dark mode classes to html document
   useEffect(() => {
@@ -97,6 +168,14 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
         commandPaletteOpen,
         setCommandPaletteOpen,
         toggleCommandPalette,
+        soundEnabled,
+        setSoundEnabled,
+        toggleSound,
+        terminalOpen,
+        setTerminalOpen,
+        toggleTerminal,
+        playClick,
+        playToggle,
       }}
     >
       {children}

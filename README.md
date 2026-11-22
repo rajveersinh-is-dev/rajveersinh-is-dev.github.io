@@ -2,7 +2,7 @@
 ### *Offline-First, Interactive, Production-Quality Academic Research Environment*
 
 > **"Discovering Structure. Proving Ideas. Building the Future."**  
-> *Independent Mathematical Researcher — Satara, Maharashtra, India (Age: 16)*
+> *Independent Mathematical Researcher — Pune, Maharashtra, India (Age: 16)*
 
 ---
 
@@ -158,7 +158,7 @@ Edit `src/data/profile.ts`:
 export const profileData: ProfileData = {
   fullName: "Rajveersinh Vishal Pardeshi",
   age: 16,
-  location: "Satara, Maharashtra, India",
+  location: "Pune, Maharashtra, India",
   tagline: "Discovering Structure. Proving Ideas. Building the Future.",
   // ...
 };

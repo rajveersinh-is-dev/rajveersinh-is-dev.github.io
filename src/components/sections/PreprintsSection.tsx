@@ -2,13 +2,19 @@ import React, { useState } from 'react';
 import { publicationsData } from '../../data';
 import type { PublicationEntry } from '../../types/content';
 import { copyTextToClipboard } from '../../utils/clipboard';
-import { FileText, ExternalLink, Copy, Check, Code } from 'lucide-react';
+import { MaskedReveal } from '../common/MaskedReveal';
+import { AcademicPopover } from '../common/AcademicPopover';
+import { PreprintInspectorModal } from '../visuals/PreprintInspectorModal';
+import { usePreferences } from '../../context';
+import { FileText, ExternalLink, Copy, Check, Code, Eye } from 'lucide-react';
 import { useIntersectionObserver } from '../../utils/intersectionObserver';
 
 export const PreprintsSection: React.FC = () => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [expandedBibtexId, setExpandedBibtexId] = useState<string | null>(null);
+  const [inspectingPub, setInspectingPub] = useState<PublicationEntry | null>(null);
   const [sectionRef, isVisible] = useIntersectionObserver<HTMLElement>();
+  const { playClick } = usePreferences();
 
   const getBibtex = (pub: PublicationEntry) => `@article{pardeshi_${pub.id},
   author    = {${pub.authors.join(' and ')}},
@@ -20,12 +26,18 @@ export const PreprintsSection: React.FC = () => {
 }`;
 
   const copyBibtex = async (pub: PublicationEntry) => {
+    playClick(920);
     const bibtex = getBibtex(pub);
     const success = await copyTextToClipboard(bibtex);
     if (success) {
       setCopiedId(pub.id);
       setTimeout(() => setCopiedId(null), 2500);
     }
+  };
+
+  const handleOpenInspector = (pub: PublicationEntry) => {
+    playClick(850);
+    setInspectingPub(pub);
   };
 
   return (
@@ -36,22 +48,34 @@ export const PreprintsSection: React.FC = () => {
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
       }`}
     >
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 relative">
+        {/* Oversized Low-Contrast Display Numeral */}
+        <div
+          aria-hidden="true"
+          className="text-8xl sm:text-9xl md:text-[11rem] font-serif font-black text-ink-primary/[0.04] dark:text-ink-primary/[0.06] select-none pointer-events-none absolute -top-12 sm:-top-16 right-4 sm:right-12 leading-none"
+        >
+          04
+        </div>
+
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 relative z-10">
           <div className="space-y-3">
             <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-ink-muted">
               § 4
             </div>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-ink-primary tracking-tight">
-              § 4. Archival Manuscripts &amp; Preprints
-            </h2>
-            <p className="font-serif italic text-ink-muted text-sm sm:text-base">
-              Research &amp; Preprints — Independently Authored Manuscripts Deposited on Zenodo
-            </p>
+            <MaskedReveal>
+              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-ink-primary tracking-tight">
+                § 4. Archival Manuscripts &amp; Preprints
+              </h2>
+            </MaskedReveal>
+            <MaskedReveal delayMs={150}>
+              <p className="font-serif italic text-ink-muted text-sm sm:text-base">
+                Research &amp; Preprints — Independently Authored Manuscripts Deposited on Zenodo
+              </p>
+            </MaskedReveal>
           </div>
 
-          <div className="px-3.5 py-1.5 rounded border border-paper-border-strong bg-paper-bg-subtle text-ink-secondary font-mono text-xs flex items-center space-x-1.5 self-start md:self-auto font-semibold">
+          <div className="px-3.5 py-1.5 rounded border border-paper-border-strong bg-paper-bg-subtle text-ink-secondary font-mono text-xs flex items-center space-x-1.5 self-start md:self-auto font-semibold shadow-xs">
             <span>Zenodo Archival Deposits</span>
           </div>
         </div>
@@ -73,14 +97,12 @@ export const PreprintsSection: React.FC = () => {
         <div className="space-y-10">
           {publicationsData.map((pub, idx) => {
             const isBibtexOpen = expandedBibtexId === pub.id;
-            const mscCode = pub.id === 'zenodo-22273633'
-              ? 'MSC2020: 55N31 (Persistent Homology), 05C65 (Hypergraphs), 68W05'
-              : 'MSC2020: 90C27 (Combinatorial Optimization), 90C06 (Large-Scale Mathematical Programming), 68Q25';
+            const isTopologyPaper = pub.id === 'zenodo-22273633';
 
             return (
               <article
                 key={pub.id}
-                className="p-6 sm:p-8 rounded border border-paper-border-strong bg-paper-bg-subtle space-y-6 shadow-sm"
+                className="p-6 sm:p-8 rounded border border-paper-border-strong bg-paper-bg-subtle space-y-6 shadow-sm hover:border-academic-amber/60 transition-colors"
               >
                 {/* Catalog Rubric & Metadata */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-paper-border-subtle pb-3">
@@ -98,8 +120,11 @@ export const PreprintsSection: React.FC = () => {
                     </span>
                   </div>
 
-                  <div className="text-xs font-mono text-ink-muted">
-                    Accession: <span className="text-ink-primary font-medium">{pub.id}</span>
+                  <div className="text-xs font-mono text-ink-muted flex items-center space-x-2">
+                    <span>Accession:</span>
+                    <AcademicPopover type="citation" id={pub.id}>
+                      <span className="text-ink-primary font-medium">{pub.id}</span>
+                    </AcademicPopover>
                   </div>
                 </div>
 
@@ -113,17 +138,46 @@ export const PreprintsSection: React.FC = () => {
                     <span className="text-academic-amber font-semibold ml-0.5">¹</span>
                   </div>
                   <div className="text-xs font-serif italic text-ink-muted">
-                    ¹ Independent Mathematical Researcher, Satara, Maharashtra, India
+                    ¹ Independent Mathematical Researcher, Pune, Maharashtra, India
                   </div>
                 </div>
 
-                {/* Subject Classification */}
+                {/* Subject Classification with Popovers */}
                 <div className="text-xs font-mono text-ink-muted space-y-1">
                   <div>
                     <span className="text-ink-secondary font-semibold">Mathematical Domain:</span> {pub.researchArea}
                   </div>
-                  <div className="text-academic-cobalt font-medium">
-                    {mscCode}
+                  <div className="text-academic-cobalt font-medium flex flex-wrap items-center gap-2">
+                    <span>MSC2020 Classification:</span>
+                    {isTopologyPaper ? (
+                      <>
+                        <AcademicPopover type="msc" id="55N31">
+                          55N31 (Persistent Homology)
+                        </AcademicPopover>
+                        <span>•</span>
+                        <AcademicPopover type="msc" id="05C65">
+                          05C65 (Hypergraphs)
+                        </AcademicPopover>
+                        <span>•</span>
+                        <AcademicPopover type="msc" id="68W05">
+                          68W05
+                        </AcademicPopover>
+                      </>
+                    ) : (
+                      <>
+                        <AcademicPopover type="msc" id="90C27">
+                          90C27 (Combinatorial Optimization)
+                        </AcademicPopover>
+                        <span>•</span>
+                        <AcademicPopover type="msc" id="90C06">
+                          90C06 (Large-Scale Math Prog)
+                        </AcademicPopover>
+                        <span>•</span>
+                        <AcademicPopover type="msc" id="68Q25">
+                          68Q25
+                        </AcademicPopover>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -135,14 +189,24 @@ export const PreprintsSection: React.FC = () => {
                   {pub.shortAbstract}
                 </div>
 
-                {/* Accession Links & Citation Controls */}
+                {/* Accession Links & Scholarly Inspector Trigger */}
                 <div className="flex flex-wrap items-center justify-between gap-3 pt-2 text-xs font-mono">
-                  <div className="flex items-center space-x-3">
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    {/* Dedicated Dual-Pane Scholarly Inspector Button */}
+                    <button
+                      onClick={() => handleOpenInspector(pub)}
+                      className="px-3.5 py-1.5 rounded border border-academic-amber bg-academic-amber text-paper-bg-base hover:opacity-90 font-bold flex items-center space-x-1.5 transition-opacity shadow-xs cursor-pointer"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>Scholarly Inspector &amp; Simulator</span>
+                    </button>
+
                     <a
                       href={pub.recordUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-3.5 py-1.5 rounded border border-academic-seal bg-academic-seal/10 hover:bg-academic-seal text-academic-seal hover:text-white transition-colors flex items-center space-x-1.5 font-semibold"
+                      onClick={() => playClick(800)}
+                      className="px-3 py-1.5 rounded border border-academic-seal bg-academic-seal/10 hover:bg-academic-seal text-academic-seal hover:text-white transition-colors flex items-center space-x-1.5 font-semibold cursor-pointer"
                     >
                       <FileText className="w-3.5 h-3.5" />
                       <span>Zenodo Record</span>
@@ -150,7 +214,10 @@ export const PreprintsSection: React.FC = () => {
                     </a>
 
                     <button
-                      onClick={() => setExpandedBibtexId(isBibtexOpen ? null : pub.id)}
+                      onClick={() => {
+                        playClick(750);
+                        setExpandedBibtexId(isBibtexOpen ? null : pub.id);
+                      }}
                       aria-expanded={isBibtexOpen}
                       aria-controls={`bibtex-${pub.id}`}
                       className="px-3 py-1.5 rounded border border-paper-border-subtle hover:border-paper-border-strong bg-paper-bg-elevated text-ink-secondary hover:text-ink-primary transition-colors flex items-center space-x-1 cursor-pointer"
@@ -162,7 +229,7 @@ export const PreprintsSection: React.FC = () => {
 
                   <button
                     onClick={() => copyBibtex(pub)}
-                    className="px-3.5 py-1.5 rounded border border-paper-border-strong hover:border-academic-amber bg-paper-bg-base text-ink-primary hover:text-academic-amber flex items-center space-x-1.5 transition-colors font-medium cursor-pointer"
+                    className="px-3.5 py-1.5 rounded border border-paper-border-strong hover:border-academic-amber bg-paper-bg-base text-ink-primary hover:text-academic-amber flex items-center space-x-1.5 transition-colors font-medium cursor-pointer shadow-xs"
                   >
                     {copiedId === pub.id ? (
                       <>
@@ -193,6 +260,14 @@ export const PreprintsSection: React.FC = () => {
             );
           })}
         </div>
+
+        {/* Dual-Pane Scholarly Preprint Inspector Modal */}
+        {inspectingPub && (
+          <PreprintInspectorModal
+            publication={inspectingPub}
+            onClose={() => setInspectingPub(null)}
+          />
+        )}
       </div>
     </section>
   );

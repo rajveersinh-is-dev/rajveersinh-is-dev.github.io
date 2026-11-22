@@ -18,7 +18,10 @@ import {
   Compass,
   ArrowRight,
   ShieldCheck,
-  Check
+  Check,
+  Terminal as TerminalIcon,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 
 interface CommandItem {
@@ -37,7 +40,10 @@ export const CommandPalette: React.FC = () => {
     visualEffectsEnabled,
     toggleVisualEffects,
     readingMode,
-    toggleReadingMode
+    toggleReadingMode,
+    soundEnabled,
+    toggleSound,
+    toggleTerminal
   } = usePreferences();
 
   const [query, setQuery] = useState('');
@@ -163,6 +169,28 @@ export const CommandPalette: React.FC = () => {
 
       // Actions & Study Preferences
       {
+        id: 'act-terminal',
+        category: 'Action',
+        title: 'Open Mathematical Terminal (REPL)',
+        subtitle: 'Interactive REPL with Lorenz, homology, AST lowering, and eval (` or Ctrl+\\)',
+        icon: <TerminalIcon className="w-4 h-4 text-academic-amber" />,
+        action: () => {
+          setCommandPaletteOpen(false);
+          toggleTerminal();
+        },
+      },
+      {
+        id: 'act-toggle-audio',
+        category: 'Action',
+        title: soundEnabled ? 'Mute Audio Click Feedback' : 'Enable Audio Click Feedback',
+        subtitle: `Currently: ${soundEnabled ? 'Active (Subtle Synthesized Web Audio)' : 'Muted'}`,
+        icon: soundEnabled ? <VolumeX className="w-4 h-4 text-academic-amber" /> : <Volume2 className="w-4 h-4 text-academic-amber" />,
+        action: () => {
+          toggleSound();
+          setCommandPaletteOpen(false);
+        },
+      },
+      {
         id: 'act-download-cv',
         category: 'Dossier',
         title: 'Download Curriculum Vitae (PDF)',
@@ -249,6 +277,9 @@ export const CommandPalette: React.FC = () => {
   }, [
     visualEffectsEnabled,
     readingMode,
+    soundEnabled,
+    toggleSound,
+    toggleTerminal,
     setCommandPaletteOpen,
     toggleVisualEffects,
     toggleReadingMode,

@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { profileData } from '../../data';
 import { downloadPdfCv } from '../../utils/generatePdfCv';
 import { AsciiDitherCanvas } from '../visuals/AsciiDitherCanvas';
+import { HeroTelemetryTicker } from '../common/HeroTelemetryTicker';
+import { MaskedReveal } from '../common/MaskedReveal';
 import { usePreferences } from '../../context';
 import { FileDown, ArrowDown } from 'lucide-react';
 
 export const HeroSection: React.FC = () => {
-  const { visualEffectsEnabled } = usePreferences();
+  const { visualEffectsEnabled, playClick } = usePreferences();
 
   const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
@@ -26,7 +28,7 @@ export const HeroSection: React.FC = () => {
       id="hero"
       className="relative min-h-screen flex flex-col justify-between pt-24 sm:pt-28 pb-12 px-4 sm:px-6 lg:px-12 overflow-hidden bg-paper-bg-base"
     >
-      {/* ASCII Dither Canvas Backdrop */}
+      {/* ASCII Dither Canvas Backdrop with Fluid Trails */}
       <div className="absolute inset-0 z-0 pointer-events-auto">
         <AsciiDitherCanvas
           mode="hidden-structures"
@@ -38,9 +40,11 @@ export const HeroSection: React.FC = () => {
 
       {/* Foreground Content */}
       <div className="relative z-10 max-w-5xl mx-auto w-full flex-1 flex flex-col justify-between py-6 pointer-events-none">
-        {/* TOP-LEFT MONOSPACE STRIP (Stagger Item 1: 0ms) */}
+        {/* TOP-LEFT MONOSPACE STRIP & EDITORIAL TELEMETRY TICKER */}
         <div
-          className={`pt-2 pointer-events-auto ${prefersReducedMotion ? '' : 'animate-fade-in'}`}
+          className={`pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${
+            prefersReducedMotion ? '' : 'animate-fade-in'
+          }`}
           style={prefersReducedMotion ? undefined : { animationDelay: '0ms' }}
         >
           <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-ink-muted">
@@ -48,15 +52,22 @@ export const HeroSection: React.FC = () => {
             <span>•</span>
             <span>{profileData.professionalIdentity}</span>
             <span>•</span>
-            <span>Satara, India</span>
+            <span>Pune, India</span>
             <span>•</span>
             <span>Age {profileData.age}</span>
           </div>
+
+          {/* Real-time editorial telemetry ticker */}
+          <div className="pointer-events-auto">
+            <HeroTelemetryTicker />
+          </div>
         </div>
 
-        {/* CENTER TYPOGRAPHIC ANCHOR (Stagger Item 2: 150ms) */}
+        {/* CENTER TYPOGRAPHIC ANCHOR */}
         <div
-          className={`my-auto py-10 sm:py-14 space-y-4 pointer-events-auto ${prefersReducedMotion ? '' : 'animate-fade-in'}`}
+          className={`my-auto py-8 sm:py-12 space-y-4 ${
+            prefersReducedMotion ? '' : 'animate-fade-in'
+          }`}
           style={prefersReducedMotion ? undefined : { animationDelay: '150ms' }}
         >
           <div className="space-y-1">
@@ -64,54 +75,67 @@ export const HeroSection: React.FC = () => {
               aria-label="Rajveersinh Vishal Pardeshi"
               className="font-serif font-bold tracking-tight text-ink-primary"
             >
-              <span className="block text-[2.75rem] min-[400px]:text-5xl sm:text-7xl md:text-8xl leading-none">
-                RAJVEERSINH
-              </span>
-              <span className="block text-[2.75rem] min-[400px]:text-5xl sm:text-7xl md:text-8xl leading-none sm:translate-x-8 md:translate-x-12 mt-1 sm:mt-2 text-ink-primary">
-                VISHAL PARDESHI
-              </span>
+              <MaskedReveal delayMs={100}>
+                <span className="block text-[2.75rem] min-[400px]:text-5xl sm:text-7xl md:text-8xl leading-none">
+                  RAJVEERSINH
+                </span>
+              </MaskedReveal>
+              <MaskedReveal delayMs={200}>
+                <span className="block text-[2.75rem] min-[400px]:text-5xl sm:text-7xl md:text-8xl leading-none sm:translate-x-8 md:translate-x-12 mt-1 sm:mt-2 text-ink-primary">
+                  VISHAL PARDESHI
+                </span>
+              </MaskedReveal>
             </h1>
           </div>
 
           {/* Restrained Italic Tagline */}
           <div className="pt-2">
-            <p className="font-serif italic text-lg sm:text-2xl text-academic-amber font-normal">
-              "{profileData.tagline}"
-            </p>
+            <MaskedReveal delayMs={300}>
+              <p className="font-serif italic text-lg sm:text-2xl text-academic-amber font-normal">
+                "{profileData.tagline}"
+              </p>
+            </MaskedReveal>
           </div>
 
           {/* Lower Human Voice Introduction (max-width 480px) */}
-          <div className="pt-4 max-w-[480px]">
-            <p className="font-serif text-sm sm:text-base text-ink-secondary leading-relaxed">
-              I study mathematical structures from first principles, algorithm engineering, mechanized proof verification, and combinatorial systems. Currently developing treatises on persistent homology on temporal hypergraphs, Lagrangian dual relaxation for constrained routing, and verified SSA supercompilation. Driven by <em>"{profileData.targetImpression}"</em>
-            </p>
+          <div className="pt-4 max-w-[500px]">
+            <MaskedReveal delayMs={400}>
+              <p className="font-serif text-sm sm:text-base text-ink-secondary leading-relaxed">
+                I study mathematical structures from first principles, algorithm engineering, mechanized proof verification, and combinatorial systems. Currently developing treatises on persistent homology on temporal hypergraphs, Lagrangian dual relaxation for constrained routing, and verified SSA supercompilation. Driven by <em>"{profileData.targetImpression}"</em>
+              </p>
+            </MaskedReveal>
           </div>
         </div>
 
-        {/* BOTTOM NAVIGATION & CV DOWNLOAD (Stagger Item 3: 300ms) */}
+        {/* BOTTOM NAVIGATION & CV DOWNLOAD */}
         <div
-          className={`pt-6 border-t border-paper-border-subtle flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pointer-events-auto ${prefersReducedMotion ? '' : 'animate-fade-in'}`}
+          className={`pt-6 border-t border-paper-border-subtle flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pointer-events-auto ${
+            prefersReducedMotion ? '' : 'animate-fade-in'
+          }`}
           style={prefersReducedMotion ? undefined : { animationDelay: '300ms' }}
         >
           {/* Research links — plain text with arrow */}
           <div className="flex flex-wrap items-center gap-6 text-xs sm:text-sm font-mono text-ink-primary">
             <a
               href="#research-interests"
-              className="hover:text-academic-amber transition-colors flex items-center space-x-1.5 group"
+              onClick={() => playClick(800)}
+              className="hover:text-academic-amber transition-colors flex items-center space-x-1.5 group cursor-pointer"
             >
               <span>View Research</span>
               <span className="group-hover:translate-x-1 transition-transform">→</span>
             </a>
             <a
               href="#projects"
-              className="hover:text-academic-amber transition-colors flex items-center space-x-1.5 group"
+              onClick={() => playClick(820)}
+              className="hover:text-academic-amber transition-colors flex items-center space-x-1.5 group cursor-pointer"
             >
               <span>Projects</span>
               <span className="group-hover:translate-x-1 transition-transform">→</span>
             </a>
             <a
               href="#preprints"
-              className="hover:text-academic-amber transition-colors flex items-center space-x-1.5 group"
+              onClick={() => playClick(840)}
+              className="hover:text-academic-amber transition-colors flex items-center space-x-1.5 group cursor-pointer"
             >
               <span>Preprints</span>
               <span className="group-hover:translate-x-1 transition-transform">→</span>
@@ -124,6 +148,7 @@ export const HeroSection: React.FC = () => {
               href="./Rajveersinh_Vishal_Pardeshi_CV.pdf"
               download="Rajveersinh_Vishal_Pardeshi_CV.pdf"
               onClick={(e) => {
+                playClick(900);
                 try {
                   downloadPdfCv();
                   e.preventDefault();
@@ -139,8 +164,9 @@ export const HeroSection: React.FC = () => {
             {/* Subtle scroll link to § 1 */}
             <a
               href="#about"
+              onClick={() => playClick(700)}
               aria-label="Scroll down to About section"
-              className="p-1.5 rounded-xs text-ink-muted hover:text-ink-primary transition-colors hidden md:inline-flex"
+              className="p-1.5 rounded-xs text-ink-muted hover:text-ink-primary transition-colors hidden md:inline-flex cursor-pointer"
             >
               <ArrowDown className="w-4 h-4" />
             </a>

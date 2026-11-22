@@ -1,6 +1,6 @@
 # RAJVEERSINH VISHAL PARDESHI
 **Independent Mathematical Researcher** (Age: 16)  
-Satara, Maharashtra, India  
+Pune, Maharashtra, India  
 Email: rajveer28dec@gmail.com | GitHub: https://github.com/rajveersinh-is-dev  
 ORCID: 0009-0004-7838-4064 | Kaggle: https://www.kaggle.com/rajveerpardeshi | LinkedIn: https://www.linkedin.com/in/rajveer-pardeshi-6bb944401  
 

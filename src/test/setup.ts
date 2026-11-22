@@ -25,11 +25,16 @@ Object.defineProperty(window, 'matchMedia', {
   disconnect() {}
 };
 
+if (typeof window !== 'undefined' && window.HTMLElement) {
+  window.HTMLElement.prototype.scrollIntoView = function () {};
+}
+
 // Canvas 2d context stub
 HTMLCanvasElement.prototype.getContext = (function () {
   return {
     fillRect: () => {},
     clearRect: () => {},
+    strokeRect: () => {},
     getImageData: () => ({ data: new Array(100) }),
     putImageData: () => {},
     createImageData: (w: number, h: number) => ({ data: new Uint8ClampedArray(w * h * 4) }),
@@ -46,5 +51,9 @@ HTMLCanvasElement.prototype.getContext = (function () {
     fill: () => {},
     arc: () => {},
     scale: () => {},
+    translate: () => {},
+    rotate: () => {},
+    setLineDash: () => {},
+    getLineDash: () => [],
   };
 }) as unknown as typeof HTMLCanvasElement.prototype.getContext;

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { researchInterestsData } from '../../data';
 import { GitBranch } from 'lucide-react';
 import { useIntersectionObserver } from '../../utils/intersectionObserver';
+import { MaskedReveal } from '../common/MaskedReveal';
 
 export const ResearchInterestsSection: React.FC = () => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -31,6 +32,14 @@ export const ResearchInterestsSection: React.FC = () => {
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
       }`}
     >
+      {/* Oversized Low-Contrast Display Numeral */}
+      <div
+        aria-hidden="true"
+        className="text-8xl sm:text-9xl md:text-[11rem] font-serif font-black text-ink-primary/[0.04] dark:text-ink-primary/[0.06] select-none pointer-events-none absolute -top-12 sm:-top-16 right-4 sm:right-12 leading-none"
+      >
+        02
+      </div>
+
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 relative z-10">
         {/* Typographic Section Header Moment */}
         <div className="flex items-start space-x-6 sm:space-x-8">
@@ -38,15 +47,19 @@ export const ResearchInterestsSection: React.FC = () => {
             §2
           </div>
           <div className="space-y-2 pt-1 sm:pt-2">
-            <h2
-              aria-label="§ 2. Theoretical Program &amp; Axiomatic Classification"
-              className="font-serif text-2xl sm:text-3xl font-bold text-ink-primary tracking-tight"
-            >
-              Theoretical Program &amp; Axiomatic Classification
-            </h2>
-            <p className="font-serif italic text-ink-muted text-sm sm:text-base">
-              Theoretical Mathematics &amp; Research Directions — Interconnected Axiomatic Lattice
-            </p>
+            <MaskedReveal>
+              <h2
+                aria-label="§ 2. Theoretical Program &amp; Axiomatic Classification"
+                className="font-serif text-2xl sm:text-3xl font-bold text-ink-primary tracking-tight"
+              >
+                Theoretical Program &amp; Axiomatic Classification
+              </h2>
+            </MaskedReveal>
+            <MaskedReveal delayMs={150}>
+              <p className="font-serif italic text-ink-muted text-sm sm:text-base">
+                Theoretical Mathematics &amp; Research Directions — Interconnected Axiomatic Lattice
+              </p>
+            </MaskedReveal>
           </div>
         </div>
 

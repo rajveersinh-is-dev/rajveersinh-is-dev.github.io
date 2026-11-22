@@ -21,6 +21,14 @@ const BAYER_4X4 = [
 // Mathematical glyph palette ordered by perceived visual density
 const MATH_GLYPHS = [' ', '·', ':', '+', '×', '∂', '∫', '∑', '∇', '∆', '#', '█'];
 
+interface TrailPoint {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  intensity: number;
+}
+
 export const AsciiDitherCanvas: React.FC<AsciiDitherCanvasProps> = ({
   mode = 'hybrid',
   density = 'normal',
@@ -31,18 +39,19 @@ export const AsciiDitherCanvas: React.FC<AsciiDitherCanvasProps> = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  // Interaction tracking with lerping
+  // Interaction tracking with fluid trail buffer
   const mouseRef = useRef({
     x: -1000,
     y: -1000,
     targetX: -1000,
     targetY: -1000,
-    radius: 140,
+    radius: 150,
     isInteracting: false,
     vx: 0,
     vy: 0,
     lastX: 0,
     lastY: 0,
+    trail: [] as TrailPoint[],
   });
 
   const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(() => {
@@ -85,7 +94,7 @@ export const AsciiDitherCanvas: React.FC<AsciiDitherCanvasProps> = ({
     let height = 0;
     let cols = 0;
     let rows = 0;
-    let cellSpacing = density === 'compact' ? 14 : density === 'sparse' ? 24 : 18;
+    const cellSpacing = density === 'compact' ? 14 : density === 'sparse' ? 24 : 18;
 
     // Simulation grid particles for spring displacement
     interface GridNode {
@@ -181,29 +190,58 @@ export const AsciiDitherCanvas: React.FC<AsciiDitherCanvasProps> = ({
     const render = () => {
       time += 0.02;
 
-      // Mouse position smoothing (lerp)
+      // Mouse position smoothing with spring velocity tracking
       const m = mouseRef.current;
-      m.x += (m.targetX - m.x) * 0.12;
-      m.y += (m.targetY - m.y) * 0.12;
-      m.vx = m.x - m.lastX;
-      m.vy = m.y - m.lastY;
-      m.lastX = m.x;
-      m.lastY = m.y;
+      const prevX = m.x;
+      const prevY = m.y;
+      m.x += (m.targetX - m.x) * 0.16;
+      m.y += (m.targetY - m.y) * 0.16;
+      m.vx = m.x - prevX;
+      m.vy = m.y - prevY;
 
-      // Clear canvas with subtle trail
+      // Add to fluid mouse trail history
+      const speed = Math.hypot(m.vx, m.vy);
+      if (m.isInteracting && m.x > -500 && speed > 0.5) {
+        m.trail.push({
+          x: m.x,
+          y: m.y,
+          vx: m.vx,
+          vy: m.vy,
+          intensity: Math.min(1.0, speed * 0.08 + 0.3),
+        });
+      }
+
+      // Smooth dissipation of fluid trail points
+      for (let i = m.trail.length - 1; i >= 0; i--) {
+        const pt = m.trail[i];
+        pt.intensity *= 0.92; // smooth exponential decay
+        pt.x += pt.vx * 0.15; // fluid drift
+        pt.y += pt.vy * 0.15;
+        if (pt.intensity < 0.02) {
+          m.trail.splice(i, 1);
+        }
+      }
+      // Cap maximum trail samples
+      if (m.trail.length > 32) {
+        m.trail.splice(0, m.trail.length - 32);
+      }
+
+      // Clear canvas
       ctx.clearRect(0, 0, width, height);
 
-      // Render mode: A. ASCII Field & Spring Displacement
+      // Render mode: A. ASCII Field & Spring Dissipation
       if (mode === 'ascii-field' || mode === 'hybrid') {
         ctx.font = `600 ${cellSpacing * 0.65}px ui-monospace, Menlo, Consolas, monospace`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
         const len = gridNodes.length;
+        const trailLen = m.trail.length;
+
         for (let i = 0; i < len; i++) {
           const node = gridNodes[i];
 
-          // Compute distance to pointer
+          // 1. Direct interaction from current mouse position
           const dx = node.curX - m.x;
           const dy = node.curY - m.y;
           const distSq = dx * dx + dy * dy;
@@ -211,19 +249,40 @@ export const AsciiDitherCanvas: React.FC<AsciiDitherCanvasProps> = ({
 
           if (interactive && distSq < radiusSq && distSq > 0.1) {
             const dist = Math.sqrt(distSq);
-            const force = (1 - dist / m.radius) * 18;
+            const force = (1 - dist / m.radius) * 16;
             const angle = Math.atan2(dy, dx);
-            // Repulsive displacement with directional tangential drag
-            node.vx += Math.cos(angle) * force * 0.4 + m.vx * 0.08;
-            node.vy += Math.sin(angle) * force * 0.4 + m.vy * 0.08;
-            node.revealLevel = Math.min(node.revealLevel + 0.15, 1);
-          } else {
-            node.revealLevel = Math.max(node.revealLevel - 0.02, 0);
+            node.vx += Math.cos(angle) * force * 0.35 + m.vx * 0.1;
+            node.vy += Math.sin(angle) * force * 0.35 + m.vy * 0.1;
+            node.revealLevel = Math.min(node.revealLevel + 0.2, 1);
           }
 
-          // Hooke's spring force returning to base position
-          const springK = 0.08;
-          const damping = 0.82;
+          // 2. Fluid drag and spring perturbation from mouse trail wake
+          if (interactive && trailLen > 0) {
+            const tRadius = m.radius * 0.8;
+            const tRadiusSq = tRadius * tRadius;
+            for (let t = 0; t < trailLen; t += 2) {
+              const tp = m.trail[t];
+              const tdx = node.curX - tp.x;
+              if (Math.abs(tdx) >= tRadius) continue;
+              const tdy = node.curY - tp.y;
+              if (Math.abs(tdy) >= tRadius) continue;
+              const tDistSq = tdx * tdx + tdy * tdy;
+              if (tDistSq < tRadiusSq) {
+                const tDist = Math.sqrt(tDistSq);
+                const tForce = (1 - tDist / tRadius) * tp.intensity * 8;
+                node.vx += tp.vx * tForce * 0.04;
+                node.vy += tp.vy * tForce * 0.04;
+                node.revealLevel = Math.min(node.revealLevel + tp.intensity * 0.1, 1);
+              }
+            }
+          }
+
+          // 3. Smooth dissipation of reveal level
+          node.revealLevel *= 0.96;
+
+          // 4. Hooke's spring force returning to base position with viscous damping
+          const springK = 0.055;
+          const damping = 0.86;
           const fBaseX = (node.baseX - node.curX) * springK;
           const fBaseY = (node.baseY - node.curY) * springK;
 
@@ -233,21 +292,20 @@ export const AsciiDitherCanvas: React.FC<AsciiDitherCanvasProps> = ({
           node.curX += node.vx;
           node.curY += node.vy;
 
-          // Compute harmonic wave intensity
+          // Harmonic ambient wave
           const wave = Math.sin(node.baseX * 0.015 + time) * Math.cos(node.baseY * 0.015 + time * 0.8);
           const normalized = (wave + 1) * 0.5;
 
-          // Interpolate glyph based on reveal and wave
           const glyphIdx = Math.floor(
-            (normalized * 0.6 + node.revealLevel * 0.4) * (MATH_GLYPHS.length - 1)
+            (normalized * 0.55 + node.revealLevel * 0.45) * (MATH_GLYPHS.length - 1)
           );
           const glyph = MATH_GLYPHS[Math.max(0, Math.min(glyphIdx, MATH_GLYPHS.length - 1))];
 
           if (glyph !== ' ') {
-            if (node.revealLevel > 0.2) {
-              ctx.fillStyle = `rgba(245, 158, 11, ${0.4 + node.revealLevel * 0.55})`; // Amber highlight
+            if (node.revealLevel > 0.18) {
+              ctx.fillStyle = `rgba(245, 158, 11, ${0.35 + node.revealLevel * 0.6})`; // Amber highlight
             } else {
-              const alpha = (0.12 + normalized * 0.18) * opacity;
+              const alpha = (0.11 + normalized * 0.16) * opacity;
               ctx.fillStyle = `rgba(148, 163, 184, ${alpha})`; // Muted slate
             }
             ctx.fillText(glyph, node.curX, node.curY);
@@ -255,7 +313,7 @@ export const AsciiDitherCanvas: React.FC<AsciiDitherCanvasProps> = ({
         }
       }
 
-      // Render mode: B. Dithered Distortion & procedural ripples
+      // Render mode: B. Dithered Distortion & fluid procedural ripples
       if (mode === 'dither-distortion' || mode === 'hybrid') {
         const step = cellSpacing * 1.5;
         const dCols = Math.ceil(width / step);
@@ -266,7 +324,6 @@ export const AsciiDitherCanvas: React.FC<AsciiDitherCanvasProps> = ({
             const x = c * step;
             const y = r * step;
 
-            // Distance to pointer creates a ripple perturbation
             const dist = Math.hypot(x - m.x, y - m.y);
             const ripple = Math.sin(dist * 0.05 - time * 3) * Math.exp(-dist * 0.008);
 
@@ -276,7 +333,7 @@ export const AsciiDitherCanvas: React.FC<AsciiDitherCanvasProps> = ({
             const threshold = BAYER_4X4[bayerY][bayerX] / 16;
 
             if (val > threshold && val < threshold + 0.35) {
-              const dAlpha = (0.04 + (dist < m.radius ? 0.18 : 0)) * opacity;
+              const dAlpha = (0.04 + (dist < m.radius ? 0.2 : 0)) * opacity;
               ctx.fillStyle = dist < m.radius ? 'rgba(255, 119, 0, 0.45)' : `rgba(100, 116, 139, ${dAlpha})`;
               ctx.fillRect(x, y, 2, 2);
             }
@@ -284,27 +341,24 @@ export const AsciiDitherCanvas: React.FC<AsciiDitherCanvasProps> = ({
         }
       }
 
-      // Render mode: C. Hidden Mathematical Structures (Clifford / Geometric Attractor)
+      // Render mode: C. Hidden Mathematical Structures (Clifford Attractor)
       if (mode === 'hidden-structures' || mode === 'hybrid') {
         const pts = clifford.points;
         const pLen = pts.length;
 
-        // Draw attractor points
         for (let i = 0; i < pLen; i += 2) {
           const pt = pts[i];
           const distToMouse = Math.hypot(pt.x - m.x, pt.y - m.y);
 
-          // Structure is revealed when mouse is near
-          if (distToMouse < m.radius * 1.3) {
-            const proximity = 1 - distToMouse / (m.radius * 1.3);
-            ctx.fillStyle = `rgba(245, 158, 11, ${proximity * 0.8})`;
+          if (distToMouse < m.radius * 1.35) {
+            const proximity = 1 - distToMouse / (m.radius * 1.35);
+            ctx.fillStyle = `rgba(245, 158, 11, ${proximity * 0.85})`;
             ctx.beginPath();
-            ctx.arc(pt.x, pt.y, 1.2 + proximity * 1.5, 0, Math.PI * 2);
+            ctx.arc(pt.x, pt.y, 1.2 + proximity * 1.6, 0, Math.PI * 2);
             ctx.fill();
 
-            // Connect nearby points to form a visible simplicial mesh / graph
-            if (i > 0 && Math.hypot(pt.x - pts[i - 1].x, pt.y - pts[i - 1].y) < 45) {
-              ctx.strokeStyle = `rgba(255, 119, 0, ${proximity * 0.35})`;
+            if (i > 0 && Math.hypot(pt.x - pts[i - 1].x, pt.y - pts[i - 1].y) < 48) {
+              ctx.strokeStyle = `rgba(255, 119, 0, ${proximity * 0.38})`;
               ctx.lineWidth = 0.75;
               ctx.beginPath();
               ctx.moveTo(pt.x, pt.y);
@@ -312,7 +366,6 @@ export const AsciiDitherCanvas: React.FC<AsciiDitherCanvasProps> = ({
               ctx.stroke();
             }
           } else {
-            // Subtle ambient structure in background
             ctx.fillStyle = `rgba(51, 65, 85, ${0.08 * opacity})`;
             ctx.fillRect(pt.x, pt.y, 1, 1);
           }
@@ -324,7 +377,6 @@ export const AsciiDitherCanvas: React.FC<AsciiDitherCanvasProps> = ({
       }
     };
 
-    // If reduced motion is requested, render once statically
     if (prefersReducedMotion) {
       render();
     } else {
@@ -337,7 +389,7 @@ export const AsciiDitherCanvas: React.FC<AsciiDitherCanvasProps> = ({
     };
   }, [mode, density, opacity, interactive, prefersReducedMotion, isVisible]);
 
-  // Pointer event handlers with touch support
+  // Pointer event handlers with smooth tracking
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();

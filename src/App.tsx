@@ -4,6 +4,8 @@ import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { CommandPalette } from './components/layout/CommandPalette';
+import { CustomCursor } from './components/common/CustomCursor';
+import { MathTerminal } from './components/common/MathTerminal';
 import { HeroSection } from './components/sections/HeroSection';
 import { AboutSection } from './components/sections/AboutSection';
 import { ResearchInterestsSection } from './components/sections/ResearchInterestsSection';
@@ -23,6 +25,12 @@ export const App: React.FC = () => {
     <PreferencesProvider>
       <ErrorBoundary>
         <div className="min-h-screen bg-bg-void text-text-primary selection:bg-academic-amber/20 selection:text-academic-amber font-serif relative">
+          {/* Custom Magnetic Cursor & Canvas Coordinate Reticle */}
+          <CustomCursor />
+
+          {/* Mathematical Terminal (REPL) */}
+          <MathTerminal />
+
           {/* Command Palette Accessible Dialog */}
           <CommandPalette />
 

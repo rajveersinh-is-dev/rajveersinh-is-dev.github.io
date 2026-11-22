@@ -1,10 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { projectsData } from '../../data';
 import type { ProjectEntry } from '../../types/content';
 import { ProjectVisualDemo } from '../visuals/ProjectVisualDemo';
+import { NumLangLoweringWalkthrough } from '../visuals/NumLangLoweringWalkthrough';
+import { TiltCard } from '../common/TiltCard';
+import { MaskedReveal } from '../common/MaskedReveal';
+import { AcademicPopover } from '../common/AcademicPopover';
 import { copyTextToClipboard } from '../../utils/clipboard';
 import { useIntersectionObserver } from '../../utils/intersectionObserver';
+import { usePreferences } from '../../context';
 import {
   Layers,
   ChevronRight,
@@ -14,15 +19,19 @@ import {
   Check,
   BookOpen,
   ShieldCheck,
-  ArrowUpRight
+  ArrowUpRight,
+  Code2,
+  Cpu
 } from 'lucide-react';
 import { GithubIcon } from '../common/BrandIcons';
 
 export const ProjectsSection: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [selectedProject, setSelectedProject] = useState<ProjectEntry | null>(null);
+  const [modalTab, setModalTab] = useState<'overview' | 'walkthrough'>('overview');
   const [copiedLink, setCopiedLink] = useState(false);
   const [sectionRef, isVisible] = useIntersectionObserver<HTMLElement>();
+  const { playClick } = usePreferences();
 
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const lastActiveElementRef = useRef<HTMLElement | null>(null);
@@ -38,11 +47,11 @@ export const ProjectsSection: React.FC = () => {
         const target = projectsData.find((p) => p.id === projId);
         if (target) {
           setSelectedProject(target);
+          setModalTab('overview');
         } else {
           setSelectedProject(null);
         }
       } else {
-        // If hash navigated away from project detail, dismiss the modal
         setSelectedProject((prev) => (prev ? null : null));
       }
     };
@@ -52,7 +61,8 @@ export const ProjectsSection: React.FC = () => {
     return () => window.removeEventListener('hashchange', handleHashSync);
   }, []);
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
+    playClick(700);
     setSelectedProject(null);
     try {
       if (window.location.hash.startsWith('#project-')) {
@@ -62,11 +72,13 @@ export const ProjectsSection: React.FC = () => {
     if (lastActiveElementRef.current) {
       lastActiveElementRef.current.focus();
     }
-  };
+  }, [playClick]);
 
-  const handleOpenProject = (project: ProjectEntry) => {
+  const handleOpenProject = (project: ProjectEntry, initialTab: 'overview' | 'walkthrough' = 'overview') => {
+    playClick(850);
     lastActiveElementRef.current = document.activeElement as HTMLElement;
     setSelectedProject(project);
+    setModalTab(initialTab);
     try {
       window.history.replaceState(null, '', `#project-${project.id}`);
     } catch {}
@@ -78,7 +90,6 @@ export const ProjectsSection: React.FC = () => {
       const originalOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
 
-      // Focus close button on dialog appearance for accessibility
       const focusTimer = setTimeout(() => {
         closeButtonRef.current?.focus();
       }, 50);
@@ -96,9 +107,10 @@ export const ProjectsSection: React.FC = () => {
         window.removeEventListener('keydown', handleKeyDown);
       };
     }
-  }, [selectedProject]);
+  }, [selectedProject, handleCloseModal]);
 
   const handleCopyProjectLink = async (project: ProjectEntry) => {
+    playClick(920);
     const url = `${window.location.origin}${window.location.pathname}#project-${project.id}`;
     const success = await copyTextToClipboard(url);
     if (success) {
@@ -139,6 +151,9 @@ export const ProjectsSection: React.FC = () => {
   const featuredProjects = projectsData.filter((p) => p.isFeatured && filterByCategory(p));
   const additionalProjects = projectsData.filter((p) => !p.isFeatured && filterByCategory(p));
 
+  const numlangProject = featuredProjects.find((p) => p.id === 'numlang');
+  const otherFeatured = featuredProjects.filter((p) => p.id !== 'numlang');
+
   return (
     <section
       ref={sectionRef}
@@ -147,19 +162,31 @@ export const ProjectsSection: React.FC = () => {
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 relative">
+        {/* Oversized Low-Contrast Display Numeral */}
+        <div
+          aria-hidden="true"
+          className="text-8xl sm:text-9xl md:text-[11rem] font-serif font-black text-ink-primary/[0.04] dark:text-ink-primary/[0.06] select-none pointer-events-none absolute -top-12 sm:-top-16 right-4 sm:right-12 leading-none"
+        >
+          03
+        </div>
+
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
           <div className="space-y-3">
             <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-ink-muted">
               § 3
             </div>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-ink-primary tracking-tight">
-              § 3. Computational Treatises &amp; Verified Algorithms
-            </h2>
-            <p className="font-serif italic text-ink-muted text-sm sm:text-base">
-              Projects &amp; Research Repositories — Mechanized Compilers, Algorithmic Lattices, and Discrete Physical Simulations
-            </p>
+            <MaskedReveal>
+              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-ink-primary tracking-tight">
+                § 3. Computational Treatises &amp; Verified Algorithms
+              </h2>
+            </MaskedReveal>
+            <MaskedReveal delayMs={150}>
+              <p className="font-serif italic text-ink-muted text-sm sm:text-base">
+                Projects &amp; Research Repositories — Mechanized Compilers, Algorithmic Lattices, and Discrete Physical Simulations
+              </p>
+            </MaskedReveal>
           </div>
 
           {/* Filter Catalog Ribbon */}
@@ -167,8 +194,11 @@ export const ProjectsSection: React.FC = () => {
             {categories.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-3 py-1.5 text-xs font-mono rounded transition-colors ${
+                onClick={() => {
+                  playClick(800);
+                  setActiveCategory(cat);
+                }}
+                className={`px-3 py-1.5 text-xs font-mono rounded transition-colors cursor-pointer ${
                   activeCategory === cat
                     ? 'bg-academic-amber text-paper-bg-base font-bold shadow-xs'
                     : 'text-ink-secondary hover:text-ink-primary hover:bg-paper-bg-elevated'
@@ -180,18 +210,148 @@ export const ProjectsSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Core Mathematical Treatises (Monographs I-V) */}
+        {/* ASYMMETRIC BENTO GRID WITH NUMLANG AS PRIMARY ANCHOR */}
         <div className="space-y-6">
           <div className="flex items-center space-x-2 text-xs font-mono text-ink-muted uppercase tracking-wider">
             <BookOpen className="w-4 h-4 text-academic-amber" />
-            <span className="font-semibold">Core Research Monographs (Monographs I–V)</span>
+            <span className="font-semibold">Core Research Monographs — Asymmetric Bento Architecture</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredProjects.map((project) => (
-              <div
+            {/* NUMLANG: Primary Anchor (Spans 2 columns on lg screens) */}
+            {numlangProject && (
+              <TiltCard
+                key={numlangProject.id}
+                id={`project-${numlangProject.id}`}
+                maxTilt={5}
+                spotlightColor="rgba(245, 158, 11, 0.16)"
+                role="button"
+                tabIndex={0}
+                aria-label={`View specifications for ${numlangProject.name}`}
+                onClick={() => handleOpenProject(numlangProject)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleOpenProject(numlangProject);
+                  }
+                }}
+                className="col-span-1 md:col-span-2 lg:col-span-2 rounded border-2 border-academic-amber/60 bg-paper-bg-subtle hover:border-academic-amber transition-all flex flex-col justify-between overflow-hidden group shadow-md cursor-pointer focus:outline-none focus:ring-1 focus:ring-academic-amber"
+              >
+                <div className="p-6 sm:p-8 space-y-5">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                        <span className="text-[10px] font-mono px-2.5 py-0.5 rounded border border-academic-amber bg-academic-amber/15 text-academic-amber font-bold">
+                          PRIMARY RESEARCH ANCHOR • MONOGRAPH I
+                        </span>
+                        <span className="text-[10px] font-mono text-ink-muted">
+                          #1 Verified Compiler
+                        </span>
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-paper-border-strong bg-paper-bg-base text-ink-secondary">
+                          Lean 4 Formal Semantics
+                        </span>
+                      </div>
+                      <h3 className="font-serif text-2xl sm:text-3xl font-bold text-ink-primary group-hover:text-academic-amber transition-colors">
+                        {numlangProject.name}
+                      </h3>
+                      <span className="text-xs text-ink-muted font-mono block mt-1">
+                        {numlangProject.category}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center space-x-2 shrink-0">
+                      {numlangProject.githubUrl && (
+                        <a
+                          href={numlangProject.githubUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            playClick(900);
+                          }}
+                          aria-label={`View ${numlangProject.name} source on GitHub`}
+                          className="p-2 rounded border border-paper-border-strong bg-paper-bg-base text-ink-secondary hover:text-academic-amber hover:border-academic-amber transition-colors cursor-pointer"
+                        >
+                          <GithubIcon className="w-4 h-4" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+
+                  <p className="text-sm text-ink-secondary font-serif leading-relaxed">
+                    {numlangProject.conciseDescription}
+                  </p>
+
+                  {/* Theoretical Invariant & Motivation with Academic Popover */}
+                  <div className="p-4 rounded border-l-3 border-academic-amber bg-paper-bg-base border border-paper-border-subtle font-mono text-xs text-ink-muted space-y-1.5">
+                    <span className="text-academic-amber font-semibold uppercase tracking-wider text-[10px] block font-serif">
+                      Formal Specification &amp; Inductive Invariant:
+                    </span>
+                    <p className="leading-relaxed text-ink-secondary">
+                      {numlangProject.motivation}{' '}
+                      <AcademicPopover type="theorem" id="thm-supercompilation">
+                        [Supercompilation Contract]
+                      </AcademicPopover>
+                    </p>
+                  </div>
+
+                  {/* NumLang Lowering Pipeline Quick Launch Teaser */}
+                  <div className="p-3 bg-paper-bg-elevated rounded border border-paper-border-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center space-x-2 text-xs font-mono text-ink-primary">
+                      <Code2 className="w-4 h-4 text-academic-amber" />
+                      <span>Interactive Step-by-Step Lowering Walkthrough Available</span>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenProject(numlangProject, 'walkthrough');
+                      }}
+                      className="px-3 py-1.5 rounded bg-academic-amber text-paper-bg-base font-mono text-xs font-bold flex items-center space-x-1.5 hover:opacity-95 transition-opacity cursor-pointer self-start sm:self-auto shadow-xs"
+                    >
+                      <Cpu className="w-3.5 h-3.5" />
+                      <span>Launch Lowering Walkthrough</span>
+                    </button>
+                  </div>
+
+                  {/* Technology Badges */}
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {numlangProject.technologies.map((tech) => (
+                      <span
+                        key={tech}
+                        className="text-[10px] font-mono px-2.5 py-1 rounded border border-paper-border-subtle bg-paper-bg-base text-ink-muted font-medium"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="px-6 sm:px-8 py-3.5 border-t border-paper-border-subtle bg-paper-bg-base flex items-center justify-between">
+                  <div className="flex items-center space-x-1.5 text-xs font-mono text-ink-muted">
+                    <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                    <span>{numlangProject.status}</span>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenProject(numlangProject);
+                    }}
+                    className="text-xs font-mono text-academic-amber hover:text-ink-primary flex items-center space-x-1 font-semibold group/btn transition-colors cursor-pointer"
+                  >
+                    <span>View Specifications</span>
+                    <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
+                  </button>
+                </div>
+              </TiltCard>
+            )}
+
+            {/* Other Featured Projects in Bento Grid */}
+            {otherFeatured.map((project) => (
+              <TiltCard
                 key={project.id}
                 id={`project-${project.id}`}
+                maxTilt={6}
+                spotlightColor="rgba(245, 158, 11, 0.12)"
                 role="button"
                 tabIndex={0}
                 aria-label={`View specifications for ${project.name}`}
@@ -202,9 +362,8 @@ export const ProjectsSection: React.FC = () => {
                     handleOpenProject(project);
                   }
                 }}
-                className="rounded border border-paper-border-strong bg-paper-bg-subtle hover:border-academic-amber transition-all flex flex-col justify-between overflow-hidden group shadow-sm cursor-pointer focus:outline-none focus:ring-1 focus:ring-academic-amber"
+                className="col-span-1 rounded border border-paper-border-strong bg-paper-bg-subtle hover:border-academic-amber transition-all flex flex-col justify-between overflow-hidden group shadow-sm cursor-pointer focus:outline-none focus:ring-1 focus:ring-academic-amber"
               >
-                {/* Header Card Strip */}
                 <div className="p-6 space-y-4">
                   <div className="flex items-start justify-between gap-2">
                     <div>
@@ -216,14 +375,8 @@ export const ProjectsSection: React.FC = () => {
                           #{project.priority}
                         </span>
                       </div>
-                      <h3
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOpenProject(project);
-                        }}
-                        className="font-serif text-xl font-bold text-ink-primary group-hover:text-academic-amber transition-colors cursor-pointer"
-                      >
-                        <span>{project.name}</span>
+                      <h3 className="font-serif text-xl font-bold text-ink-primary group-hover:text-academic-amber transition-colors">
+                        {project.name}
                       </h3>
                       <span className="text-xs text-ink-muted font-mono block mt-1">
                         {project.category}
@@ -235,7 +388,10 @@ export const ProjectsSection: React.FC = () => {
                         href={project.githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          playClick(900);
+                        }}
                         aria-label={`View ${project.name} source on GitHub`}
                         className="p-1.5 rounded border border-paper-border-subtle bg-paper-bg-base text-ink-secondary hover:text-academic-amber hover:border-academic-amber transition-colors cursor-pointer"
                       >
@@ -244,29 +400,26 @@ export const ProjectsSection: React.FC = () => {
                     )}
                   </div>
 
-                  <p className="text-xs text-ink-secondary font-serif leading-relaxed">
+                  <p className="text-xs text-ink-secondary font-serif leading-relaxed line-clamp-3">
                     {project.conciseDescription}
                   </p>
 
-                  {/* Mathematical Motivation Block */}
-                  <div className="p-3.5 rounded border-l-2 border-academic-amber bg-paper-bg-base border border-paper-border-subtle font-mono text-[11px] text-ink-muted space-y-1">
+                  <div className="p-3 rounded border-l-2 border-academic-amber bg-paper-bg-base border border-paper-border-subtle font-mono text-[11px] text-ink-muted space-y-1">
                     <span className="text-academic-amber font-semibold uppercase tracking-wider text-[9px] block font-serif">
-                      Theoretical Invariant &amp; Motivation:
+                      Theoretical Invariant:
                     </span>
                     <p className="line-clamp-2 leading-relaxed text-ink-secondary">{project.motivation}</p>
                   </div>
 
-                  {/* Audit / Simulation Honesty Note */}
                   {project.metricsAuditNote && (
                     <div className="text-[10px] font-mono text-ink-muted flex items-center space-x-1.5 bg-paper-bg-elevated p-2 rounded border border-paper-border-subtle">
                       <Info className="w-3.5 h-3.5 text-ink-muted flex-shrink-0" />
-                      <span>{project.metricsAuditNote}</span>
+                      <span className="line-clamp-1">{project.metricsAuditNote}</span>
                     </div>
                   )}
 
-                  {/* Technology Tags */}
                   <div className="flex flex-wrap gap-1 pt-1">
-                    {project.technologies.map((tech) => (
+                    {project.technologies.slice(0, 4).map((tech) => (
                       <span
                         key={tech}
                         className="text-[10px] font-mono px-2 py-0.5 rounded border border-paper-border-subtle bg-paper-bg-base text-ink-muted"
@@ -277,8 +430,7 @@ export const ProjectsSection: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Footer Action Strip */}
-                <div className="px-6 py-3.5 border-t border-paper-border-subtle bg-paper-bg-base flex items-center justify-between">
+                <div className="px-6 py-3 border-t border-paper-border-subtle bg-paper-bg-base flex items-center justify-between">
                   <div className="flex items-center space-x-1.5 text-[11px] font-mono text-ink-muted">
                     <ShieldCheck className="w-3.5 h-3.5 text-ink-muted" />
                     <span>{project.status}</span>
@@ -294,7 +446,7 @@ export const ProjectsSection: React.FC = () => {
                     <ChevronRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
                   </button>
                 </div>
-              </div>
+              </TiltCard>
             ))}
           </div>
         </div>
@@ -308,9 +460,10 @@ export const ProjectsSection: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {additionalProjects.map((project, idx) => (
-              <div
+              <TiltCard
                 key={project.id}
                 id={`project-${project.id}`}
+                maxTilt={4}
                 role="button"
                 tabIndex={0}
                 aria-label={`View specifications for ${project.name}`}
@@ -330,14 +483,8 @@ export const ProjectsSection: React.FC = () => {
                         Treatise {romanNumerals[5 + idx] || `${idx + 6}`}
                       </span>
                     </div>
-                    <h4
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleOpenProject(project);
-                      }}
-                      className="font-serif text-lg font-bold text-ink-primary hover:text-academic-amber transition-colors cursor-pointer"
-                    >
-                      <span>{project.name}</span>
+                    <h4 className="font-serif text-lg font-bold text-ink-primary hover:text-academic-amber transition-colors">
+                      {project.name}
                     </h4>
                     <span className="text-xs text-ink-muted font-mono">{project.category}</span>
                   </div>
@@ -348,7 +495,10 @@ export const ProjectsSection: React.FC = () => {
                         href={project.githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          playClick(900);
+                        }}
                         className="p-1.5 rounded border border-paper-border-subtle bg-paper-bg-base text-ink-muted hover:text-academic-amber transition-colors cursor-pointer"
                         title="GitHub Repository"
                       >
@@ -396,7 +546,7 @@ export const ProjectsSection: React.FC = () => {
                     <ChevronRight className="w-3 h-3" />
                   </button>
                 </div>
-              </div>
+              </TiltCard>
             ))}
           </div>
         </div>
@@ -416,7 +566,7 @@ export const ProjectsSection: React.FC = () => {
                     className="max-w-4xl w-full my-auto max-h-[85vh] sm:max-h-[90vh] max-h-[85dvh] sm:max-h-[90dvh] flex flex-col overflow-hidden bg-paper-bg-subtle border-2 border-paper-border-strong rounded shadow-2xl"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    {/* Modal Header — Archival Folio Header */}
+                    {/* Modal Header */}
                     <div className="px-4 sm:px-6 py-4 border-b-2 border-paper-border-strong bg-paper-bg-base flex items-center justify-between shrink-0">
                       <div className="min-w-0 pr-3">
                         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
@@ -436,6 +586,38 @@ export const ProjectsSection: React.FC = () => {
                       </div>
 
                       <div className="flex items-center space-x-2 shrink-0">
+                        {/* NumLang Lowering Walkthrough Toggle Tab */}
+                        {selectedProject.id === 'numlang' && (
+                          <div className="flex items-center space-x-1 bg-paper-bg-subtle p-1 rounded border border-paper-border-subtle mr-1">
+                            <button
+                              onClick={() => {
+                                playClick(800);
+                                setModalTab('overview');
+                              }}
+                              className={`px-2.5 py-1 text-xs font-mono rounded cursor-pointer transition-colors ${
+                                modalTab === 'overview'
+                                  ? 'bg-academic-amber text-paper-bg-base font-bold shadow-xs'
+                                  : 'text-ink-secondary hover:text-ink-primary'
+                              }`}
+                            >
+                              Overview
+                            </button>
+                            <button
+                              onClick={() => {
+                                playClick(850);
+                                setModalTab('walkthrough');
+                              }}
+                              className={`px-2.5 py-1 text-xs font-mono rounded cursor-pointer transition-colors ${
+                                modalTab === 'walkthrough'
+                                  ? 'bg-academic-amber text-paper-bg-base font-bold shadow-xs'
+                                  : 'text-ink-secondary hover:text-ink-primary'
+                              }`}
+                            >
+                              Lowering Walkthrough
+                            </button>
+                          </div>
+                        )}
+
                         <button
                           onClick={() => handleCopyProjectLink(selectedProject)}
                           className="p-2 rounded border border-paper-border-subtle bg-paper-bg-subtle hover:bg-paper-bg-elevated text-ink-muted hover:text-academic-amber transition-colors cursor-pointer"
@@ -456,73 +638,82 @@ export const ProjectsSection: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Modal Body — Scholarly Specification Monograph */}
+                    {/* Modal Body */}
                     <div className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 min-h-0">
-                      {/* Visual Demonstration / Architecture Flow */}
-                      <div>
-                        <h4 className="text-xs font-mono uppercase tracking-wider text-academic-amber mb-2 font-semibold">
-                          Visual Demonstration &amp; Technical Architecture
-                        </h4>
-                        <ProjectVisualDemo project={selectedProject} />
-                      </div>
-
-                      <div>
-                        <h4 className="text-xs font-serif uppercase tracking-wider text-ink-primary mb-1.5 font-bold">
-                          Description &amp; Research Scope
-                        </h4>
-                        <p className="text-sm text-ink-secondary leading-relaxed font-serif">
-                          {selectedProject.conciseDescription}
-                        </p>
-                      </div>
-
-                      <div>
-                        <h4 className="text-xs font-serif uppercase tracking-wider text-ink-primary mb-1.5 font-bold">
-                          Research &amp; Engineering Motivation
-                        </h4>
-                        <p className="text-xs text-ink-secondary leading-relaxed font-mono bg-paper-bg-base p-3.5 rounded border border-paper-border-subtle">
-                          {selectedProject.motivation}
-                        </p>
-                      </div>
-
-                      <div>
-                        <h4 className="text-xs font-serif uppercase tracking-wider text-ink-primary mb-1.5 font-bold">
-                          Key Technical Ideas &amp; Structural Principles
-                        </h4>
-                        <ul className="space-y-2">
-                          {selectedProject.keyIdeas.map((idea, idx) => (
-                            <li
-                              key={idx}
-                              className="text-xs text-ink-secondary flex items-start space-x-2 font-mono"
-                            >
-                              <span className="text-academic-amber font-bold">[{idx + 1}]</span>
-                              <span className="leading-relaxed">{idea}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      {selectedProject.metricsAuditNote && (
-                        <div className="p-3.5 rounded border-l-2 border-academic-amber bg-paper-bg-base border border-paper-border-subtle text-xs text-ink-secondary font-mono">
-                          <span className="font-bold text-academic-amber">Metric Transparency: </span>
-                          {selectedProject.metricsAuditNote}
+                      {selectedProject.id === 'numlang' && modalTab === 'walkthrough' ? (
+                        /* NumLang Lowering Walkthrough interactive component */
+                        <div>
+                          <NumLangLoweringWalkthrough />
                         </div>
+                      ) : (
+                        <>
+                          {/* Visual Demonstration / Architecture Flow */}
+                          <div>
+                            <h4 className="text-xs font-mono uppercase tracking-wider text-academic-amber mb-2 font-semibold">
+                              Visual Demonstration &amp; Technical Architecture
+                            </h4>
+                            <ProjectVisualDemo project={selectedProject} />
+                          </div>
+
+                          <div>
+                            <h4 className="text-xs font-serif uppercase tracking-wider text-ink-primary mb-1.5 font-bold">
+                              Description &amp; Research Scope
+                            </h4>
+                            <p className="text-sm text-ink-secondary leading-relaxed font-serif">
+                              {selectedProject.conciseDescription}
+                            </p>
+                          </div>
+
+                          <div>
+                            <h4 className="text-xs font-serif uppercase tracking-wider text-ink-primary mb-1.5 font-bold">
+                              Research &amp; Engineering Motivation
+                            </h4>
+                            <p className="text-xs text-ink-secondary leading-relaxed font-mono bg-paper-bg-base p-3.5 rounded border border-paper-border-subtle">
+                              {selectedProject.motivation}
+                            </p>
+                          </div>
+
+                          <div>
+                            <h4 className="text-xs font-serif uppercase tracking-wider text-ink-primary mb-1.5 font-bold">
+                              Key Technical Ideas &amp; Structural Principles
+                            </h4>
+                            <ul className="space-y-2">
+                              {selectedProject.keyIdeas.map((idea, idx) => (
+                                <li
+                                  key={idx}
+                                  className="text-xs text-ink-secondary flex items-start space-x-2 font-mono"
+                                >
+                                  <span className="text-academic-amber font-bold">[{idx + 1}]</span>
+                                  <span className="leading-relaxed">{idea}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          {selectedProject.metricsAuditNote && (
+                            <div className="p-3.5 rounded border-l-2 border-academic-amber bg-paper-bg-base border border-paper-border-subtle text-xs text-ink-secondary font-mono">
+                              <span className="font-bold text-academic-amber">Metric Transparency: </span>
+                              {selectedProject.metricsAuditNote}
+                            </div>
+                          )}
+
+                          <div>
+                            <h4 className="text-xs font-mono uppercase tracking-wider text-ink-muted mb-2 font-semibold">
+                              Technologies &amp; Proof Assistants
+                            </h4>
+                            <div className="flex flex-wrap gap-1.5">
+                              {selectedProject.technologies.map((t) => (
+                                <span
+                                  key={t}
+                                  className="text-xs font-mono px-2.5 py-1 rounded border border-paper-border-strong bg-paper-bg-base text-ink-primary"
+                                >
+                                  {t}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </>
                       )}
-
-                      <div>
-                        <h4 className="text-xs font-mono uppercase tracking-wider text-ink-muted mb-2 font-semibold">
-                          Technologies &amp; Proof Assistants
-                        </h4>
-                        <div className="flex flex-wrap gap-1.5">
-                          {selectedProject.technologies.map((t) => (
-                            <span
-                              key={t}
-                              className="text-xs font-mono px-2.5 py-1 rounded border border-paper-border-strong bg-paper-bg-base text-ink-primary"
-                            >
-                              {t}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
                     </div>
 
                     {/* Modal Footer */}
@@ -532,6 +723,7 @@ export const ProjectsSection: React.FC = () => {
                           href={selectedProject.githubUrl}
                           target="_blank"
                           rel="noopener noreferrer"
+                          onClick={() => playClick(900)}
                           className="px-4 py-2 rounded border border-paper-border-strong bg-academic-amber text-paper-bg-base font-mono text-xs font-semibold flex items-center justify-center space-x-2 shadow-xs hover:opacity-90 transition-opacity"
                         >
                           <GithubIcon className="w-4 h-4" />

@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { connectionsGraphData } from '../../data';
 import type { GraphConnectionNode } from '../../types/content';
 import { useIntersectionObserver } from '../../utils/intersectionObserver';
+import { MaskedReveal } from '../common/MaskedReveal';
 
 export const ConnectionsGraphSection: React.FC = () => {
   const [selectedNodeId, setSelectedNodeId] = useState<string>('p-numlang');
@@ -78,19 +79,31 @@ export const ConnectionsGraphSection: React.FC = () => {
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
       }`}
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 relative">
+        {/* Oversized Low-Contrast Display Numeral */}
+        <div
+          aria-hidden="true"
+          className="text-8xl sm:text-9xl md:text-[11rem] font-serif font-black text-ink-primary/[0.04] dark:text-ink-primary/[0.06] select-none pointer-events-none absolute -top-12 sm:-top-16 right-4 sm:right-12 leading-none"
+        >
+          10
+        </div>
+
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 relative z-10">
           <div className="space-y-3">
             <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-ink-muted">
               § 10
             </div>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-ink-primary tracking-tight">
-              § 10. Harmonic Topological Lattice
-            </h2>
-            <p className="font-serif italic text-ink-muted text-sm sm:text-base">
-              Research Connections Graph — Relational Map of Mathematical Concepts, Treatises, &amp; Toolchains
-            </p>
+            <MaskedReveal>
+              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-ink-primary tracking-tight">
+                § 10. Harmonic Topological Lattice
+              </h2>
+            </MaskedReveal>
+            <MaskedReveal delayMs={150}>
+              <p className="font-serif italic text-ink-muted text-sm sm:text-base">
+                Research Connections Graph — Relational Map of Mathematical Concepts, Treatises, &amp; Toolchains
+              </p>
+            </MaskedReveal>
           </div>
 
           {/* Archival Legend */}

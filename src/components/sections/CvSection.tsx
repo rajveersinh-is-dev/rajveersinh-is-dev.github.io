@@ -3,6 +3,7 @@ import { profileData } from '../../data';
 import { downloadPdfCv } from '../../utils/generatePdfCv';
 import { copyTextToClipboard } from '../../utils/clipboard';
 import { useIntersectionObserver } from '../../utils/intersectionObserver';
+import { MaskedReveal } from '../common/MaskedReveal';
 import {
   FileDown,
   FileCode,
@@ -51,19 +52,31 @@ export const CvSection: React.FC = () => {
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 relative">
+        {/* Oversized Low-Contrast Display Numeral */}
+        <div
+          aria-hidden="true"
+          className="text-8xl sm:text-9xl md:text-[11rem] font-serif font-black text-ink-primary/[0.04] dark:text-ink-primary/[0.06] select-none pointer-events-none absolute -top-12 sm:-top-16 right-4 sm:right-12 leading-none"
+        >
+          08
+        </div>
+
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
           <div className="space-y-3">
             <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-ink-muted">
               § 8
             </div>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-ink-primary tracking-tight">
-              § 8. Curriculum Vitae (CV) &amp; Academic Dossier
-            </h2>
-            <p className="font-serif italic text-ink-muted text-sm sm:text-base">
-              Curriculum Vitae (CV) — Verified Institutional Credentials, Authoritative Preprints &amp; Offline Vector Export
-            </p>
+            <MaskedReveal>
+              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-ink-primary tracking-tight">
+                § 8. Curriculum Vitae (CV) &amp; Academic Dossier
+              </h2>
+            </MaskedReveal>
+            <MaskedReveal delayMs={150}>
+              <p className="font-serif italic text-ink-muted text-sm sm:text-base">
+                Curriculum Vitae (CV) — Verified Institutional Credentials, Authoritative Preprints &amp; Offline Vector Export
+              </p>
+            </MaskedReveal>
           </div>
 
           <div className="px-3.5 py-1.5 rounded border border-paper-border-strong bg-paper-bg-subtle text-ink-secondary font-mono text-xs flex items-center space-x-2 self-start md:self-auto font-semibold shadow-xs">
