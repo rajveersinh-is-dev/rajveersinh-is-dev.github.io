@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, RotateCcw, Info, Sliders, Compass, Activity, Layers } from 'lucide-react';
 import { useIntersectionObserver } from '../../utils/intersectionObserver';
 import { MaskedReveal } from '../common/MaskedReveal';
+import { usePreferences } from '../../context';
 
 type PlaygroundTab = 'lorenz' | 'cellular' | 'fractal' | 'homology';
 
@@ -120,6 +121,7 @@ export const PlaygroundSection: React.FC = () => {
    1. Lorenz Attractor Simulation Component (Plate I)
    ========================================================================= */
 const LorenzSimulator: React.FC = () => {
+  const { readingMode } = usePreferences();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isRunning, setIsRunning] = useState(true);
 
@@ -137,6 +139,13 @@ const LorenzSimulator: React.FC = () => {
     trail: [] as { x: number; y: number; z: number }[],
   });
 
+  const paramsRef = useRef({ sigma, rho, beta, dt, isRunning, readingMode });
+  useEffect(() => {
+    paramsRef.current = { sigma, rho, beta, dt, isRunning, readingMode };
+  }, [sigma, rho, beta, dt, isRunning, readingMode]);
+
+  const prevReadingModeRef = useRef<boolean | null>(null);
+
   const resetSimulation = () => {
     stateRef.current = {
       x: 0.1 + (Math.random() - 0.5) * 0.1,
@@ -149,7 +158,29 @@ const LorenzSimulator: React.FC = () => {
     setRho(28.0);
     setBeta(2.666);
     setDt(0.008);
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.fillStyle = readingMode ? '#faf7f0' : '#121110';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+    }
   };
+
+  // Immediate canvas background initialization and reactive theme transitions
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    if (prevReadingModeRef.current !== readingMode) {
+      ctx.fillStyle = readingMode ? '#faf7f0' : '#121110';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      prevReadingModeRef.current = readingMode;
+    }
+  }, [readingMode]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -160,24 +191,25 @@ const LorenzSimulator: React.FC = () => {
     let animId: number;
 
     const render = () => {
+      const { sigma: s, rho: r, beta: b, dt: d, isRunning: running, readingMode: light } = paramsRef.current;
       const w = canvas.width;
       const h = canvas.height;
 
-      // Deep archival slate wash for motion trail persistence
-      ctx.fillStyle = 'rgba(18, 17, 16, 0.14)';
+      // Dynamic theme wash for trajectory persistence (warm archival paper vs deep espresso slate)
+      ctx.fillStyle = light ? 'rgba(250, 247, 240, 0.16)' : 'rgba(18, 17, 16, 0.14)';
       ctx.fillRect(0, 0, w, h);
 
-      if (isRunning) {
+      if (running) {
         // Integrate several sub-steps per frame for smooth trajectory
-        for (let s = 0; s < 6; s++) {
+        for (let step = 0; step < 6; step++) {
           const { x, y, z } = stateRef.current;
-          const dx = sigma * (y - x);
-          const dy = x * (rho - z) - y;
-          const dz = x * y - beta * z;
+          const dx = s * (y - x);
+          const dy = x * (r - z) - y;
+          const dz = x * y - b * z;
 
-          stateRef.current.x += dx * dt;
-          stateRef.current.y += dy * dt;
-          stateRef.current.z += dz * dt;
+          stateRef.current.x += dx * d;
+          stateRef.current.y += dy * d;
+          stateRef.current.z += dz * d;
 
           stateRef.current.trail.push({
             x: stateRef.current.x,
@@ -220,19 +252,21 @@ const LorenzSimulator: React.FC = () => {
           const py2 = cy - (p2.z - 25) * scale + ry2 * scale * 0.3;
 
           const alpha = i / tLen;
-          // Gold / ochre archival trajectory ink
-          ctx.strokeStyle = `rgba(217, 119, 6, ${alpha * 0.92})`;
+          // Archival ink trajectory: Deep cobalt (#1e3a5f) in light mode, Glowing amber (#d97706) in dark mode
+          ctx.strokeStyle = light
+            ? `rgba(30, 58, 95, ${alpha * 0.95})`
+            : `rgba(217, 119, 6, ${alpha * 0.92})`;
           ctx.beginPath();
           ctx.moveTo(px1, py1);
           ctx.lineTo(px2, py2);
           ctx.stroke();
         }
 
-        // Current tip marker
+        // Current tip marker: Archival oxblood (#881337) in light mode, Glowing amber (#d97706) in dark mode
         const last = trail[tLen - 1];
         const lx = cx + (last.x * cosA - last.y * sinA) * scale;
         const ly = cy - (last.z - 25) * scale + (last.x * sinA + last.y * cosA) * scale * 0.3;
-        ctx.fillStyle = '#f59e0b';
+        ctx.fillStyle = light ? '#881337' : '#d97706';
         ctx.beginPath();
         ctx.arc(lx, ly, 3.5, 0, Math.PI * 2);
         ctx.fill();
@@ -243,7 +277,7 @@ const LorenzSimulator: React.FC = () => {
 
     animId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animId);
-  }, [isRunning, sigma, rho, beta, dt]);
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -321,8 +355,8 @@ const LorenzSimulator: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
         {/* Canvas Display with Coordinate Framing */}
-        <div className="lg:col-span-8 bg-[#121110] rounded border-2 border-paper-border-strong overflow-hidden relative aspect-video flex items-center justify-center math-grid shadow-inner">
-          <div className="absolute top-2 left-2 text-[9px] font-mono text-[#a8a29e] tracking-widest uppercase pointer-events-none bg-[#121110]/80 px-1.5 py-0.5 rounded border border-[#38332d]">
+        <div className="lg:col-span-8 bg-paper-bg-base rounded border-2 border-paper-border-strong overflow-hidden relative aspect-video flex items-center justify-center math-grid shadow-inner">
+          <div className="absolute top-2 left-2 text-[9px] font-mono text-ink-muted tracking-widest uppercase pointer-events-none bg-paper-bg-base/80 px-1.5 py-0.5 rounded border border-paper-border-subtle shadow-xs">
             ℝ³ Phase Space • ẋ = F(x)
           </div>
           <canvas
@@ -355,7 +389,7 @@ const LorenzSimulator: React.FC = () => {
                 step="0.5"
                 value={sigma}
                 onChange={(e) => setSigma(parseFloat(e.target.value))}
-                className="w-full accent-amber-600 bg-paper-bg-elevated cursor-pointer"
+                className="w-full accent-academic-amber bg-paper-bg-elevated cursor-pointer"
               />
             </div>
 
@@ -371,7 +405,7 @@ const LorenzSimulator: React.FC = () => {
                 step="0.5"
                 value={rho}
                 onChange={(e) => setRho(parseFloat(e.target.value))}
-                className="w-full accent-amber-600 bg-paper-bg-elevated cursor-pointer"
+                className="w-full accent-academic-amber bg-paper-bg-elevated cursor-pointer"
               />
             </div>
 
@@ -387,7 +421,7 @@ const LorenzSimulator: React.FC = () => {
                 step="0.1"
                 value={beta}
                 onChange={(e) => setBeta(parseFloat(e.target.value))}
-                className="w-full accent-amber-600 bg-paper-bg-elevated cursor-pointer"
+                className="w-full accent-academic-amber bg-paper-bg-elevated cursor-pointer"
               />
             </div>
 
@@ -403,7 +437,7 @@ const LorenzSimulator: React.FC = () => {
                 step="0.001"
                 value={dt}
                 onChange={(e) => setDt(parseFloat(e.target.value))}
-                className="w-full accent-amber-600 bg-paper-bg-elevated cursor-pointer"
+                className="w-full accent-academic-amber bg-paper-bg-elevated cursor-pointer"
               />
             </div>
 
@@ -421,6 +455,7 @@ const LorenzSimulator: React.FC = () => {
    2. Cellular Automata (Conway's Game of Life) Component (Plate II)
    ========================================================================= */
 const CellularSimulator: React.FC = () => {
+  const { readingMode } = usePreferences();
   const COLS = 48;
   const ROWS = 30;
 
@@ -561,7 +596,7 @@ const CellularSimulator: React.FC = () => {
         </div>
 
         {/* Lattice Grid with Archival Frame */}
-        <div className="bg-[#121110] p-4 rounded border-2 border-paper-border-strong overflow-x-auto shadow-inner">
+        <div className="bg-paper-bg-base p-4 rounded border-2 border-paper-border-strong overflow-x-auto shadow-inner">
           <div
             className="grid gap-0.5 mx-auto"
             style={{
@@ -576,8 +611,10 @@ const CellularSimulator: React.FC = () => {
                   onClick={() => toggleCell(r, c)}
                   className={`aspect-square rounded-xs cursor-pointer transition-colors ${
                     val
-                      ? 'bg-amber-600 border border-amber-400/40 shadow-xs'
-                      : 'bg-[#1e1c19] hover:bg-[#2e2a25] border border-[#2a2622]'
+                      ? (readingMode
+                          ? 'bg-academic-cobalt border border-academic-cobalt/80 shadow-xs'
+                          : 'bg-academic-amber border border-academic-amber/60 shadow-xs')
+                      : 'bg-paper-bg-subtle hover:bg-paper-bg-elevated border border-paper-border-subtle'
                   }`}
                   title={`Cell (${r}, ${c}): ${val ? 'Alive' : 'Dead'}`}
                 />
@@ -594,6 +631,7 @@ const CellularSimulator: React.FC = () => {
    3. Complex Fractal (Julia / Mandelbrot Parameter Tweaker) (Plate III)
    ========================================================================= */
 const FractalSimulator: React.FC = () => {
+  const { readingMode } = usePreferences();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [cr, setCr] = useState(-0.7);
   const [ci, setCi] = useState(0.27015);
@@ -629,24 +667,54 @@ const FractalSimulator: React.FC = () => {
         }
 
         const idx = (py * w + px) * 4;
-        if (iter === maxIter) {
-          data[idx] = 18;
-          data[idx + 1] = 17;
-          data[idx + 2] = 16;
-          data[idx + 3] = 255;
+        if (readingMode) {
+          if (iter === maxIter) {
+            // Julia set interior: Carbon black #1c1917
+            data[idx] = 28;
+            data[idx + 1] = 25;
+            data[idx + 2] = 23;
+            data[idx + 3] = 255;
+          } else {
+            // Exterior escape gradient: Warm Archival Paper #faf7f0 -> Ochre #92400e -> Archival Oxblood #881337
+            const norm = iter / maxIter;
+            let r: number, g: number, b: number;
+            if (norm < 0.5) {
+              const t = norm * 2;
+              r = Math.floor(250 + (146 - 250) * t);
+              g = Math.floor(247 + (64 - 247) * t);
+              b = Math.floor(240 + (14 - 240) * t);
+            } else {
+              const t = (norm - 0.5) * 2;
+              r = Math.floor(146 + (136 - 146) * t);
+              g = Math.floor(64 + (19 - 64) * t);
+              b = Math.floor(14 + (55 - 14) * t);
+            }
+            data[idx] = r;
+            data[idx + 1] = g;
+            data[idx + 2] = b;
+            data[idx + 3] = 255;
+          }
         } else {
-          // Color based on escape iteration (Archival amber / terracotta gradient)
-          const norm = iter / maxIter;
-          data[idx] = Math.floor(norm * 217);
-          data[idx + 1] = Math.floor(norm * 119);
-          data[idx + 2] = Math.floor(norm * 6);
-          data[idx + 3] = 255;
+          if (iter === maxIter) {
+            // Julia set interior: Deep Espresso Slate #121110
+            data[idx] = 18;
+            data[idx + 1] = 17;
+            data[idx + 2] = 16;
+            data[idx + 3] = 255;
+          } else {
+            // Exterior escape gradient: Deep Espresso Slate #121110 -> Glowing Amber #d97706
+            const norm = iter / maxIter;
+            data[idx] = Math.floor(18 + (217 - 18) * norm);
+            data[idx + 1] = Math.floor(17 + (119 - 17) * norm);
+            data[idx + 2] = Math.floor(16 + (6 - 16) * norm);
+            data[idx + 3] = 255;
+          }
         }
       }
     }
 
     ctx.putImageData(imgData, 0, 0);
-  }, [cr, ci, maxIter, zoom]);
+  }, [cr, ci, maxIter, zoom, readingMode]);
 
   return (
     <div className="space-y-6">
@@ -700,8 +768,8 @@ const FractalSimulator: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-        <div className="lg:col-span-8 bg-[#121110] rounded border-2 border-paper-border-strong overflow-hidden relative aspect-video flex items-center justify-center math-grid shadow-inner">
-          <div className="absolute top-2 left-2 text-[9px] font-mono text-[#a8a29e] tracking-widest uppercase pointer-events-none bg-[#121110]/80 px-1.5 py-0.5 rounded border border-[#38332d]">
+        <div className="lg:col-span-8 bg-paper-bg-base rounded border-2 border-paper-border-strong overflow-hidden relative aspect-video flex items-center justify-center math-grid shadow-inner">
+          <div className="absolute top-2 left-2 text-[9px] font-mono text-ink-muted tracking-widest uppercase pointer-events-none bg-paper-bg-base/80 px-1.5 py-0.5 rounded border border-paper-border-subtle shadow-xs">
             ℂ Argand Plane • |z| ≤ 2
           </div>
           <canvas ref={canvasRef} width={400} height={250} className="w-full h-full block" />
@@ -728,7 +796,7 @@ const FractalSimulator: React.FC = () => {
                 step="0.01"
                 value={cr}
                 onChange={(e) => setCr(parseFloat(e.target.value))}
-                className="w-full accent-amber-600 bg-paper-bg-elevated cursor-pointer"
+                className="w-full accent-academic-amber bg-paper-bg-elevated cursor-pointer"
               />
             </div>
 
@@ -744,7 +812,7 @@ const FractalSimulator: React.FC = () => {
                 step="0.01"
                 value={ci}
                 onChange={(e) => setCi(parseFloat(e.target.value))}
-                className="w-full accent-amber-600 bg-paper-bg-elevated cursor-pointer"
+                className="w-full accent-academic-amber bg-paper-bg-elevated cursor-pointer"
               />
             </div>
 
@@ -760,7 +828,7 @@ const FractalSimulator: React.FC = () => {
                 step="4"
                 value={maxIter}
                 onChange={(e) => setMaxIter(parseInt(e.target.value))}
-                className="w-full accent-amber-600 bg-paper-bg-elevated cursor-pointer"
+                className="w-full accent-academic-amber bg-paper-bg-elevated cursor-pointer"
               />
             </div>
 
@@ -776,7 +844,7 @@ const FractalSimulator: React.FC = () => {
                 step="0.1"
                 value={zoom}
                 onChange={(e) => setZoom(parseFloat(e.target.value))}
-                className="w-full accent-amber-600 bg-paper-bg-elevated cursor-pointer"
+                className="w-full accent-academic-amber bg-paper-bg-elevated cursor-pointer"
               />
             </div>
 
@@ -794,6 +862,7 @@ const FractalSimulator: React.FC = () => {
    4. Simplicial Homology & Topological Filtration Component (Plate IV)
    ========================================================================= */
 const HomologySimulator: React.FC = () => {
+  const { readingMode } = usePreferences();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [epsilon, setEpsilon] = useState<number>(65);
   const draggingIdxRef = useRef<number | null>(null);
@@ -873,8 +942,10 @@ const HomologySimulator: React.FC = () => {
         for (let k = j + 1; k < n; k++) {
           if (adj[i].includes(k) && adj[j].includes(k)) {
             triangles++;
-            // Draw filled triangle simplex in warm ochre wash
-            ctx.fillStyle = 'rgba(217, 119, 6, 0.16)';
+            // Draw filled triangle simplex: Archival oxblood wash in light, warm amber wash in dark
+            ctx.fillStyle = readingMode
+              ? 'rgba(136, 19, 55, 0.15)'
+              : 'rgba(217, 119, 6, 0.16)';
             ctx.beginPath();
             ctx.moveTo(points[i].x, points[i].y);
             ctx.lineTo(points[j].x, points[j].y);
@@ -886,8 +957,10 @@ const HomologySimulator: React.FC = () => {
       }
     }
 
-    // Draw 1-simplices (Edges)
-    ctx.strokeStyle = 'rgba(217, 119, 6, 0.75)';
+    // Draw 1-simplices (Edges): Deep cobalt ink in light, glowing amber in dark
+    ctx.strokeStyle = readingMode
+      ? 'rgba(30, 58, 95, 0.85)'
+      : 'rgba(217, 119, 6, 0.75)';
     ctx.lineWidth = 1.3;
     edgePairs.forEach(([i, j]) => {
       ctx.beginPath();
@@ -898,18 +971,20 @@ const HomologySimulator: React.FC = () => {
 
     // Draw 0-simplices (Vertices) & epsilon balls
     points.forEach((pt) => {
-      // Epsilon neighborhood metric ball
-      ctx.strokeStyle = 'rgba(184, 173, 150, 0.22)';
+      // Epsilon neighborhood metric ball: Warm ochre in light, muted parchment in dark
+      ctx.strokeStyle = readingMode
+        ? 'rgba(146, 64, 14, 0.25)'
+        : 'rgba(184, 173, 150, 0.22)';
       ctx.beginPath();
       ctx.arc(pt.x, pt.y, epsilon / 2, 0, Math.PI * 2);
       ctx.stroke();
 
-      // Vertex point
-      ctx.fillStyle = '#faf7f0';
+      // Vertex point: Deep cobalt with oxblood rim in light mode; parchment with glowing amber rim in dark mode
+      ctx.fillStyle = readingMode ? '#1e3a5f' : '#ede8df';
       ctx.beginPath();
       ctx.arc(pt.x, pt.y, 4.5, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = '#92400e';
+      ctx.strokeStyle = readingMode ? '#881337' : '#d97706';
       ctx.lineWidth = 1.4;
       ctx.stroke();
     });
@@ -944,7 +1019,7 @@ const HomologySimulator: React.FC = () => {
       edgesCount: edgePairs.length,
       trianglesCount: triangles,
     });
-  }, [points, epsilon]);
+  }, [points, epsilon, readingMode]);
 
   // Interactive pointer handlers to add/drag vertices
   const getCanvasCoords = (e: React.PointerEvent<HTMLCanvasElement>) => {
@@ -965,6 +1040,11 @@ const HomologySimulator: React.FC = () => {
     const foundIdx = points.findIndex((pt) => Math.hypot(pt.x - x, pt.y - y) <= 14);
     if (foundIdx !== -1) {
       draggingIdxRef.current = foundIdx;
+      try {
+        e.currentTarget.setPointerCapture(e.pointerId);
+      } catch {
+        // Fallback for environments lacking pointer capture
+      }
     } else {
       // Clicked empty space: add new vertex
       if (points.length < 35) {
@@ -984,8 +1064,17 @@ const HomologySimulator: React.FC = () => {
     }
   };
 
-  const handlePointerUp = () => {
-    draggingIdxRef.current = null;
+  const handlePointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (draggingIdxRef.current !== null) {
+      try {
+        if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+          e.currentTarget.releasePointerCapture(e.pointerId);
+        }
+      } catch {
+        // Fallback for environments lacking pointer capture
+      }
+      draggingIdxRef.current = null;
+    }
   };
 
   const eulerChi = points.length - stats.edgesCount + stats.trianglesCount;
@@ -1057,8 +1146,8 @@ const HomologySimulator: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
         {/* Interactive Topological Coordinate Canvas */}
-        <div className="lg:col-span-8 bg-[#121110] rounded border-2 border-paper-border-strong overflow-hidden relative aspect-video flex items-center justify-center math-grid shadow-inner">
-          <div className="absolute top-2 left-2 text-[9px] font-mono text-[#a8a29e] tracking-widest uppercase pointer-events-none bg-[#121110]/80 px-1.5 py-0.5 rounded border border-[#38332d]">
+        <div className="lg:col-span-8 bg-paper-bg-base rounded border-2 border-paper-border-strong overflow-hidden relative aspect-video flex items-center justify-center math-grid shadow-inner">
+          <div className="absolute top-2 left-2 text-[9px] font-mono text-ink-muted tracking-widest uppercase pointer-events-none bg-paper-bg-base/80 px-1.5 py-0.5 rounded border border-paper-border-subtle shadow-xs">
             Topological Manifold • Drag to deform • Click to insert
           </div>
           <canvas
@@ -1095,7 +1184,7 @@ const HomologySimulator: React.FC = () => {
                 step="1"
                 value={epsilon}
                 onChange={(e) => setEpsilon(parseInt(e.target.value))}
-                className="w-full accent-amber-600 bg-paper-bg-elevated cursor-pointer"
+                className="w-full accent-academic-amber bg-paper-bg-elevated cursor-pointer"
               />
             </div>
 
