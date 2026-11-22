@@ -5,13 +5,27 @@ import {
   Menu,
   X,
   FileDown,
-  BookOpen,
   Command,
   Sun,
   Moon,
   Eye,
   EyeOff
 } from 'lucide-react';
+
+const NAV_LINKS = [
+  { label: 'About', href: '#about', section: '§ 1' },
+  { label: 'Research', href: '#research-interests', section: '§ 2' },
+  { label: 'Projects', href: '#projects', section: '§ 3' },
+  { label: 'Preprints', href: '#preprints', section: '§ 4' },
+  { label: 'Achievements', href: '#achievements', section: '§ 5' },
+  { label: 'Skills', href: '#skills', section: '§ 6' },
+  { label: 'Education', href: '#education', section: '§ 7' },
+  { label: 'CV', href: '#cv', section: '§ 8' },
+  { label: 'Timeline', href: '#timeline', section: '§ 9' },
+  { label: 'Graph', href: '#connections-graph', section: '§ 10' },
+  { label: 'Playground', href: '#playground', section: '§ 11' },
+  { label: 'Contact', href: '#contact', section: '§ 12' },
+];
 
 export const Navbar: React.FC = () => {
   const {
@@ -24,76 +38,90 @@ export const Navbar: React.FC = () => {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>('about');
+  const navLinks = NAV_LINKS;
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
+
+      const sectionElements = NAV_LINKS
+        .map((l) => ({ id: l.href.slice(1), el: document.getElementById(l.href.slice(1)) }))
+        .filter((item): item is { id: string; el: HTMLElement } => item.el !== null);
+
+      const scrollPosition = window.scrollY + 140;
+      let currentSection = sectionElements[0]?.id || 'about';
+
+      for (const { id, el } of sectionElements) {
+        if (el.offsetTop <= scrollPosition) {
+          currentSection = id;
+        }
+      }
+      setActiveSection(currentSection);
     };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
 
-  const navLinks = [
-    { label: 'About', href: '#about', section: '§ 1' },
-    { label: 'Research', href: '#research-interests', section: '§ 2' },
-    { label: 'Projects', href: '#projects', section: '§ 3' },
-    { label: 'Preprints', href: '#preprints', section: '§ 4' },
-    { label: 'Achievements', href: '#achievements', section: '§ 5' },
-    { label: 'Skills', href: '#skills', section: '§ 6' },
-    { label: 'Education', href: '#education', section: '§ 7' },
-    { label: 'CV', href: '#cv', section: '§ 8' },
-    { label: 'Graph', href: '#connections-graph', section: '§ 9' },
-    { label: 'Playground', href: '#playground', section: '§ 10' },
-    { label: 'Contact', href: '#contact', section: '§ 11' },
-  ];
-
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-200 ${
         scrolled
-          ? 'bg-paper-bg-base/95 dark:bg-night-bg-base/95 border-b border-paper-border-strong dark:border-night-border-strong py-2.5 shadow-xs'
-          : 'bg-paper-bg-base/90 dark:bg-night-bg-base/90 border-b border-paper-border-subtle dark:border-night-border-subtle py-3.5'
+          ? 'bg-paper-bg-base/95 border-b border-paper-border-strong py-2.5 shadow-xs'
+          : 'bg-paper-bg-base/90 border-b border-paper-border-subtle py-3.5'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          {/* ACTA MATHEMATICA Scholarly Monogram & Masthead Identity */}
+          {/* Scholarly Monogram & Masthead Identity */}
           <a
             href="#hero"
-            className="flex items-center space-x-2.5 text-ink-primary dark:text-night-ink-primary hover:text-academic-seal dark:hover:text-night-seal transition-colors group"
+            className="flex items-center space-x-2.5 text-ink-primary hover:text-ink-primary transition-colors group"
           >
-            <div className="w-8 h-8 rounded-xs border border-paper-border-strong dark:border-night-border-strong bg-paper-bg-subtle dark:bg-night-bg-subtle flex items-center justify-center font-serif text-sm text-academic-seal dark:text-night-seal font-bold shadow-xs group-hover:border-academic-seal dark:group-hover:border-night-seal transition-colors">
+            <div className="w-8 h-8 rounded-xs border border-paper-border-strong bg-paper-bg-subtle flex items-center justify-center font-serif text-sm text-academic-seal font-bold shadow-xs transition-colors">
               ∇
             </div>
             <div className="flex flex-col">
               <div className="flex items-center space-x-1.5">
-                <span className="font-serif text-xs sm:text-sm font-bold tracking-wider text-ink-primary dark:text-night-ink-primary group-hover:text-academic-seal dark:group-hover:text-night-seal uppercase">
-                  Acta Mathematica
+                <span className="font-serif text-xs sm:text-sm font-bold tracking-wider text-ink-primary uppercase">
+                  Pardeshi Archive
                 </span>
-                <span className="text-[10px] font-mono px-1 py-0.2 rounded-xs border border-paper-border-subtle dark:border-night-border-subtle text-ink-muted dark:text-night-ink-muted hidden md:inline">
+                <span className="text-[10px] font-mono px-1 py-0.2 rounded-xs border border-paper-border-subtle text-ink-muted hidden md:inline">
                   VOL. I
                 </span>
               </div>
-              <span className="text-[10px] text-ink-muted dark:text-night-ink-muted font-serif tracking-normal hidden sm:inline">
-                R. V. Pardeshi • Fasciculus 2026
+              <span className="text-[10px] text-ink-muted font-serif tracking-normal hidden sm:inline">
+                R. V. Pardeshi • Mathematical Research
               </span>
             </div>
           </a>
 
           {/* Editorial Section Index Links (Desktop) */}
-          <nav className="hidden lg:flex items-center space-x-1 xl:space-x-2" aria-label="Journal Sections Navigation">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="px-2 py-1 text-xs font-serif text-ink-secondary dark:text-night-ink-secondary hover:text-academic-seal dark:hover:text-night-seal transition-colors rounded-xs hover:bg-paper-bg-subtle dark:hover:bg-night-bg-subtle"
-                title={`${link.section} ${link.label}`}
-              >
-                {link.label}
-              </a>
-            ))}
+          <nav className="hidden lg:flex items-center space-x-0.5 xl:space-x-1" aria-label="Journal Sections Navigation">
+            {navLinks.map((link) => {
+              const isActive = activeSection === link.href.slice(1);
+              return (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className={`px-2 py-1 text-xs font-serif transition-colors rounded-xs relative ${
+                    isActive
+                      ? 'text-ink-primary font-bold'
+                      : 'text-ink-secondary hover:text-ink-primary hover:bg-paper-bg-subtle'
+                  }`}
+                  title={`${link.section} ${link.label}`}
+                >
+                  {link.label}
+                  {isActive && (
+                    <span className="absolute bottom-0 left-1 right-1 h-0.5 bg-academic-seal rounded-full" />
+                  )}
+                </a>
+              );
+            })}
           </nav>
 
           {/* Masthead Instrument Controls & Actions */}
@@ -102,12 +130,12 @@ export const Navbar: React.FC = () => {
             <button
               onClick={toggleCommandPalette}
               aria-label="Open Command Palette"
-              className="px-2.5 py-1 rounded-xs bg-paper-bg-subtle dark:bg-night-bg-subtle border border-paper-border-subtle dark:border-night-border-subtle hover:border-paper-border-strong dark:hover:border-night-border-strong text-xs font-serif text-ink-secondary dark:text-night-ink-secondary hover:text-ink-primary dark:hover:text-night-ink-primary flex items-center space-x-1.5 transition-colors cursor-pointer"
+              className="px-2.5 py-1 rounded-xs bg-paper-bg-subtle border border-paper-border-subtle hover:border-paper-border-strong text-xs font-serif text-ink-secondary hover:text-ink-primary flex items-center space-x-1.5 transition-colors cursor-pointer"
               title="Search Index & Concordance (Ctrl+K)"
             >
-              <Command className="w-3.5 h-3.5 text-academic-seal dark:text-night-seal" />
+              <Command className="w-3.5 h-3.5 text-ink-muted" />
               <span className="font-serif">Concordance</span>
-              <kbd className="text-[10px] font-mono bg-paper-bg-elevated dark:bg-night-bg-elevated px-1.5 py-0.5 rounded-xs border border-paper-border-subtle dark:border-night-border-subtle text-ink-muted dark:text-night-ink-muted">
+              <kbd className="text-[10px] font-mono bg-paper-bg-elevated px-1.5 py-0.5 rounded-xs border border-paper-border-subtle text-ink-muted">
                 {isMac ? '⌘K' : 'Ctrl+K'}
               </kbd>
             </button>
@@ -118,8 +146,8 @@ export const Navbar: React.FC = () => {
               aria-label={readingMode ? 'Exit Reading Mode' : 'Enable Reading Mode'}
               className={`p-1.5 px-2.5 rounded-xs border text-xs font-serif flex items-center space-x-1.5 transition-colors cursor-pointer ${
                 readingMode
-                  ? 'bg-paper-bg-elevated border-paper-border-strong text-academic-seal'
-                  : 'bg-paper-bg-subtle dark:bg-night-bg-subtle border-paper-border-subtle dark:border-night-border-subtle hover:border-paper-border-strong dark:hover:border-night-border-strong text-ink-secondary dark:text-night-ink-secondary hover:text-ink-primary dark:hover:text-night-ink-primary'
+                  ? 'bg-paper-bg-elevated border-paper-border-strong text-ink-primary'
+                  : 'bg-paper-bg-subtle border-paper-border-subtle hover:border-paper-border-strong text-ink-secondary hover:text-ink-primary'
               }`}
               title={
                 readingMode
@@ -129,12 +157,12 @@ export const Navbar: React.FC = () => {
             >
               {readingMode ? (
                 <>
-                  <Sun className="w-3.5 h-3.5 text-academic-seal" />
+                  <Sun className="w-3.5 h-3.5 text-academic-amber" />
                   <span className="hidden xl:inline text-[11px] font-serif">Archival Paper</span>
                 </>
               ) : (
                 <>
-                  <Moon className="w-3.5 h-3.5 text-academic-amber dark:text-academic-amber-night" />
+                  <Moon className="w-3.5 h-3.5 text-academic-amber" />
                   <span className="hidden xl:inline text-[11px] font-serif">Night Study</span>
                 </>
               )}
@@ -146,12 +174,12 @@ export const Navbar: React.FC = () => {
               aria-label={visualEffectsEnabled ? 'Disable Visual Effects' : 'Enable Visual Effects'}
               className={`p-1.5 rounded-xs border text-xs transition-colors cursor-pointer ${
                 visualEffectsEnabled
-                  ? 'bg-paper-bg-subtle dark:bg-night-bg-subtle border-paper-border-subtle dark:border-night-border-subtle hover:border-paper-border-strong dark:hover:border-night-border-strong text-academic-seal dark:text-night-seal'
-                  : 'bg-paper-bg-elevated dark:bg-night-bg-elevated border-paper-border-subtle dark:border-night-border-subtle text-ink-muted dark:text-night-ink-muted'
+                  ? 'bg-paper-bg-subtle border-paper-border-subtle hover:border-paper-border-strong text-ink-primary'
+                  : 'bg-paper-bg-elevated border-paper-border-subtle text-ink-muted'
               }`}
               title={visualEffectsEnabled ? 'Pause Mathematical Canvas Dynamics' : 'Resume Mathematical Canvas Dynamics'}
             >
-              {visualEffectsEnabled ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+              {visualEffectsEnabled ? <Eye className="w-4 h-4 text-ink-secondary" /> : <EyeOff className="w-4 h-4" />}
             </button>
 
             {/* Academic Dossier / CV Vector PDF Download */}
@@ -166,10 +194,10 @@ export const Navbar: React.FC = () => {
                   // Fall back to native download of bundled PDF
                 }
               }}
-              className="px-2.5 py-1 rounded-xs bg-academic-seal/10 dark:bg-night-seal/10 hover:bg-academic-seal/20 dark:hover:bg-night-seal/20 text-academic-seal dark:text-night-seal border border-academic-seal/30 dark:border-night-seal/40 text-xs font-serif flex items-center space-x-1.5 transition-all cursor-pointer shadow-xs"
+              className="px-2.5 py-1 rounded-xs bg-paper-bg-subtle hover:bg-paper-bg-elevated text-ink-primary border border-paper-border-strong text-xs font-serif flex items-center space-x-1.5 transition-all cursor-pointer shadow-xs"
               title="Download official Academic Dossier & Curriculum Vitae (Vector PDF)"
             >
-              <FileDown className="w-3.5 h-3.5" />
+              <FileDown className="w-3.5 h-3.5 text-ink-muted" />
               <span>Dossier (PDF)</span>
             </a>
           </div>
@@ -179,15 +207,15 @@ export const Navbar: React.FC = () => {
             <button
               onClick={toggleCommandPalette}
               aria-label="Open Command Palette"
-              className="p-1.5 rounded-xs bg-paper-bg-subtle dark:bg-night-bg-subtle border border-paper-border-subtle dark:border-night-border-subtle text-ink-secondary dark:text-night-ink-secondary hover:text-academic-seal sm:hidden"
+              className="p-1.5 rounded-xs bg-paper-bg-subtle border border-paper-border-subtle text-ink-secondary hover:text-ink-primary sm:hidden"
             >
-              <Command className="w-4 h-4 text-academic-seal dark:text-night-seal" />
+              <Command className="w-4 h-4 text-ink-muted" />
             </button>
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
-              className="p-2 rounded-xs bg-paper-bg-subtle dark:bg-night-bg-subtle border border-paper-border-subtle dark:border-night-border-subtle text-ink-secondary dark:text-night-ink-secondary hover:text-ink-primary"
+              className="p-2 rounded-xs bg-paper-bg-subtle border border-paper-border-subtle text-ink-secondary hover:text-ink-primary"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -197,22 +225,29 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Journal Index Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-b border-paper-border-strong dark:border-night-border-strong bg-paper-bg-base/95 dark:bg-night-bg-base/95 px-4 pt-3 pb-6 space-y-3 shadow-lg">
+        <div className="lg:hidden border-b border-paper-border-strong bg-paper-bg-base/95 px-4 pt-3 pb-6 space-y-3 shadow-lg">
           <nav className="grid grid-cols-2 gap-2" aria-label="Mobile Journal Navigation">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2 text-xs font-serif rounded-xs bg-paper-bg-subtle dark:bg-night-bg-subtle text-ink-secondary dark:text-night-ink-secondary hover:text-academic-seal dark:hover:text-night-seal hover:bg-paper-bg-elevated dark:hover:bg-night-bg-elevated transition-colors border border-paper-border-subtle dark:border-night-border-subtle"
-              >
-                <span className="text-[10px] text-ink-muted dark:text-night-ink-muted mr-1.5 font-mono">{link.section}</span>
-                {link.label}
-              </a>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = activeSection === link.href.slice(1);
+              return (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`px-3 py-2 text-xs font-serif rounded-xs transition-colors border ${
+                    isActive
+                      ? 'bg-paper-bg-elevated text-ink-primary border-l-2 border-l-academic-seal border-paper-border-strong font-bold'
+                      : 'bg-paper-bg-subtle text-ink-secondary hover:text-ink-primary hover:bg-paper-bg-elevated border-paper-border-subtle'
+                  }`}
+                >
+                  <span className="text-[10px] text-ink-muted mr-1.5 font-mono">{link.section}</span>
+                  {link.label}
+                </a>
+              );
+            })}
           </nav>
 
-          <div className="pt-2 border-t border-paper-border-subtle dark:border-night-border-subtle flex flex-col space-y-2">
+          <div className="pt-2 border-t border-paper-border-subtle flex flex-col space-y-2">
             <a
               href="./Rajveersinh_Vishal_Pardeshi_CV.pdf"
               download="Rajveersinh_Vishal_Pardeshi_CV.pdf"
@@ -222,21 +257,21 @@ export const Navbar: React.FC = () => {
                   downloadPdfCv();
                 } catch {}
               }}
-              className="w-full py-2 px-3 rounded-xs bg-academic-seal/10 dark:bg-night-seal/10 text-academic-seal dark:text-night-seal border border-academic-seal/30 dark:border-night-seal/40 text-xs font-serif flex items-center justify-center space-x-2"
+              className="w-full py-2 px-3 rounded-xs bg-paper-bg-subtle hover:bg-paper-bg-elevated text-ink-primary border border-paper-border-strong text-xs font-serif flex items-center justify-center space-x-2"
             >
-              <FileDown className="w-4 h-4" />
+              <FileDown className="w-4 h-4 text-ink-muted" />
               <span>Download Official CV (PDF)</span>
             </a>
 
-            <div className="flex items-center justify-between px-1 pt-1 text-xs font-serif text-ink-muted dark:text-night-ink-muted">
+            <div className="flex items-center justify-between px-1 pt-1 text-xs font-serif text-ink-muted">
               <button
                 onClick={toggleReadingMode}
                 aria-label={readingMode ? 'Exit Reading Mode' : 'Enable Reading Mode'}
-                className="flex items-center space-x-1.5 py-1 px-2 rounded-xs bg-paper-bg-subtle dark:bg-night-bg-subtle border border-paper-border-subtle dark:border-night-border-subtle cursor-pointer"
+                className="flex items-center space-x-1.5 py-1 px-2 rounded-xs bg-paper-bg-subtle border border-paper-border-subtle cursor-pointer"
               >
                 {readingMode ? (
                   <>
-                    <Sun className="w-3.5 h-3.5 text-academic-seal" />
+                    <Sun className="w-3.5 h-3.5 text-academic-amber" />
                     <span>Archival Paper</span>
                   </>
                 ) : (
@@ -250,9 +285,9 @@ export const Navbar: React.FC = () => {
               <button
                 onClick={toggleVisualEffects}
                 aria-label={visualEffectsEnabled ? 'Disable Visual Effects' : 'Enable Visual Effects'}
-                className="flex items-center space-x-1.5 py-1 px-2 rounded-xs bg-paper-bg-subtle dark:bg-night-bg-subtle border border-paper-border-subtle dark:border-night-border-subtle cursor-pointer"
+                className="flex items-center space-x-1.5 py-1 px-2 rounded-xs bg-paper-bg-subtle border border-paper-border-subtle cursor-pointer"
               >
-                <BookOpen className="w-3.5 h-3.5 text-academic-seal dark:text-night-seal" />
+                {visualEffectsEnabled ? <Eye className="w-3.5 h-3.5 text-academic-amber" /> : <EyeOff className="w-3.5 h-3.5 text-ink-muted" />}
                 <span>{visualEffectsEnabled ? 'Dynamics Active' : 'Dynamics Paused'}</span>
               </button>
             </div>

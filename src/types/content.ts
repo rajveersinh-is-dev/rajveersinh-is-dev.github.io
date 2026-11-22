@@ -54,6 +54,7 @@ export interface PublicationEntry {
   pdfUrl?: string;
   isPeerReviewed: false;
   verified: boolean;
+  year?: string;
 }
 
 export interface AchievementEntry {
@@ -67,14 +68,16 @@ export interface AchievementEntry {
   verified: boolean;
 }
 
+export interface SkillEntry {
+  name: string;
+  description: string;
+  associatedTopics: string[];
+}
+
 export interface SkillCategory {
   categoryName: string;
   proficiencyLevel: 'Intermediate';
-  skills: {
-    name: string;
-    description: string;
-    associatedTopics: string[];
-  }[];
+  skills: SkillEntry[];
 }
 
 export interface ExperienceEntry {

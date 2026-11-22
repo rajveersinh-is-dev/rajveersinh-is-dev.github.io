@@ -1,18 +1,27 @@
 import React from 'react';
 import { educationData } from '../../data';
-import { GraduationCap, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { Check } from 'lucide-react';
+import { useIntersectionObserver } from '../../utils/intersectionObserver';
 
 export const EducationSection: React.FC = () => {
+  const [sectionRef, isVisible] = useIntersectionObserver<HTMLElement>();
+
   return (
-    <section id="education" className="py-20 border-t border-paper-border-subtle relative bg-paper-bg-subtle/30">
+    <section
+      ref={sectionRef}
+      id="education"
+      className={`py-20 border-t border-paper-border-subtle relative bg-paper-bg-subtle/30 transition-all duration-700 ease-out ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+      }`}
+    >
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="space-y-3">
-            <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-academic-seal font-semibold">
-              Archival Dossier • Section VII
+            <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-ink-muted">
+              § 7
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-ink-primary tracking-tight">
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-ink-primary tracking-tight">
               § 7. Academic Enrolment &amp; Institutional Credentials
             </h2>
             <p className="font-serif italic text-ink-muted text-sm sm:text-base">
@@ -20,9 +29,8 @@ export const EducationSection: React.FC = () => {
             </p>
           </div>
 
-          <div className="px-3.5 py-1.5 rounded border border-academic-seal/40 bg-academic-seal/10 text-academic-seal font-mono text-xs flex items-center space-x-2 self-start md:self-auto font-semibold">
-            <ShieldCheck className="w-4 h-4" />
-            <span>Strictly Verified Enrolment Data</span>
+          <div className="px-3.5 py-1.5 rounded border border-paper-border-strong bg-paper-bg-subtle text-ink-secondary font-mono text-xs flex items-center space-x-2 self-start md:self-auto font-semibold">
+            <span>Verified Enrolment Data</span>
           </div>
         </div>
 
@@ -67,13 +75,13 @@ export const EducationSection: React.FC = () => {
                     )}
                   </td>
                   <td className="py-4 px-4 sm:px-6 align-top">
-                    <span className="inline-block px-2.5 py-1 rounded border border-academic-seal/30 bg-academic-seal/10 font-mono text-xs text-academic-seal font-semibold whitespace-nowrap">
+                    <span className="inline-block px-2.5 py-1 rounded border border-academic-amber/40 bg-academic-amber/10 font-mono text-xs text-academic-amber font-semibold whitespace-nowrap">
                       {edu.status}
                     </span>
                   </td>
                   <td className="py-4 px-4 sm:px-6 align-top hidden sm:table-cell">
                     <div className="flex items-center space-x-1.5 text-xs font-mono text-ink-secondary">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-academic-seal flex-shrink-0" />
+                      <Check className="w-3.5 h-3.5 text-academic-amber flex-shrink-0" />
                       <span>Confirmed Enrolment Record</span>
                     </div>
                   </td>
@@ -83,13 +91,13 @@ export const EducationSection: React.FC = () => {
           </table>
         </div>
 
-        {/* Verification Footnote & Institutional Registry Seal */}
+        {/* Verification Footnote */}
         <div className="p-4 rounded border border-paper-border-subtle bg-paper-bg-subtle flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono text-ink-muted">
           <div className="flex items-center space-x-2">
-            <GraduationCap className="w-4 h-4 text-academic-seal" />
+            <span className="w-1.5 h-1.5 rounded-full bg-ink-muted" />
             <span>Archive Classification: Certified Institutional Matriculation Record</span>
           </div>
-          <span className="text-academic-seal font-semibold">IIT Madras BS Aerospace &amp; Eon Gyanankur Class XII</span>
+          <span className="text-ink-secondary font-semibold">IIT Madras BS Aerospace &amp; Eon Gyanankur Class XII</span>
         </div>
       </div>
     </section>

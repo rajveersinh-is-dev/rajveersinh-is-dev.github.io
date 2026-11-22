@@ -60,7 +60,7 @@ export const CommandPalette: React.FC = () => {
         category: 'Index',
         title: 'Title Plate & Frontispiece',
         subtitle: 'Annals volume, issue metadata, and research abstract',
-        icon: <Compass className="w-4 h-4 text-academic-seal" />,
+        icon: <Compass className="w-4 h-4 text-academic-amber" />,
         action: () => navigateToSection('hero'),
       },
       {
@@ -84,7 +84,7 @@ export const CommandPalette: React.FC = () => {
         category: 'Index',
         title: 'Computational Treatises & Verified Algorithms',
         subtitle: 'NumLang compiler, Omni toolkit, hydraulic modeling, and audit suites',
-        icon: <FolderGit2 className="w-4 h-4 text-academic-seal" />,
+        icon: <FolderGit2 className="w-4 h-4 text-academic-amber" />,
         action: () => navigateToSection('projects'),
       },
       {
@@ -92,7 +92,7 @@ export const CommandPalette: React.FC = () => {
         category: 'Index',
         title: 'Archival Manuscripts & Preprints',
         subtitle: 'Zenodo deposited independent manuscripts with MSC2020 codes',
-        icon: <FileText className="w-4 h-4 text-academic-seal" />,
+        icon: <FileText className="w-4 h-4 text-academic-amber" />,
         action: () => navigateToSection('preprints'),
       },
       {
@@ -116,7 +116,7 @@ export const CommandPalette: React.FC = () => {
         category: 'Index',
         title: 'Education & Institutional Credentials',
         subtitle: 'IIT Madras (BSc Aerospace Enrolled) & Eon Gyanankur (Class XII)',
-        icon: <GraduationCap className="w-4 h-4 text-academic-seal" />,
+        icon: <GraduationCap className="w-4 h-4 text-academic-amber" />,
         action: () => navigateToSection('education'),
       },
       {
@@ -124,7 +124,7 @@ export const CommandPalette: React.FC = () => {
         category: 'Index',
         title: 'Curriculum Vitae & Academic Dossier',
         subtitle: 'Download official vector PDF or inspect Markdown source',
-        icon: <FileText className="w-4 h-4 text-academic-seal" />,
+        icon: <FileText className="w-4 h-4 text-academic-amber" />,
         action: () => navigateToSection('cv'),
       },
       {
@@ -140,7 +140,7 @@ export const CommandPalette: React.FC = () => {
         category: 'Index',
         title: 'Harmonic Topological Lattice',
         subtitle: 'Interactive network mapping mathematical areas, treatises, and concepts',
-        icon: <Compass className="w-4 h-4 text-academic-seal" />,
+        icon: <Compass className="w-4 h-4 text-academic-amber" />,
         action: () => navigateToSection('connections-graph'),
       },
       {
@@ -156,7 +156,7 @@ export const CommandPalette: React.FC = () => {
         category: 'Index',
         title: 'Academic Correspondence & Contact',
         subtitle: 'Direct email channel and verified academic repositories',
-        icon: <Mail className="w-4 h-4 text-academic-seal" />,
+        icon: <Mail className="w-4 h-4 text-academic-amber" />,
         action: () => navigateToSection('contact'),
       },
 
@@ -166,7 +166,7 @@ export const CommandPalette: React.FC = () => {
         category: 'Dossier',
         title: 'Download Curriculum Vitae (PDF)',
         subtitle: 'Locally generated vector PDF document without remote dependencies',
-        icon: <FileText className="w-4 h-4 text-academic-seal" />,
+        icon: <FileText className="w-4 h-4 text-academic-amber" />,
         action: () => {
           setCommandPaletteOpen(false);
           downloadPdfCv();
@@ -203,7 +203,7 @@ export const CommandPalette: React.FC = () => {
         category: 'Treatise',
         title: proj.name,
         subtitle: `${proj.category} — ${proj.technologies.slice(0, 3).join(', ')}`,
-        icon: <FolderGit2 className="w-4 h-4 text-academic-seal" />,
+        icon: <FolderGit2 className="w-4 h-4 text-academic-amber" />,
         action: () => {
           setCommandPaletteOpen(false);
           window.location.hash = `#project-${proj.id}`;
@@ -235,7 +235,7 @@ export const CommandPalette: React.FC = () => {
       category: 'Epistolary',
       title: `Copy Email: ${contactData.email}`,
       subtitle: 'Copy institutional correspondence address to clipboard',
-      icon: <Mail className="w-4 h-4 text-academic-seal" />,
+      icon: <Mail className="w-4 h-4 text-ink-muted" />,
       action: async () => {
         await copyTextToClipboard(contactData.email);
         setCopiedEmail(true);
@@ -319,11 +319,11 @@ export const CommandPalette: React.FC = () => {
       >
         {/* Masthead Concordance Title Strip */}
         <div className="px-4 py-2 border-b border-paper-border-subtle bg-paper-bg-base flex items-center justify-between text-[11px] font-mono text-ink-muted">
-          <span className="font-serif italic font-semibold text-academic-seal uppercase tracking-wider text-[10px]">
+          <span className="font-serif italic font-semibold text-academic-amber uppercase tracking-wider text-[10px]">
             Bibliographic Concordance &amp; Research Index
           </span>
           <span className="text-[10px]">
-            Acta Mathematica &amp; Computatoria
+            Pardeshi Research Archive
           </span>
         </div>
 
@@ -393,7 +393,7 @@ export const CommandPalette: React.FC = () => {
                   </div>
                   <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded border flex-shrink-0 ${
                     item.category === 'Treatise'
-                      ? 'bg-paper-bg-base border-academic-seal text-academic-seal font-semibold'
+                      ? 'bg-paper-bg-base border-academic-amber text-academic-amber font-semibold'
                       : item.category === 'Preprint'
                       ? 'bg-paper-bg-base border-academic-amber text-academic-amber font-semibold'
                       : 'bg-paper-bg-base border-paper-border-strong text-ink-muted'
@@ -416,7 +416,7 @@ export const CommandPalette: React.FC = () => {
             <span className="hidden sm:inline"><kbd className="px-1 py-0.5 rounded border border-paper-border-strong bg-paper-bg-subtle text-[10px]">↵</kbd> Inspect Record</span>
           </div>
           {copiedEmail && (
-            <span className="text-academic-seal font-semibold flex items-center space-x-1">
+            <span className="text-academic-amber font-semibold flex items-center space-x-1">
               <Check className="w-3.5 h-3.5" />
               <span>Email Copied!</span>
             </span>

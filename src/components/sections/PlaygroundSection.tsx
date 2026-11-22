@@ -1,22 +1,30 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, RotateCcw, Info, Sliders, Compass, Activity, Layers } from 'lucide-react';
+import { useIntersectionObserver } from '../../utils/intersectionObserver';
 
 type PlaygroundTab = 'lorenz' | 'cellular' | 'fractal' | 'homology';
 
 export const PlaygroundSection: React.FC = () => {
   const [activeTab, setActiveTab] = useState<PlaygroundTab>('lorenz');
+  const [sectionRef, isVisible] = useIntersectionObserver<HTMLElement>();
 
   return (
-    <section id="playground" className="py-20 border-t border-paper-border-subtle relative bg-paper-bg-base">
+    <section
+      ref={sectionRef}
+      id="playground"
+      className={`py-20 border-t border-paper-border-subtle relative bg-paper-bg-base transition-all duration-700 ease-out ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-3">
-            <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-academic-seal font-semibold">
-              Laboratorium Mathematicum • Section III
+            <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-ink-muted">
+              § 11
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-ink-primary tracking-tight">
-              § 3. The Computational Workbench / Laboratorium Mathematicum
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-ink-primary tracking-tight">
+              § 11. The Computational Workbench / Laboratorium Mathematicum
             </h2>
             <p className="font-serif italic text-ink-muted text-sm sm:text-base">
               Mathematical Visual Playground — Continuous Chaos, Cellular Automata, Complex Dynamics &amp; Simplicial Homology
@@ -229,7 +237,7 @@ const LorenzSimulator: React.FC = () => {
       {/* Plate Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-paper-border-subtle">
         <div>
-          <div className="text-[10px] font-mono uppercase tracking-widest text-academic-seal font-semibold">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-ink-muted font-semibold">
             Plate I • Continuous Dynamical Chaos
           </div>
           <h3 className="font-serif text-xl sm:text-2xl font-bold text-ink-primary">
@@ -245,7 +253,7 @@ const LorenzSimulator: React.FC = () => {
             onClick={() => setIsRunning(!isRunning)}
             className="px-3.5 py-1.5 rounded border border-paper-border-strong bg-paper-bg-base hover:bg-paper-bg-elevated text-xs font-mono flex items-center space-x-1.5 text-ink-primary transition-colors font-semibold"
           >
-            {isRunning ? <Pause className="w-3.5 h-3.5 text-academic-seal" /> : <Play className="w-3.5 h-3.5 text-academic-amber" />}
+            {isRunning ? <Pause className="w-3.5 h-3.5 text-academic-amber" /> : <Play className="w-3.5 h-3.5 text-academic-amber" />}
             <span>{isRunning ? 'Pause' : 'Resume'}</span>
           </button>
           <button
@@ -450,7 +458,7 @@ const CellularSimulator: React.FC = () => {
       {/* Plate Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-paper-border-subtle">
         <div>
-          <div className="text-[10px] font-mono uppercase tracking-widest text-academic-seal font-semibold">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-ink-muted font-semibold">
             Plate II • Emergent Discrete Complexity
           </div>
           <h3 className="font-serif text-xl sm:text-2xl font-bold text-ink-primary">
@@ -599,7 +607,7 @@ const FractalSimulator: React.FC = () => {
       {/* Plate Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-paper-border-subtle">
         <div>
-          <div className="text-[10px] font-mono uppercase tracking-widest text-academic-seal font-semibold">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-ink-muted font-semibold">
             Plate III • Complex Quadratic Dynamics
           </div>
           <h3 className="font-serif text-xl sm:text-2xl font-bold text-ink-primary">
@@ -927,7 +935,7 @@ const HomologySimulator: React.FC = () => {
       {/* Plate Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-paper-border-subtle">
         <div>
-          <div className="text-[10px] font-mono uppercase tracking-widest text-academic-seal font-semibold">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-ink-muted font-semibold">
             Plate IV • Algebraic Topology &amp; Filtration
           </div>
           <h3 className="font-serif text-xl sm:text-2xl font-bold text-ink-primary">
@@ -1033,7 +1041,7 @@ const HomologySimulator: React.FC = () => {
               </div>
               <div className="flex justify-between py-1 border-b border-paper-border-subtle text-ink-secondary">
                 <span className="font-serif">Euler Characteristic (χ):</span>
-                <span className="text-academic-seal font-bold">{eulerChi}</span>
+                <span className="text-academic-amber font-bold">{eulerChi}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-paper-border-subtle text-ink-secondary">
                 <span>0-simplices (Vertices):</span>

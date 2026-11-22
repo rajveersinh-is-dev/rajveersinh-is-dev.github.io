@@ -11,6 +11,7 @@ export const publicationsData: PublicationEntry[] = [
     recordUrl: "https://zenodo.org/records/22273633",
     isPeerReviewed: false,
     verified: true,
+    year: "2026",
   },
   {
     id: "zenodo-22310401",
@@ -22,5 +23,6 @@ export const publicationsData: PublicationEntry[] = [
     recordUrl: "https://zenodo.org/records/22310401",
     isPeerReviewed: false,
     verified: true,
+    year: "2026",
   }
 ];

@@ -2,17 +2,19 @@ import React, { useState } from 'react';
 import { publicationsData } from '../../data';
 import type { PublicationEntry } from '../../types/content';
 import { copyTextToClipboard } from '../../utils/clipboard';
-import { FileText, ExternalLink, Copy, Check, ShieldAlert, Code } from 'lucide-react';
+import { FileText, ExternalLink, Copy, Check, Code } from 'lucide-react';
+import { useIntersectionObserver } from '../../utils/intersectionObserver';
 
 export const PreprintsSection: React.FC = () => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [expandedBibtexId, setExpandedBibtexId] = useState<string | null>(null);
+  const [sectionRef, isVisible] = useIntersectionObserver<HTMLElement>();
 
   const getBibtex = (pub: PublicationEntry) => `@article{pardeshi_${pub.id},
   author    = {${pub.authors.join(' and ')}},
   title     = {${pub.title}},
   journal   = {Zenodo Preprint},
-  year      = {2026},
+  year      = {${pub.year ?? new Date().getFullYear()}},
   note      = {Independently authored research preprint},
   url       = {${pub.recordUrl}}
 }`;
@@ -27,15 +29,21 @@ export const PreprintsSection: React.FC = () => {
   };
 
   return (
-    <section id="preprints" className="py-20 border-t border-paper-border-subtle relative bg-paper-bg-base">
+    <section
+      ref={sectionRef}
+      id="preprints"
+      className={`py-20 border-t border-paper-border-subtle relative bg-paper-bg-base transition-all duration-700 ease-out ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+      }`}
+    >
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="space-y-3">
-            <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-academic-seal font-semibold">
-              Bibliotheca Mathematica • Section IV
+            <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-ink-muted">
+              § 4
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-ink-primary tracking-tight">
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-ink-primary tracking-tight">
               § 4. Archival Manuscripts &amp; Preprints
             </h2>
             <p className="font-serif italic text-ink-muted text-sm sm:text-base">
@@ -49,8 +57,7 @@ export const PreprintsSection: React.FC = () => {
         </div>
 
         {/* Strict Honesty / Academic Notice */}
-        <div className="p-4 rounded border-l-4 border-academic-seal bg-paper-bg-subtle border border-paper-border-subtle flex items-start space-x-3 text-xs font-mono text-ink-secondary">
-          <ShieldAlert className="w-4 h-4 text-academic-seal mt-0.5 flex-shrink-0" />
+        <div className="p-4 rounded border-l-3 border-paper-border-strong bg-paper-bg-subtle border border-paper-border-subtle text-xs font-mono text-ink-secondary">
           <div className="space-y-1">
             <span className="text-ink-primary font-bold">Scientific Integrity Notice:</span>
             <p>
@@ -78,7 +85,7 @@ export const PreprintsSection: React.FC = () => {
                 {/* Catalog Rubric & Metadata */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-paper-border-subtle pb-3">
                   <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
-                    <span className="font-bold text-academic-seal uppercase tracking-wider">
+                    <span className="font-bold text-ink-muted uppercase tracking-wider">
                       Article IV.{idx + 1}
                     </span>
                     <span className="text-paper-border-strong">•</span>
@@ -103,7 +110,7 @@ export const PreprintsSection: React.FC = () => {
                   </h3>
                   <div className="font-serif text-sm text-ink-secondary">
                     By <span className="font-semibold text-ink-primary">{pub.authors.join(', ')}</span>
-                    <span className="text-academic-seal font-semibold ml-0.5">¹</span>
+                    <span className="text-academic-amber font-semibold ml-0.5">¹</span>
                   </div>
                   <div className="text-xs font-serif italic text-ink-muted">
                     ¹ Independent Mathematical Researcher, Satara, Maharashtra, India
@@ -157,8 +164,8 @@ export const PreprintsSection: React.FC = () => {
                   >
                     {copiedId === pub.id ? (
                       <>
-                        <Check className="w-3.5 h-3.5 text-academic-seal" />
-                        <span className="text-academic-seal font-bold">BibTeX Copied!</span>
+                        <Check className="w-3.5 h-3.5 text-academic-amber" />
+                        <span className="text-academic-amber font-bold">BibTeX Copied!</span>
                       </>
                     ) : (
                       <>

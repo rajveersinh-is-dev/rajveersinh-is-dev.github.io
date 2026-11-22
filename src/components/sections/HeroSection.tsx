@@ -1,107 +1,152 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { profileData } from '../../data';
 import { downloadPdfCv } from '../../utils/generatePdfCv';
-import { ArrowDown, FileDown, BookOpen, Cpu, Sparkles } from 'lucide-react';
+import { AsciiDitherCanvas } from '../visuals/AsciiDitherCanvas';
+import { usePreferences } from '../../context';
+import { FileDown, ArrowDown } from 'lucide-react';
 
 export const HeroSection: React.FC = () => {
+  const { visualEffectsEnabled } = usePreferences();
+
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const listener = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
+    media.addEventListener('change', listener);
+    return () => media.removeEventListener('change', listener);
+  }, []);
+
   return (
-    <section id="hero" className="relative min-h-[92vh] flex items-center justify-center pt-28 pb-16 px-4 sm:px-6 lg:px-8">
-      {/* Frontispiece Title Plate */}
-      <div className="relative z-10 max-w-4xl mx-auto w-full text-center space-y-8 p-6 sm:p-10 md:p-12 border-2 border-paper-border-strong bg-paper-bg-subtle/80 shadow-sm">
-        {/* Archival Journal Header */}
-        <div className="pb-3 border-b border-paper-border-subtle flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] font-mono tracking-[0.2em] uppercase text-academic-seal font-semibold">
-          <span>Acta Mathematica &amp; Computatoria</span>
-          <span>Vol. I, Fasc. 2026 • Satara, Maharashtra, India</span>
-        </div>
-
-        {/* Scholarly Metadata Strip */}
-        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs font-mono text-ink-muted">
-          <span className="text-academic-seal font-bold uppercase tracking-wider">
-            {profileData.professionalIdentity}
-          </span>
-          <span>•</span>
-          <span>Age {profileData.age}</span>
-          <span>•</span>
-          <span>{profileData.location}</span>
-          <span>•</span>
-          <span>MSC2020: 55N31, 90C27, 68N20</span>
-        </div>
-
-        {/* Main Title & Role */}
-        <div className="space-y-3 pt-2">
-          <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-ink-primary uppercase">
-            {profileData.fullName}
-          </h1>
-          <p className="font-serif text-base sm:text-lg text-ink-secondary tracking-widest uppercase font-medium">
-            {profileData.professionalIdentity}
-          </p>
-        </div>
-
-        {/* Classical Oxford Double Rule */}
-        <hr className="oxford-rule my-4" />
-
-        {/* Research Epigraph */}
-        <div className="py-1">
-          <blockquote className="font-serif italic text-lg sm:text-2xl text-academic-amber max-w-2xl mx-auto font-normal leading-relaxed">
-            "{profileData.tagline}"
-          </blockquote>
-        </div>
-
-        {/* Scholarly Abstract Block */}
-        <div className="max-w-3xl mx-auto text-left p-5 sm:p-6 border-l-3 border-academic-seal bg-paper-bg-base border border-paper-border-subtle space-y-2">
-          <div className="font-serif font-bold text-xs uppercase tracking-widest text-academic-seal flex items-center space-x-1.5">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Abstract of Research Program</span>
-          </div>
-          <p className="font-serif text-sm sm:text-base text-ink-secondary leading-relaxed">
-            An independent research program in theoretical mathematics, algorithm engineering, mechanized proof verification, and combinatorial structures. Primary treatises address persistent homology on temporal hypergraphs, Lagrangian dual relaxation with provable bounds for constrained shortest paths, and certified supercompilation via SSA lowering in Lean 4 with Cranelift code generation. Dedicated to <span className="text-ink-primary font-medium italic">"{profileData.targetImpression}"</span>
-          </p>
-        </div>
-
-        {/* Dignified Archival Action Ribbon */}
-        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 pt-2">
-          <a
-            href="#preprints"
-            className="px-5 py-2.5 rounded border border-academic-seal bg-academic-seal/10 hover:bg-academic-seal text-academic-seal hover:text-white font-mono font-medium text-xs tracking-wider uppercase transition-colors flex items-center space-x-2"
-          >
-            <BookOpen className="w-3.5 h-3.5" />
-            <span>Archival Preprints</span>
-          </a>
-
-          <a
-            href="#projects"
-            className="px-5 py-2.5 rounded border border-paper-border-strong bg-paper-bg-elevated hover:bg-paper-border-subtle text-ink-primary font-mono font-medium text-xs tracking-wider uppercase transition-colors flex items-center space-x-2"
-          >
-            <Cpu className="w-3.5 h-3.5" />
-            <span>Computational Treatises</span>
-          </a>
-
-          <a
-            href="./Rajveersinh_Vishal_Pardeshi_CV.pdf"
-            download="Rajveersinh_Vishal_Pardeshi_CV.pdf"
-            onClick={(e) => {
-              try {
-                downloadPdfCv();
-                e.preventDefault();
-              } catch {}
-            }}
-            className="px-5 py-2.5 rounded border border-paper-border-subtle hover:border-paper-border-strong bg-paper-bg-base text-ink-secondary hover:text-ink-primary font-mono text-xs tracking-wider uppercase transition-colors flex items-center space-x-2 cursor-pointer"
-            title="Download locally compiled Curriculum Vitae vector PDF"
-          >
-            <FileDown className="w-3.5 h-3.5 text-academic-amber" />
-            <span>Curriculum Vitae</span>
-          </a>
-        </div>
+    <section
+      id="hero"
+      className="relative min-h-screen flex flex-col justify-between pt-24 sm:pt-28 pb-12 px-4 sm:px-6 lg:px-12 overflow-hidden bg-paper-bg-base"
+    >
+      {/* ASCII Dither Canvas Backdrop */}
+      <div className="absolute inset-0 z-0 pointer-events-auto">
+        <AsciiDitherCanvas
+          mode="hidden-structures"
+          density="normal"
+          opacity={visualEffectsEnabled ? 0.65 : 0.15}
+          interactive={visualEffectsEnabled}
+        />
       </div>
 
-      {/* Subtle bottom scroll link to § 1 */}
-      <a
-        href="#about"
-        aria-label="Scroll down to About section"
-        className="absolute bottom-4 left-1/2 -translate-x-1/2 p-2 text-ink-muted hover:text-academic-seal transition-colors"
-      >
-        <ArrowDown className="w-4 h-4 animate-bounce" />
-      </a>
+      {/* Foreground Content */}
+      <div className="relative z-10 max-w-5xl mx-auto w-full flex-1 flex flex-col justify-between py-6 pointer-events-none">
+        {/* TOP-LEFT MONOSPACE STRIP (Stagger Item 1: 0ms) */}
+        <div
+          className={`pt-2 pointer-events-auto ${prefersReducedMotion ? '' : 'animate-fade-in'}`}
+          style={prefersReducedMotion ? undefined : { animationDelay: '0ms' }}
+        >
+          <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-ink-muted">
+            <span className="font-bold tracking-wider uppercase text-ink-primary">RVP</span>
+            <span>•</span>
+            <span>{profileData.professionalIdentity}</span>
+            <span>•</span>
+            <span>Satara, India</span>
+            <span>•</span>
+            <span>Age {profileData.age}</span>
+          </div>
+        </div>
+
+        {/* CENTER TYPOGRAPHIC ANCHOR (Stagger Item 2: 150ms) */}
+        <div
+          className={`my-auto py-10 sm:py-14 space-y-4 pointer-events-auto ${prefersReducedMotion ? '' : 'animate-fade-in'}`}
+          style={prefersReducedMotion ? undefined : { animationDelay: '150ms' }}
+        >
+          <div className="space-y-1">
+            <h1
+              aria-label="Rajveersinh Vishal Pardeshi"
+              className="font-serif font-bold tracking-tight text-ink-primary"
+            >
+              <span className="block text-[2.75rem] min-[400px]:text-5xl sm:text-7xl md:text-8xl leading-none">
+                RAJVEERSINH
+              </span>
+              <span className="block text-[2.75rem] min-[400px]:text-5xl sm:text-7xl md:text-8xl leading-none sm:translate-x-8 md:translate-x-12 mt-1 sm:mt-2 text-ink-primary">
+                VISHAL PARDESHI
+              </span>
+            </h1>
+          </div>
+
+          {/* Restrained Italic Tagline */}
+          <div className="pt-2">
+            <p className="font-serif italic text-lg sm:text-2xl text-academic-amber font-normal">
+              "{profileData.tagline}"
+            </p>
+          </div>
+
+          {/* Lower Human Voice Introduction (max-width 480px) */}
+          <div className="pt-4 max-w-[480px]">
+            <p className="font-serif text-sm sm:text-base text-ink-secondary leading-relaxed">
+              I study mathematical structures from first principles, algorithm engineering, mechanized proof verification, and combinatorial systems. Currently developing treatises on persistent homology on temporal hypergraphs, Lagrangian dual relaxation for constrained routing, and verified SSA supercompilation. Driven by <em>"{profileData.targetImpression}"</em>
+            </p>
+          </div>
+        </div>
+
+        {/* BOTTOM NAVIGATION & CV DOWNLOAD (Stagger Item 3: 300ms) */}
+        <div
+          className={`pt-6 border-t border-paper-border-subtle flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pointer-events-auto ${prefersReducedMotion ? '' : 'animate-fade-in'}`}
+          style={prefersReducedMotion ? undefined : { animationDelay: '300ms' }}
+        >
+          {/* Research links — plain text with arrow */}
+          <div className="flex flex-wrap items-center gap-6 text-xs sm:text-sm font-mono text-ink-primary">
+            <a
+              href="#research-interests"
+              className="hover:text-academic-amber transition-colors flex items-center space-x-1.5 group"
+            >
+              <span>View Research</span>
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </a>
+            <a
+              href="#projects"
+              className="hover:text-academic-amber transition-colors flex items-center space-x-1.5 group"
+            >
+              <span>Projects</span>
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </a>
+            <a
+              href="#preprints"
+              className="hover:text-academic-amber transition-colors flex items-center space-x-1.5 group"
+            >
+              <span>Preprints</span>
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </a>
+          </div>
+
+          {/* Bottom-right CV download — ghost/outline only, small */}
+          <div className="flex items-center space-x-4">
+            <a
+              href="./Rajveersinh_Vishal_Pardeshi_CV.pdf"
+              download="Rajveersinh_Vishal_Pardeshi_CV.pdf"
+              onClick={(e) => {
+                try {
+                  downloadPdfCv();
+                  e.preventDefault();
+                } catch {}
+              }}
+              className="px-3 py-1.5 rounded-xs border border-paper-border-strong hover:border-academic-amber text-ink-secondary hover:text-ink-primary font-mono text-xs transition-colors flex items-center space-x-1.5 cursor-pointer shadow-xs"
+              title="Download locally compiled Curriculum Vitae vector PDF"
+            >
+              <FileDown className="w-3.5 h-3.5 text-ink-muted" />
+              <span>Download CV (PDF)</span>
+            </a>
+
+            {/* Subtle scroll link to § 1 */}
+            <a
+              href="#about"
+              aria-label="Scroll down to About section"
+              className="p-1.5 rounded-xs text-ink-muted hover:text-ink-primary transition-colors hidden md:inline-flex"
+            >
+              <ArrowDown className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
+      </div>
     </section>
   );
 };

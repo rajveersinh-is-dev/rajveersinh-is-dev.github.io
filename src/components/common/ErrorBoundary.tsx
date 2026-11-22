@@ -41,7 +41,7 @@ export class ErrorBoundary extends Component<Props, State> {
         <div className="min-h-screen bg-[#121110] text-[#ede8df] flex items-center justify-center p-6 font-serif">
           <div className="max-w-xl w-full border border-[#5c5449] bg-[#1a1816] p-8 rounded-sm shadow-xl space-y-6">
             <div className="border-b border-[#38332d] pb-3 flex items-center justify-between text-xs font-mono uppercase tracking-widest text-[#be123c]">
-              <span>Acta Mathematica &amp; Computatoria</span>
+              <span>Pardeshi Research Archive</span>
               <span>Fault Recovery</span>
             </div>
             <div className="space-y-2">

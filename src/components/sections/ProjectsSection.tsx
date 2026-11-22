@@ -3,6 +3,7 @@ import { projectsData } from '../../data';
 import type { ProjectEntry } from '../../types/content';
 import { ProjectVisualDemo } from '../visuals/ProjectVisualDemo';
 import { copyTextToClipboard } from '../../utils/clipboard';
+import { useIntersectionObserver } from '../../utils/intersectionObserver';
 import {
   Layers,
   ChevronRight,
@@ -20,6 +21,7 @@ export const ProjectsSection: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [selectedProject, setSelectedProject] = useState<ProjectEntry | null>(null);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [sectionRef, isVisible] = useIntersectionObserver<HTMLElement>();
 
   const categories = ['All', 'Compiler & Verification', 'Optimization & Graphs', 'Simulation & Systems'];
 
@@ -119,16 +121,22 @@ export const ProjectsSection: React.FC = () => {
   const additionalProjects = projectsData.filter((p) => !p.isFeatured && filterByCategory(p));
 
   return (
-    <section id="projects" className="py-20 border-t border-paper-border-subtle relative bg-paper-bg-base">
+    <section
+      ref={sectionRef}
+      id="projects"
+      className={`py-20 border-t border-paper-border-subtle relative bg-paper-bg-base transition-all duration-700 ease-out ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-3">
-            <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-academic-seal font-semibold">
-              Fasciculus Systematum • Section II
+            <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-ink-muted">
+              § 3
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-ink-primary tracking-tight">
-              § 2. Computational Treatises &amp; Verified Algorithms
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-ink-primary tracking-tight">
+              § 3. Computational Treatises &amp; Verified Algorithms
             </h2>
             <p className="font-serif italic text-ink-muted text-sm sm:text-base">
               Projects &amp; Research Repositories — Mechanized Compilers, Algorithmic Lattices, and Discrete Physical Simulations
@@ -172,7 +180,7 @@ export const ProjectsSection: React.FC = () => {
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <div className="flex items-center space-x-2 mb-1.5">
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-paper-border-strong bg-paper-bg-base text-academic-seal font-bold">
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-paper-border-strong bg-paper-bg-base text-academic-amber font-bold">
                           Monograph {romanNumerals[project.priority - 1] || project.priority}
                         </span>
                         <span className="text-[10px] font-mono text-ink-muted">
@@ -215,7 +223,7 @@ export const ProjectsSection: React.FC = () => {
                   {/* Audit / Simulation Honesty Note */}
                   {project.metricsAuditNote && (
                     <div className="text-[10px] font-mono text-ink-muted flex items-center space-x-1.5 bg-paper-bg-elevated p-2 rounded border border-paper-border-subtle">
-                      <Info className="w-3.5 h-3.5 text-academic-seal flex-shrink-0" />
+                      <Info className="w-3.5 h-3.5 text-ink-muted flex-shrink-0" />
                       <span>{project.metricsAuditNote}</span>
                     </div>
                   )}
@@ -236,12 +244,12 @@ export const ProjectsSection: React.FC = () => {
                 {/* Footer Action Strip */}
                 <div className="px-6 py-3.5 border-t border-paper-border-subtle bg-paper-bg-base flex items-center justify-between">
                   <div className="flex items-center space-x-1.5 text-[11px] font-mono text-ink-muted">
-                    <ShieldCheck className="w-3.5 h-3.5 text-academic-seal" />
+                    <ShieldCheck className="w-3.5 h-3.5 text-ink-muted" />
                     <span>{project.status}</span>
                   </div>
                   <button
                     onClick={() => handleOpenProject(project)}
-                    className="text-xs font-mono text-academic-amber hover:text-academic-seal flex items-center space-x-1 font-semibold group/btn transition-colors"
+                    className="text-xs font-mono text-academic-amber hover:text-ink-primary flex items-center space-x-1 font-semibold group/btn transition-colors cursor-pointer"
                   >
                     <span>View Specifications</span>
                     <ChevronRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
@@ -255,7 +263,7 @@ export const ProjectsSection: React.FC = () => {
         {/* Additional Algorithmic Treatises */}
         <div className="space-y-4 pt-6">
           <div className="flex items-center space-x-2 text-xs font-mono text-ink-muted uppercase tracking-wider">
-            <Layers className="w-4 h-4 text-academic-seal" />
+            <Layers className="w-4 h-4 text-academic-amber" />
             <span className="font-semibold">Additional Research &amp; Algorithmic Repositories</span>
           </div>
 
@@ -269,7 +277,7 @@ export const ProjectsSection: React.FC = () => {
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <div className="flex items-center space-x-2 mb-1">
-                      <span className="text-[10px] font-mono text-academic-seal font-semibold">
+                      <span className="text-[10px] font-mono text-ink-muted font-semibold">
                         Treatise {romanNumerals[5 + idx] || `${idx + 6}`}
                       </span>
                     </div>
@@ -293,7 +301,7 @@ export const ProjectsSection: React.FC = () => {
                     )}
                     <button
                       onClick={() => handleOpenProject(project)}
-                      className="px-2.5 py-1 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-academic-amber text-xs font-mono flex items-center space-x-1 transition-colors font-semibold"
+                      className="px-2.5 py-1 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-academic-amber text-xs font-mono flex items-center space-x-1 transition-colors font-semibold cursor-pointer"
                       title="View Details"
                     >
                       <Info className="w-3.5 h-3.5" />
@@ -320,7 +328,7 @@ export const ProjectsSection: React.FC = () => {
 
                   <button
                     onClick={() => handleOpenProject(project)}
-                    className="text-[11px] font-mono text-academic-amber hover:text-academic-seal font-semibold flex items-center space-x-0.5 transition-colors"
+                    className="text-[11px] font-mono text-academic-amber hover:text-ink-primary font-semibold flex items-center space-x-0.5 transition-colors cursor-pointer"
                   >
                     <span>Inspect</span>
                     <ChevronRight className="w-3 h-3" />
@@ -348,7 +356,7 @@ export const ProjectsSection: React.FC = () => {
               <div className="px-6 py-4 border-b-2 border-paper-border-strong bg-paper-bg-base flex items-center justify-between">
                 <div>
                   <div className="flex items-center space-x-2">
-                    <span className="text-xs font-mono text-academic-seal font-bold tracking-wider">
+                    <span className="text-xs font-mono text-academic-amber font-bold tracking-wider">
                       [PROJECT SPECIFICATION RECORD]
                     </span>
                     <span className="text-xs text-ink-muted font-mono">
@@ -429,8 +437,8 @@ export const ProjectsSection: React.FC = () => {
                 </div>
 
                 {selectedProject.metricsAuditNote && (
-                  <div className="p-3.5 rounded border-l-2 border-academic-seal bg-paper-bg-base border border-paper-border-subtle text-xs text-ink-secondary font-mono">
-                    <span className="font-bold text-academic-seal">Metric Transparency: </span>
+                  <div className="p-3.5 rounded border-l-2 border-academic-amber bg-paper-bg-base border border-paper-border-subtle text-xs text-ink-secondary font-mono">
+                    <span className="font-bold text-academic-amber">Metric Transparency: </span>
                     {selectedProject.metricsAuditNote}
                   </div>
                 )}

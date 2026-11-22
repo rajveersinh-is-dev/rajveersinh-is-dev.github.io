@@ -1,17 +1,25 @@
 import React from 'react';
 import { profileData, experienceData } from '../../data';
-import { Briefcase, CheckCircle2, Compass, Target } from 'lucide-react';
+import { useIntersectionObserver } from '../../utils/intersectionObserver';
 
 export const AboutSection: React.FC = () => {
+  const [sectionRef, isVisible] = useIntersectionObserver<HTMLElement>();
+
   return (
-    <section id="about" className="py-20 border-t border-paper-border-subtle relative bg-paper-bg-base">
+    <section
+      ref={sectionRef}
+      id="about"
+      className={`py-20 border-t border-paper-border-subtle relative bg-paper-bg-base transition-all duration-700 ease-out ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+      }`}
+    >
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         {/* Section Header */}
         <div className="space-y-3">
-          <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-academic-seal font-semibold">
-            Acta Mathematica et Computatoria • Section I
+          <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-ink-muted">
+            § 1
           </div>
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-ink-primary tracking-tight">
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-ink-primary tracking-tight">
             § 1. Foundational Profile &amp; Research Philosophy
           </h2>
           <p className="font-serif italic text-ink-muted text-sm sm:text-base">
@@ -25,7 +33,7 @@ export const AboutSection: React.FC = () => {
         {/* Wide-Margin Scholarly Narrative Layout */}
         <div className="space-y-8">
           {/* First-Person Intellectual Manifesto with Drop Cap */}
-          <div className="space-y-5 font-serif text-ink-secondary text-base sm:text-lg leading-relaxed">
+          <div className="space-y-5 font-serif text-ink-secondary text-base sm:text-lg leading-relaxed max-w-4xl">
             <p className="drop-cap text-ink-primary">
               I am an independent researcher focused on mathematical discoveries, algorithm design, and computational approaches to understanding complex structures. My interests span theoretical mathematics and computation, with a particular emphasis on developing original ideas through rigorous reasoning.
             </p>
@@ -37,12 +45,12 @@ export const AboutSection: React.FC = () => {
             </p>
           </div>
 
-          {/* Research Philosophy Formal Theorem Box */}
-          <div className="theorem-box my-8">
-            <div className="theorem-label">
+          {/* Research Philosophy Formal Theorem Box (oxford-rule left border in academic-seal) */}
+          <div className="my-8 p-6 bg-paper-bg-subtle border-l-4 border-academic-seal space-y-3">
+            <div className="font-serif font-bold text-xs uppercase tracking-wider text-academic-amber">
               Axiom I.1 — Research Philosophy
             </div>
-            <blockquote className="theorem-statement text-base sm:text-lg">
+            <blockquote className="font-serif italic text-base sm:text-lg text-ink-primary leading-relaxed">
               "{profileData.researchPhilosophy}"
             </blockquote>
             <div className="pt-2 flex justify-end">
@@ -50,41 +58,38 @@ export const AboutSection: React.FC = () => {
             </div>
           </div>
 
-          {/* Academic Aspirations & Research Direction */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-            <div className="p-6 rounded border border-paper-border-strong bg-paper-bg-subtle space-y-2">
-              <div className="text-xs font-mono uppercase tracking-wider text-academic-seal font-semibold flex items-center space-x-2">
-                <Target className="w-3.5 h-3.5" />
-                <span>Long-Term Ambition</span>
-              </div>
-              <p className="font-serif text-sm text-ink-primary leading-relaxed italic">
+          {/* Academic Aspirations & Research Direction: Single-Column, Wide-Margin Pull-Quote Style */}
+          <div className="py-6 space-y-6 max-w-3xl border-t border-b border-paper-border-subtle">
+            <div className="space-y-2">
+              <span className="text-[11px] font-mono uppercase tracking-widest text-ink-muted block">
+                Long-Term Ambition
+              </span>
+              <p className="font-serif italic text-xl sm:text-2xl text-ink-primary leading-relaxed">
                 "{profileData.longTermAmbition}"
               </p>
             </div>
 
-            <div className="p-6 rounded border border-paper-border-strong bg-paper-bg-subtle space-y-2">
-              <div className="text-xs font-mono uppercase tracking-wider text-academic-amber font-semibold flex items-center space-x-2">
-                <Compass className="w-3.5 h-3.5" />
-                <span>Five-Year Aspiration</span>
-              </div>
-              <p className="font-serif text-sm text-ink-primary leading-relaxed italic">
+            <div className="space-y-2 pt-2">
+              <span className="text-[11px] font-mono uppercase tracking-widest text-ink-muted block">
+                Five-Year Aspiration
+              </span>
+              <p className="font-serif italic text-lg sm:text-xl text-ink-secondary leading-relaxed">
                 "{profileData.fiveYearAspiration}"
               </p>
             </div>
           </div>
 
           {/* Practical Technical Stewardship & Applied Systems */}
-          <div className="pt-6 border-t border-paper-border-subtle space-y-4">
-            <div className="flex items-center space-x-2 text-xs font-mono text-ink-primary uppercase tracking-wider">
-              <Briefcase className="w-4 h-4 text-academic-seal" />
-              <span className="font-bold">Applied Technical Stewardship &amp; Practical Systems Experience</span>
+          <div className="pt-6 space-y-4">
+            <div className="text-xs font-mono text-ink-primary uppercase tracking-wider font-bold">
+              Applied Technical Stewardship &amp; Practical Systems Experience
             </div>
 
             <div className="space-y-4">
               {experienceData.map((exp) => (
                 <div
                   key={exp.id}
-                  className="p-6 rounded border border-paper-border-subtle bg-paper-bg-subtle space-y-3"
+                  className="py-5 border-b border-paper-border-subtle space-y-3"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-paper-border-subtle pb-2">
                     <div className="font-serif text-base font-bold text-ink-primary">
@@ -101,8 +106,8 @@ export const AboutSection: React.FC = () => {
 
                   <ul className="text-xs sm:text-sm text-ink-secondary space-y-1.5 pt-1 font-serif">
                     {exp.responsibilities.map((resp, i) => (
-                      <li key={i} className="flex items-start space-x-2">
-                        <CheckCircle2 className="w-4 h-4 text-academic-seal mt-0.5 flex-shrink-0" />
+                      <li key={i} className="flex items-start space-x-2.5">
+                        <span className="text-ink-muted select-none">—</span>
                         <span>{resp}</span>
                       </li>
                     ))}
@@ -116,7 +121,7 @@ export const AboutSection: React.FC = () => {
               <span>Verified Institutional Credentials &amp; Enrolment:</span>
               <a
                 href="#education"
-                className="text-academic-seal hover:underline font-semibold flex items-center space-x-1"
+                className="text-academic-amber hover:underline font-semibold flex items-center space-x-1"
               >
                 <span>Inspect § 7. Academic Enrolment &amp; Institutional Credentials →</span>
               </a>

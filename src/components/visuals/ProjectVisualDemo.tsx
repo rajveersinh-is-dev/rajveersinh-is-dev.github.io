@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { ProjectEntry } from '../../types/content';
-import { Play, RotateCcw, Sliders, CheckCircle2 } from 'lucide-react';
+import { Play, RotateCcw, Sliders, Check } from 'lucide-react';
 
 interface ProjectVisualDemoProps {
   project: ProjectEntry;
@@ -79,7 +79,7 @@ const NumLangPipelineVisualizer: React.FC = () => {
   return (
     <div className="space-y-4 p-4 rounded border border-paper-border-strong bg-paper-bg-base font-mono text-xs shadow-xs">
       <div className="flex items-center justify-between border-b border-paper-border-subtle pb-2">
-        <span className="text-academic-seal font-bold uppercase tracking-wider text-[11px] font-mono">
+        <span className="text-academic-amber font-bold uppercase tracking-wider text-[11px] font-mono">
           [INTERACTIVE COMPILER PIPELINE STAGES]
         </span>
         <span className="text-ink-muted text-[10px] font-serif italic">
@@ -99,7 +99,7 @@ const NumLangPipelineVisualizer: React.FC = () => {
                 : 'bg-paper-bg-base border-paper-border-subtle text-ink-secondary hover:text-ink-primary hover:bg-paper-bg-elevated'
             }`}
           >
-            <div className="text-[9px] uppercase tracking-wider text-academic-seal font-bold">
+            <div className="text-[9px] uppercase tracking-wider text-academic-amber font-bold">
               {stage.badge}
             </div>
             <div className="text-[11px] truncate mt-0.5 font-serif font-semibold">{stage.title}</div>
@@ -127,7 +127,7 @@ const NumLangPipelineVisualizer: React.FC = () => {
         </pre>
 
         <div className="text-[10px] text-ink-muted flex items-center space-x-1.5 pt-1 font-serif">
-          <CheckCircle2 className="w-3.5 h-3.5 text-academic-amber flex-shrink-0" />
+          <Check className="w-3.5 h-3.5 text-academic-amber flex-shrink-0" />
           <span>{stages[activeStage].notes}</span>
         </div>
       </div>
@@ -267,7 +267,7 @@ const TerrainErosionSimulator: React.FC = () => {
     <div className="space-y-4 p-4 rounded border border-paper-border-strong bg-paper-bg-base font-mono text-xs shadow-xs">
       <div className="flex items-center justify-between border-b border-paper-border-subtle pb-2">
         <div>
-          <span className="text-academic-seal font-bold uppercase tracking-wider text-[11px] block font-mono">
+          <span className="text-academic-amber font-bold uppercase tracking-wider text-[11px] block font-mono">
             [INTERACTIVE HYDRAULIC EROSION CANVAS]
           </span>
           <span className="text-ink-muted text-[10px] font-serif italic">
@@ -326,7 +326,7 @@ const DualPruningHullVisualizer: React.FC = () => {
   return (
     <div className="space-y-4 p-4 rounded border border-paper-border-strong bg-paper-bg-base font-mono text-xs shadow-xs">
       <div className="flex items-center justify-between border-b border-paper-border-subtle pb-2">
-        <span className="text-academic-seal font-bold uppercase tracking-wider text-[11px] font-mono">
+        <span className="text-academic-amber font-bold uppercase tracking-wider text-[11px] font-mono">
           [LAGRANGIAN HULL PRUNING ON DECODING LATTICE]
         </span>
         <span className="text-ink-muted text-[10px] font-math">
@@ -381,7 +381,7 @@ const DualPruningHullVisualizer: React.FC = () => {
                   {isPruned ? (
                     <span className="text-ink-dim">PRUNED</span>
                   ) : (
-                    <span className="text-academic-seal">SURVIVOR</span>
+                    <span className="text-academic-amber">SURVIVOR</span>
                   )}
                 </div>
               </div>
@@ -400,7 +400,7 @@ const EarlyWarningDynamicsVisualizer: React.FC = () => {
   return (
     <div className="space-y-4 p-4 rounded border border-paper-border-strong bg-paper-bg-base font-mono text-xs shadow-xs">
       <div className="border-b border-paper-border-subtle pb-2">
-        <span className="text-academic-seal font-bold uppercase tracking-wider text-[11px] block font-mono">
+        <span className="text-academic-amber font-bold uppercase tracking-wider text-[11px] block font-mono">
           [CRITICAL SLOWING DOWN DYNAMICAL INDICATORS]
         </span>
         <span className="text-ink-muted text-[10px] font-serif italic">
@@ -411,7 +411,7 @@ const EarlyWarningDynamicsVisualizer: React.FC = () => {
       <div className="p-4 rounded border border-paper-border-strong bg-paper-bg-subtle space-y-3.5">
         <div className="flex justify-between items-center text-[11px]">
           <span className="text-ink-secondary font-serif font-semibold">Simulated State Transition:</span>
-          <span className="px-2.5 py-0.5 rounded border border-paper-border-strong bg-paper-bg-base text-academic-seal font-bold font-mono">
+          <span className="px-2.5 py-0.5 rounded border border-paper-border-strong bg-paper-bg-base text-academic-amber font-bold font-mono">
             Approaching Fold Bifurcation
           </span>
         </div>
@@ -430,10 +430,10 @@ const EarlyWarningDynamicsVisualizer: React.FC = () => {
           <div>
             <div className="flex justify-between text-[10px] text-ink-muted mb-1 font-serif">
               <span>Variance Scaling (σ²):</span>
-              <span className="text-academic-seal font-bold font-mono">4.2x Baseline</span>
+              <span className="text-academic-amber font-bold font-mono">4.2x Baseline</span>
             </div>
             <div className="h-1.5 w-full bg-paper-bg-base rounded border border-paper-border-subtle overflow-hidden">
-              <div className="h-full bg-academic-seal rounded" style={{ width: '78%' }} />
+              <div className="h-full bg-academic-amber rounded" style={{ width: '78%' }} />
             </div>
           </div>
 
@@ -459,7 +459,7 @@ const PersistentHomologyHypergraphVisualizer: React.FC = () => {
   return (
     <div className="space-y-4 p-4 rounded border border-paper-border-strong bg-paper-bg-base font-mono text-xs shadow-xs">
       <div className="border-b border-paper-border-subtle pb-2">
-        <span className="text-academic-seal font-bold uppercase tracking-wider text-[11px] block font-mono">
+        <span className="text-academic-amber font-bold uppercase tracking-wider text-[11px] block font-mono">
           [PATH-CROSSING FUNCTORS &amp; PERSISTENCE BARCODES]
         </span>
         <span className="text-ink-muted text-[10px] font-math">
@@ -474,9 +474,9 @@ const PersistentHomologyHypergraphVisualizer: React.FC = () => {
 
         <div className="space-y-2">
           <div className="flex items-center space-x-2 text-[10px]">
-            <span className="w-10 text-academic-seal font-bold font-mono">β₁ #1</span>
+            <span className="w-10 text-academic-amber font-bold font-mono">β₁ #1</span>
             <div className="flex-1 bg-paper-bg-base h-2.5 rounded border border-paper-border-subtle relative overflow-hidden">
-              <div className="absolute left-[15%] right-[20%] h-full bg-academic-seal rounded" />
+              <div className="absolute left-[15%] right-[20%] h-full bg-academic-amber rounded" />
             </div>
             <span className="text-ink-muted text-[9px] font-mono">[t=0.15, t=0.80]</span>
           </div>
@@ -509,7 +509,7 @@ const UmbraAuditCoverageVisualizer: React.FC = () => {
   return (
     <div className="space-y-4 p-4 rounded border border-paper-border-strong bg-paper-bg-base font-mono text-xs shadow-xs">
       <div className="border-b border-paper-border-subtle pb-2">
-        <span className="text-academic-seal font-bold uppercase tracking-wider text-[11px] block font-mono">
+        <span className="text-academic-amber font-bold uppercase tracking-wider text-[11px] block font-mono">
           [REPORTED AUDIT METRIC DASHBOARD]
         </span>
         <span className="text-ink-muted text-[10px] font-serif italic">
@@ -524,7 +524,7 @@ const UmbraAuditCoverageVisualizer: React.FC = () => {
         </div>
 
         <div className="p-4 rounded border border-paper-border-strong bg-paper-bg-subtle text-center space-y-1">
-          <div className="text-2xl font-bold text-academic-seal font-serif">88.67%</div>
+          <div className="text-2xl font-bold text-academic-amber font-serif">88.67%</div>
           <div className="text-[10px] text-ink-muted uppercase font-mono">Branch Coverage (&gt;85% req)</div>
         </div>
       </div>
@@ -539,7 +539,7 @@ const SunflowerHypergraphVisualizer: React.FC = () => {
   return (
     <div className="space-y-4 p-4 rounded border border-paper-border-strong bg-paper-bg-base font-mono text-xs shadow-xs">
       <div className="border-b border-paper-border-subtle pb-2">
-        <span className="text-academic-seal font-bold uppercase tracking-wider text-[11px] block font-mono">
+        <span className="text-academic-amber font-bold uppercase tracking-wider text-[11px] block font-mono">
           [ERDŐS-RADO SUNFLOWER STRUCTURE SCHEMATIC]
         </span>
         <span className="text-ink-muted text-[10px] font-serif italic">
@@ -569,7 +569,7 @@ const DefaultSystemArchitectureVisualizer: React.FC<{ project: ProjectEntry }> =
   return (
     <div className="space-y-3 p-4 rounded border border-paper-border-strong bg-paper-bg-base font-mono text-xs shadow-xs">
       <div className="flex items-center justify-between border-b border-paper-border-subtle pb-2">
-        <span className="text-academic-seal font-bold uppercase tracking-wider text-[11px] font-mono">
+        <span className="text-academic-amber font-bold uppercase tracking-wider text-[11px] font-mono">
           [SYSTEM ARCHITECTURE &amp; INVARIANT CONTRACT]
         </span>
         <span className="text-ink-muted text-[10px] font-serif italic">
@@ -590,7 +590,7 @@ const DefaultSystemArchitectureVisualizer: React.FC<{ project: ProjectEntry }> =
             Mathematical Transformation
           </span>
           <span className="text-ink-muted">→</span>
-          <span className="px-2.5 py-1 rounded border border-paper-border-subtle bg-paper-bg-base text-academic-seal font-semibold">
+          <span className="px-2.5 py-1 rounded border border-paper-border-subtle bg-paper-bg-base text-academic-amber font-semibold">
             Verified Invariant Bound
           </span>
         </div>

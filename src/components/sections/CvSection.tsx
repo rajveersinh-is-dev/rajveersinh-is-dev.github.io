@@ -2,19 +2,19 @@ import React, { useState } from 'react';
 import { profileData } from '../../data';
 import { downloadPdfCv } from '../../utils/generatePdfCv';
 import { copyTextToClipboard } from '../../utils/clipboard';
+import { useIntersectionObserver } from '../../utils/intersectionObserver';
 import {
   FileDown,
   FileCode,
-  ShieldCheck,
   Check,
   ExternalLink,
-  FileText,
-  Award
+  FileText
 } from 'lucide-react';
 
 export const CvSection: React.FC = () => {
   const [downloading, setDownloading] = useState(false);
   const [copiedMd, setCopiedMd] = useState(false);
+  const [sectionRef, isVisible] = useIntersectionObserver<HTMLElement>();
 
   const handleDownloadPdf = () => {
     setDownloading(true);
@@ -44,15 +44,21 @@ export const CvSection: React.FC = () => {
   };
 
   return (
-    <section id="cv" className="py-20 border-t border-paper-border-subtle relative bg-paper-bg-base">
+    <section
+      ref={sectionRef}
+      id="cv"
+      className={`py-20 border-t border-paper-border-subtle relative bg-paper-bg-base transition-all duration-700 ease-out ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-3">
-            <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-academic-seal font-semibold">
-              Dossier Academicum • Section VIII
+            <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-ink-muted">
+              § 8
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-ink-primary tracking-tight">
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-ink-primary tracking-tight">
               § 8. Curriculum Vitae (CV) &amp; Academic Dossier
             </h2>
             <p className="font-serif italic text-ink-muted text-sm sm:text-base">
@@ -61,8 +67,7 @@ export const CvSection: React.FC = () => {
           </div>
 
           <div className="px-3.5 py-1.5 rounded border border-paper-border-strong bg-paper-bg-subtle text-ink-secondary font-mono text-xs flex items-center space-x-2 self-start md:self-auto font-semibold shadow-xs">
-            <ShieldCheck className="w-4 h-4 text-academic-seal" />
-            <span>Authoritative Single Source • Offline Compiled</span>
+            <span>Offline Compiled Vector Dossier</span>
           </div>
         </div>
 
@@ -71,7 +76,7 @@ export const CvSection: React.FC = () => {
           <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-8 pb-8 border-b-2 border-paper-border-strong">
             <div className="space-y-4 max-w-2xl">
               <div className="flex items-center space-x-2">
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-paper-border-strong bg-paper-bg-base text-academic-seal font-bold tracking-wider uppercase">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-paper-border-strong bg-paper-bg-base text-academic-amber font-bold tracking-wider uppercase">
                   VECTOR PDF &amp; MARKDOWN SOURCE
                 </span>
                 <span className="text-xs font-mono text-ink-muted">
@@ -97,7 +102,7 @@ export const CvSection: React.FC = () => {
               <button
                 onClick={handleDownloadPdf}
                 disabled={downloading}
-                className="px-6 py-3.5 rounded border border-paper-border-strong bg-academic-amber hover:opacity-90 text-paper-bg-base font-mono font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 transition-all shadow-xs"
+                className="px-6 py-3.5 rounded border border-paper-border-strong bg-academic-amber hover:opacity-90 text-paper-bg-base font-mono font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 transition-all shadow-xs cursor-pointer"
               >
                 <FileDown className="w-4 h-4" />
                 <span>{downloading ? 'Compiling PDF...' : 'Download Official CV (PDF)'}</span>
@@ -109,19 +114,19 @@ export const CvSection: React.FC = () => {
                 className="px-5 py-2.5 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-ink-secondary hover:text-ink-primary font-mono text-xs flex items-center justify-center space-x-2 transition-colors font-semibold"
                 title="Direct link to pre-built static PDF"
               >
-                <FileText className="w-4 h-4 text-academic-seal" />
+                <FileText className="w-4 h-4 text-ink-muted" />
                 <span>Direct Static PDF Link</span>
                 <ExternalLink className="w-3.5 h-3.5 text-ink-muted" />
               </a>
 
               <button
                 onClick={handleCopyMarkdown}
-                className="px-5 py-2.5 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-ink-muted hover:text-ink-primary font-mono text-xs flex items-center justify-center space-x-2 transition-colors"
+                className="px-5 py-2.5 rounded border border-paper-border-subtle bg-paper-bg-base hover:bg-paper-bg-elevated text-ink-muted hover:text-ink-primary font-mono text-xs flex items-center justify-center space-x-2 transition-colors cursor-pointer"
               >
                 {copiedMd ? (
                   <>
-                    <Check className="w-4 h-4 text-academic-seal" />
-                    <span className="text-academic-seal font-semibold">Markdown Copied!</span>
+                    <Check className="w-4 h-4 text-academic-amber" />
+                    <span className="text-academic-amber font-semibold">Markdown Copied!</span>
                   </>
                 ) : (
                   <>
@@ -138,7 +143,7 @@ export const CvSection: React.FC = () => {
             {/* Vector Document Architecture */}
             <div className="p-4 rounded border border-paper-border-subtle bg-paper-bg-base space-y-3">
               <div className="flex items-center space-x-2 border-b border-paper-border-subtle pb-2">
-                <FileText className="w-4 h-4 text-academic-seal" />
+                <FileText className="w-4 h-4 text-ink-muted" />
                 <span className="font-serif font-bold text-xs uppercase tracking-wider text-ink-primary">
                   Document Architecture
                 </span>
@@ -153,7 +158,7 @@ export const CvSection: React.FC = () => {
             {/* Included Curricular Records */}
             <div className="p-4 rounded border border-paper-border-subtle bg-paper-bg-base space-y-3">
               <div className="flex items-center space-x-2 border-b border-paper-border-subtle pb-2">
-                <ShieldCheck className="w-4 h-4 text-academic-amber" />
+                <span className="w-2 h-2 rounded-full bg-academic-amber" />
                 <span className="font-serif font-bold text-xs uppercase tracking-wider text-ink-primary">
                   Archival Inclusions
                 </span>
@@ -168,7 +173,7 @@ export const CvSection: React.FC = () => {
             {/* Offline Vector Integrity */}
             <div className="p-4 rounded border border-paper-border-subtle bg-paper-bg-base space-y-3">
               <div className="flex items-center space-x-2 border-b border-paper-border-subtle pb-2">
-                <Award className="w-4 h-4 text-academic-seal" />
+                <span className="w-2 h-2 rounded-full bg-academic-amber" />
                 <span className="font-serif font-bold text-xs uppercase tracking-wider text-ink-primary">
                   Integrity Guarantee
                 </span>
@@ -186,7 +191,7 @@ export const CvSection: React.FC = () => {
             <span className="font-serif italic">
               Verification Hash: SHA-256 Synchronized with public repository assets
             </span>
-            <span className="text-academic-seal font-semibold">
+            <span className="text-ink-secondary font-semibold">
               MSC2020: 55N31 • 90C27 • 68N20 • 37D45
             </span>
           </div>

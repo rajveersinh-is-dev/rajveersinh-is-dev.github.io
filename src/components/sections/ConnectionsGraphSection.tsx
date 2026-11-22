@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { connectionsGraphData } from '../../data';
 import type { GraphConnectionNode } from '../../types/content';
-import { Sparkles, Compass } from 'lucide-react';
+import { useIntersectionObserver } from '../../utils/intersectionObserver';
 
 export const ConnectionsGraphSection: React.FC = () => {
   const [selectedNodeId, setSelectedNodeId] = useState<string>('p-numlang');
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+  const [sectionRef, isVisible] = useIntersectionObserver<HTMLElement>();
 
   const activeId = hoveredNodeId || selectedNodeId;
   const activeNode = connectionsGraphData.find((n) => n.id === activeId) || null;
@@ -70,16 +71,22 @@ export const ConnectionsGraphSection: React.FC = () => {
   };
 
   return (
-    <section id="connections-graph" className="py-20 border-t border-paper-border-subtle relative bg-paper-bg-base">
+    <section
+      ref={sectionRef}
+      id="connections-graph"
+      className={`py-20 border-t border-paper-border-subtle relative bg-paper-bg-base transition-all duration-700 ease-out ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+      }`}
+    >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="space-y-3">
-            <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-academic-seal font-semibold">
-              Topologia Harmonica • Section IX
+            <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-ink-muted">
+              § 10
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-ink-primary tracking-tight">
-              § 9. Harmonic Topological Lattice
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-ink-primary tracking-tight">
+              § 10. Harmonic Topological Lattice
             </h2>
             <p className="font-serif italic text-ink-muted text-sm sm:text-base">
               Research Connections Graph — Relational Map of Mathematical Concepts, Treatises, &amp; Toolchains
@@ -204,7 +211,7 @@ export const ConnectionsGraphSection: React.FC = () => {
                       textAnchor="middle"
                       className={`text-[9px] font-mono select-none pointer-events-none transition-colors ${
                         isSelected || isHovered
-                          ? 'fill-academic-seal font-bold'
+                          ? 'fill-academic-amber font-bold'
                           : isConnectedToActive
                           ? 'fill-ink-primary font-semibold'
                           : 'fill-ink-muted'
@@ -223,7 +230,7 @@ export const ConnectionsGraphSection: React.FC = () => {
             {activeNode ? (
               <div className="p-6 rounded border border-paper-border-strong bg-paper-bg-subtle space-y-4 shadow-sm">
                 <div className="flex items-center justify-between border-b border-paper-border-subtle pb-2">
-                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded border border-academic-seal/30 bg-academic-seal/10 text-academic-seal font-semibold">
+                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded border border-academic-amber/30 bg-academic-amber/10 text-academic-amber font-semibold">
                     {activeNode.type}
                   </span>
                   <span className="text-xs font-mono text-ink-muted">
@@ -241,8 +248,8 @@ export const ConnectionsGraphSection: React.FC = () => {
                 </div>
 
                 <div className="pt-3 border-t border-paper-border-subtle space-y-2">
-                  <div className="text-xs font-mono text-academic-seal font-semibold flex items-center space-x-1.5">
-                    <Sparkles className="w-3.5 h-3.5" />
+                  <div className="text-xs font-mono text-academic-amber font-semibold flex items-center space-x-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-academic-amber inline-block" />
                     <span>Direct Relational Connections ({activeNode.connections.length})</span>
                   </div>
 
@@ -254,7 +261,7 @@ export const ConnectionsGraphSection: React.FC = () => {
                         <button
                           key={connId}
                           onClick={() => setSelectedNodeId(connId)}
-                          className="text-xs font-mono px-2.5 py-1 rounded border border-paper-border-subtle hover:border-academic-seal bg-paper-bg-base hover:bg-paper-bg-elevated text-ink-secondary hover:text-academic-seal transition-colors text-left"
+                          className="text-xs font-mono px-2.5 py-1 rounded border border-paper-border-subtle hover:border-academic-amber bg-paper-bg-base hover:bg-paper-bg-elevated text-ink-secondary hover:text-academic-amber transition-colors text-left"
                         >
                           {linked.name}
                         </button>
@@ -263,8 +270,7 @@ export const ConnectionsGraphSection: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="pt-2 text-[10px] font-mono text-ink-muted flex items-center space-x-1">
-                  <Compass className="w-3 h-3 text-academic-amber" />
+                <div className="pt-2 text-[10px] font-mono text-ink-muted">
                   <span>Click any connected node above to pivot focus in lattice.</span>
                 </div>
               </div>
