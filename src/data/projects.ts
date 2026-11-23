@@ -24,10 +24,10 @@ export const projectsData: ProjectEntry[] = [
   {
     id: "omni-toolkit",
     name: "Omni Toolkit",
-    conciseDescription: "A multipurpose software and algorithmic utility toolkit designed for cross-discipline computational tasks, high-efficiency data routines, and developer tooling.",
+    conciseDescription: "A standalone Rust and Python utility toolkit for file format conversion, data stream parsing, and algorithmic benchmarking without external dependencies.",
     category: "Computational Utilities & Systems",
     technologies: ["Rust", "Python", "CLI", "Systems Architecture"],
-    motivation: "Providing unified, dependency-lean tools for automated mathematical workflows, format conversion, and rapid experimental prototyping.",
+    motivation: "Automates format conversion, equation parsing, and test-data generation locally with minimal dependencies.",
     keyIdeas: [
       "Modular architectural layout separating core engines from CLI drivers",
       "Zero-overhead memory-safe abstractions in Rust",

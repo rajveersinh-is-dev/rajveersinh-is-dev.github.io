@@ -10,7 +10,7 @@
 endobj
 4 0 obj
 <<
-/Length 10061
+/Length 10619
 >>
 stream
 0.200025 w
@@ -69,13 +69,11 @@ BT
 10.3499999999999996 TL
 0.2 0.255 0.333 rg
 40. 709.8899999999999864 Td
-(I am an independent researcher focused on mathematical discoveries, algorithm design, and computational approaches to) Tj
-T* (understanding complex structures. My interests span theoretical mathematics and computation, with a particular emphasis on) Tj
-T* (developing original ideas through rigorous reasoning.) Tj
+(I am an independent researcher focused on discrete optimization, algorithm design, and computational geometry. My work) Tj
+T* (emphasizes constructing rigorous proofs, discovering structural invariants, and mechanizing correctness in proof assistants.) Tj
 T* () Tj
-T* (My interest in mathematics began early, and I earned multiple medals in SOF IMO Olympiads during my school years. I now) Tj
-T* (pursue independent research while exploring the connections between mathematical theory, algorithms, scientific computing, and) Tj
-T* (formal verification.) Tj
+T* (My interest in mathematics began early, earning medals in school-level SOF IMO Olympiads. I now pursue independent research) Tj
+T* (connecting mathematical theory, scientific computing, and formal verification in Lean 4.) Tj
 T* () Tj
 T* (I believe in approaching difficult problems with curiosity, persistence, and intellectual honesty.) Tj
 ET
@@ -83,90 +81,90 @@ BT
 /F2 11 Tf
 12.6499999999999986 TL
 0.078 0.094 0.129 rg
-40. 594.8899999999999864 Td
+40. 616.8899999999999864 Td
 (EDUCATION) Tj
 ET
 0.85 0.47 0.02 RG
 1.2 w
-40. 590.8899999999999864 m
-68. 590.8899999999999864 l
+40. 612.8899999999999864 m
+68. 612.8899999999999864 l
 S
 0.86 0.88 0.9 RG
 0.5 w
-72. 590.8899999999999864 m
-555.2799999999999727 590.8899999999999864 l
+72. 612.8899999999999864 m
+555.2799999999999727 612.8899999999999864 l
 S
 BT
 /F2 9.5 Tf
 10.9249999999999989 TL
 0.059 0.09 0.165 rg
-40. 578.8899999999999864 Td
+40. 600.8899999999999864 Td
 (Indian Institute of Technology Madras) Tj
 ET
 BT
 /F3 8.5 Tf
 9.7749999999999986 TL
 0.392 0.455 0.545 rg
-487.7899999999999636 578.8899999999999864 Td
+487.7899999999999636 600.8899999999999864 Td
 (Currently Enrolled) Tj
 ET
 BT
 /F1 9 Tf
 10.3499999999999996 TL
 0.2 0.255 0.333 rg
-48. 566.8899999999999864 Td
+48. 588.8899999999999864 Td
 (Bachelor of Science, Aerospace, Aeronautical and Astronautical Engineering) Tj
 ET
 BT
 /F2 9.5 Tf
 10.9249999999999989 TL
 0.059 0.09 0.165 rg
-40. 552.8899999999999864 Td
+40. 574.8899999999999864 Td
 (Eon Gyanankur English School) Tj
 ET
 BT
 /F3 8.5 Tf
 9.7749999999999986 TL
 0.392 0.455 0.545 rg
-463.3099999999999454 552.8899999999999864 Td
+463.3099999999999454 574.8899999999999864 Td
 (Current Academic Stage) Tj
 ET
 BT
 /F1 9 Tf
 10.3499999999999996 TL
 0.2 0.255 0.333 rg
-48. 540.8899999999999864 Td
+48. 562.8899999999999864 Td
 (Class XII) Tj
 ET
 BT
 /F2 11 Tf
 12.6499999999999986 TL
 0.078 0.094 0.129 rg
-40. 514.8899999999999864 Td
+40. 536.8899999999999864 Td
 (RESEARCH & PREPRINTS) Tj
 ET
 0.85 0.47 0.02 RG
 1.2 w
-40. 510.8899999999999864 m
-68. 510.8899999999999864 l
+40. 532.8899999999999864 m
+68. 532.8899999999999864 l
 S
 0.86 0.88 0.9 RG
 0.5 w
-72. 510.8899999999999864 m
-555.2799999999999727 510.8899999999999864 l
+72. 532.8899999999999864 m
+555.2799999999999727 532.8899999999999864 l
 S
 BT
 /F2 9 Tf
 10.3499999999999996 TL
 0.059 0.09 0.165 rg
-40. 498.8899999999999864 Td
+40. 520.8899999999999864 Td
 ([Preprint] Path-Crossing Functors and Persistent Homology on Weighted Temporal Hypergraphs) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.278 0.333 0.412 rg
-48. 487.8899999999999864 Td
+48. 509.8899999999999864 Td
 (Area: Algebraic Topology & Persistent Homology. An independently authored mathematical preprint exploring functorial constructions) Tj
 T* (on time-varying hypergraphs, formulating path-crossing topological invariants and stability properties under filtration metrics.) Tj
 ET
@@ -174,21 +172,21 @@ BT
 /F3 8 Tf
 9.1999999999999993 TL
 0.851 0.467 0.024 rg
-48. 465.8899999999999864 Td
+48. 487.8899999999999864 Td
 (Record: https://zenodo.org/records/22273633) Tj
 ET
 BT
 /F2 9 Tf
 10.3499999999999996 TL
 0.059 0.09 0.165 rg
-40. 451.8899999999999864 Td
+40. 473.8899999999999864 Td
 ([Preprint] Lagrangian Dual Pruning and Constrained Shortest Path Bounds in Combinatorial Lattices) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.278 0.333 0.412 rg
-48. 440.8899999999999864 Td
+48. 462.8899999999999864 Td
 (Area: Optimization, Combinatorics & Algorithm Design. An independently authored preprint investigating dual decomposition methods,) Tj
 T* (adaptive Lagrange multipliers, and lower convex hull pruning algorithms for resource-constrained shortest path problems.) Tj
 ET
@@ -196,45 +194,45 @@ BT
 /F3 8 Tf
 9.1999999999999993 TL
 0.851 0.467 0.024 rg
-48. 418.8899999999999864 Td
+48. 440.8899999999999864 Td
 (Record: https://zenodo.org/records/22310401) Tj
 ET
 BT
 /F2 11 Tf
 12.6499999999999986 TL
 0.078 0.094 0.129 rg
-40. 392.8899999999999864 Td
+40. 414.8899999999999864 Td
 (COMPUTATIONAL & RESEARCH PROJECTS) Tj
 ET
 0.85 0.47 0.02 RG
 1.2 w
-40. 388.8899999999999864 m
-68. 388.8899999999999864 l
+40. 410.8899999999999864 m
+68. 410.8899999999999864 l
 S
 0.86 0.88 0.9 RG
 0.5 w
-72. 388.8899999999999864 m
-555.2799999999999727 388.8899999999999864 l
+72. 410.8899999999999864 m
+555.2799999999999727 410.8899999999999864 l
 S
 BT
 /F2 9 Tf
 10.3499999999999996 TL
 0.059 0.09 0.165 rg
-40. 376.8899999999999864 Td
+40. 398.8899999999999864 Td
 (NumLang — Compiler Theory & Formal Verification) Tj
 ET
 BT
 /F1 8 Tf
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
-444.5599999999999454 376.8899999999999864 Td
+444.5599999999999454 398.8899999999999864 Td
 ([Rust, SSA IR, LLVM, Cranelift]) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 365.8899999999999864 Td
+48. 387.8899999999999864 Td
 (A Rust compiler project implementing static single assignment \(SSA\) intermediate representation, supercompilation, polyhedral) Tj
 T* (recurrence detection, and dual Cranelift/LLVM code generation with Lean 4 formal semantics.) Tj
 ET
@@ -242,43 +240,43 @@ BT
 /F2 9 Tf
 10.3499999999999996 TL
 0.059 0.09 0.165 rg
-40. 339.8899999999999864 Td
+40. 361.8899999999999864 Td
 (Omni Toolkit — Computational Utilities & Systems) Tj
 ET
 BT
 /F1 8 Tf
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
-408.6399999999999864 339.8899999999999864 Td
+408.6399999999999864 361.8899999999999864 Td
 ([Rust, Python, CLI, Systems Architecture]) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 328.8899999999999864 Td
-(A multipurpose software and algorithmic utility toolkit designed for cross-discipline computational tasks, high-efficiency data routines,) Tj
-T* (and developer tooling.) Tj
+48. 350.8899999999999864 Td
+(A standalone Rust and Python utility toolkit for file format conversion, data stream parsing, and algorithmic benchmarking without) Tj
+T* (external dependencies.) Tj
 ET
 BT
 /F2 9 Tf
 10.3499999999999996 TL
 0.059 0.09 0.165 rg
-40. 302.8899999999999864 Td
+40. 324.8899999999999864 Td
 (Terrain Erosion Engine — Scientific Computing & Simulation) Tj
 ET
 BT
 /F1 8 Tf
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
-296.1599999999999113 302.8899999999999864 Td
+296.1599999999999113 324.8899999999999864 Td
 ([TypeScript, HTML5 Canvas, Hydraulic Simulation, Numerical Integration]) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 291.8899999999999864 Td
+48. 313.8899999999999864 Td
 (A TypeScript-based procedural terrain and hydraulic erosion simulation engine modeling droplet physics, sediment transport, thermal) Tj
 T* (weathering, and heightfield dynamics.) Tj
 ET
@@ -286,42 +284,42 @@ BT
 /F2 9 Tf
 10.3499999999999996 TL
 0.059 0.09 0.165 rg
-40. 265.8899999999999864 Td
+40. 287.8899999999999864 Td
 (Umbra — Systems & Software Reliability) Tj
 ET
 BT
 /F1 8 Tf
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
-346.8799999999998818 265.8899999999999864 Td
+346.8799999999998818 287.8899999999999864 Td
 ([Rust, Automated Testing, Code Coverage, Static Analysis]) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 254.8899999999999864 Td
+48. 276.8899999999999864 Td
 (A systems software and verification project with a rigorous automated testing harness and security inspection pipeline.) Tj
 ET
 BT
 /F2 9 Tf
 10.3499999999999996 TL
 0.059 0.09 0.165 rg
-40. 238.8899999999999864 Td
+40. 260.8899999999999864 Td
 (DocuTrust — Cryptographic Integrity & Verification) Tj
 ET
 BT
 /F1 8 Tf
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
-351.7599999999998772 238.8899999999999864 Td
+351.7599999999998772 260.8899999999999864 Td
 ([TypeScript, Cryptography, Merkle Trees, Integrity Proofs]) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 227.8899999999999864 Td
+48. 249.8899999999999864 Td
 (A cryptographic document verification and tamper-evident authentication system using cryptographic hash trees and reproducible) Tj
 T* (integrity proofs.) Tj
 ET
@@ -329,21 +327,21 @@ BT
 /F2 9 Tf
 10.3499999999999996 TL
 0.059 0.09 0.165 rg
-40. 201.8899999999999864 Td
+40. 223.8899999999999864 Td
 (ADHP-CSPP — Constrained Shortest Path & Optimization) Tj
 ET
 BT
 /F1 8 Tf
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
-308.5599999999998317 201.8899999999999864 Td
+308.5599999999998317 223.8899999999999864 Td
 ([Rust, Optimization Algorithms, Lagrangian Relaxation, Graph Theory]) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 190.8899999999999864 Td
+48. 212.8899999999999864 Td
 (Adaptive Dual-Heuristic Pruning for the Constrained Shortest Path Problem, combining Lagrangian relaxation with bidirectional search) Tj
 T* (heuristics.) Tj
 ET
@@ -351,21 +349,21 @@ BT
 /F2 9 Tf
 10.3499999999999996 TL
 0.059 0.09 0.165 rg
-40. 164.8899999999999864 Td
+40. 186.8899999999999864 Td
 (Dual-Pruned Decoding — Algorithmic Language Model Decoding) Tj
 ET
 BT
 /F1 8 Tf
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
-336.9599999999998658 164.8899999999999864 Td
+336.9599999999998658 186.8899999999999864 Td
 ([Python, PyTorch, Lagrange Multipliers, Combinatorial Lattice]) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 153.8899999999999864 Td
+48. 175.8899999999999864 Td
 (Research implementation of Lagrangian hull pruning for budget-constrained language model generation over combinatorial decoding) Tj
 T* (lattices.) Tj
 ET
@@ -373,43 +371,65 @@ BT
 /F2 9 Tf
 10.3499999999999996 TL
 0.059 0.09 0.165 rg
-40. 127.8899999999999864 Td
+40. 149.8899999999999864 Td
 (Early Warning Complex Systems — Dynamical Systems & Stochastic Processes) Tj
 ET
 BT
 /F1 8 Tf
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
-317.1999999999998749 127.8899999999999864 Td
+317.1999999999998749 149.8899999999999864 Td
 ([Python, NumPy / SciPy, Dynamical Systems, Permutation Entropy]) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 116.8899999999999864 Td
+48. 138.8899999999999864 Td
 (Research codebase investigating statistical and spectral early-warning indicators for critical transitions in complex dynamical systems.) Tj
 ET
 BT
 /F2 9 Tf
 10.3499999999999996 TL
 0.059 0.09 0.165 rg
-40. 100.8899999999999864 Td
+40. 122.8899999999999864 Td
 (Certified Dose — Algebraic Topology & Persistent Homology) Tj
 ET
 BT
 /F1 8 Tf
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
-355.8399999999999181 100.8899999999999864 Td
+355.8399999999999181 122.8899999999999864 Td
 ([Python, Lean 4, Category Theory, Persistent Homology]) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 89.8899999999999864 Td
+48. 111.8899999999999864 Td
 (Mathematical research codebase for persistent homology computations on weighted temporal hypergraphs via path-crossing functors.) Tj
+ET
+BT
+/F2 9 Tf
+10.3499999999999996 TL
+0.059 0.09 0.165 rg
+40. 95.8899999999999864 Td
+(Sunflower Conjecture Audit — Extremal Combinatorics & Hypergraphs) Tj
+ET
+BT
+/F1 8 Tf
+9.1999999999999993 TL
+0.392 0.455 0.545 rg
+364.3199999999999363 95.8899999999999864 Td
+([Python, Extremal Combinatorics, Hypergraph Theory]) Tj
+ET
+BT
+/F1 8.5 Tf
+9.7749999999999986 TL
+0.2 0.255 0.333 rg
+48. 84.8899999999999864 Td
+( C o m p u t a t i o n a l   a u d i t   a n d   a n a l y t i c a l   v e r i f i c a t i o n   o f   b o u n d i n g   t e c h n i q u e s   a n d   h y p e r g r a p h   r e p r e s e n t a t i o n s   f o r   t h e   E r dQ s - R a d o   S u n f l o w e r) Tj
+T* (Conjecture.) Tj
 ET
 BT
 /F1 8 Tf
@@ -430,7 +450,7 @@ endobj
 endobj
 6 0 obj
 <<
-/Length 7933
+/Length 7244
 >>
 stream
 0.5 w
@@ -451,42 +471,20 @@ BT
 10.3499999999999996 TL
 0.059 0.09 0.165 rg
 40. 801.8899999999999864 Td
-(Sunflower Conjecture Audit — Extremal Combinatorics & Hypergraphs) Tj
-ET
-BT
-/F1 8 Tf
-9.1999999999999993 TL
-0.392 0.455 0.545 rg
-364.3199999999999363 801.8899999999999864 Td
-([Python, Extremal Combinatorics, Hypergraph Theory]) Tj
-ET
-BT
-/F1 8.5 Tf
-9.7749999999999986 TL
-0.2 0.255 0.333 rg
-48. 790.8899999999999864 Td
-( C o m p u t a t i o n a l   a u d i t   a n d   a n a l y t i c a l   v e r i f i c a t i o n   o f   b o u n d i n g   t e c h n i q u e s   a n d   h y p e r g r a p h   r e p r e s e n t a t i o n s   f o r   t h e   E r dQ s - R a d o   S u n f l o w e r) Tj
-T* (Conjecture.) Tj
-ET
-BT
-/F2 9 Tf
-10.3499999999999996 TL
-0.059 0.09 0.165 rg
-40. 764.8899999999999864 Td
 (Lilium Mathematical Art — Computational Geometry & Mathematical Art) Tj
 ET
 BT
 /F1 8 Tf
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
-331.3599999999999568 764.8899999999999864 Td
+331.3599999999999568 801.8899999999999864 Td
 ([TypeScript, Canvas / WebGL, Parametric Geometry, Dithering]) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 753.8899999999999864 Td
+48. 790.8899999999999864 Td
 (Algorithmic generation of complex geometric forms, high-order parametric curves, and topological manifolds rendered via procedural) Tj
 T* (shaders.) Tj
 ET
@@ -494,31 +492,31 @@ BT
 /F2 11 Tf
 12.6499999999999986 TL
 0.078 0.094 0.129 rg
-40. 715.8899999999999864 Td
+40. 752.8899999999999864 Td
 (HONORS & ACHIEVEMENTS) Tj
 ET
 0.85 0.47 0.02 RG
 1.2 w
-40. 711.8899999999999864 m
-68. 711.8899999999999864 l
+40. 748.8899999999999864 m
+68. 748.8899999999999864 l
 S
 0.86 0.88 0.9 RG
 0.5 w
-72. 711.8899999999999864 m
-555.2799999999999727 711.8899999999999864 l
+72. 748.8899999999999864 m
+555.2799999999999727 748.8899999999999864 l
 S
 BT
 /F2 9 Tf
 10.3499999999999996 TL
 0.059 0.09 0.165 rg
-40. 699.8899999999999864 Td
+40. 736.8899999999999864 Td
 (Kaggle — Squares in Squares Competition) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 688.8899999999999864 Td
+48. 725.8899999999999864 Td
 (7th — current reported leaderboard position; ongoing competition. Ranked 7th among approximately 13,000 global entries on the active) Tj
 T* (public leaderboard for the Squares in Squares algorithmic competition. \(Note: Leaderboard position is subject to change as competition) Tj
 T* (proceeds\).) Tj
@@ -527,14 +525,14 @@ BT
 /F2 9 Tf
 10.3499999999999996 TL
 0.059 0.09 0.165 rg
-40. 652.8899999999999864 Td
+40. 689.8899999999999864 Td
 (SOF International Mathematics Olympiad \(IMO\)) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 641.8899999999999864 Td
+48. 678.8899999999999864 Td
 (Multiple school-level medals awarded across Classes 6, 7, and 8. Earned multiple school-level medals in Classes 6, 7, and 8 in the) Tj
 T* (Science Olympiad Foundation International Mathematics Olympiad for early mathematical problem-solving aptitude.) Tj
 ET
@@ -542,31 +540,31 @@ BT
 /F2 11 Tf
 12.6499999999999986 TL
 0.078 0.094 0.129 rg
-40. 603.8899999999999864 Td
+40. 640.8899999999999864 Td
 (TECHNICAL SKILLS \(INTERMEDIATE PROFICIENCY\)) Tj
 ET
 0.85 0.47 0.02 RG
 1.2 w
-40. 599.8899999999999864 m
-68. 599.8899999999999864 l
+40. 636.8899999999999864 m
+68. 636.8899999999999864 l
 S
 0.86 0.88 0.9 RG
 0.5 w
-72. 599.8899999999999864 m
-555.2799999999999727 599.8899999999999864 l
+72. 636.8899999999999864 m
+555.2799999999999727 636.8899999999999864 l
 S
 BT
 /F2 8.5 Tf
 9.7749999999999986 TL
 0.851 0.467 0.024 rg
-40. 587.8899999999999864 Td
+40. 624.8899999999999864 Td
 (Core & Systems Languages:) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 577.8899999999999864 Td
+48. 614.8899999999999864 Td
 (Rust \(Systems Programming, Zero-Cost Abstractions, Memory Safety\)  •  Python \(Scientific Computing, Numerical Algorithms,) Tj
 T* (Data-Parallel Concurrency\)  •  TypeScript \(Web Runtimes, Type Invariants, Interactive Graphics\)  •  C / C++ \(Systems Programming,) Tj
 T* (Memory Safety, Native Bindings\)  •  WebAssembly \(Wasm\) \(Web Runtimes, Systems Programming, Zero-Cost Abstractions\)  •  Shell &) Tj
@@ -577,14 +575,14 @@ BT
 /F2 8.5 Tf
 9.7749999999999986 TL
 0.851 0.467 0.024 rg
-40. 523.8899999999999864 Td
+40. 560.8899999999999864 Td
 (Formal Verification & Compiler Architecture:) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 513.8899999999999864 Td
+48. 550.8899999999999864 Td
 (Lean 4 \(Dependent Types, Formal Verification, Equational Reasoning\)  •  SSA IR Construction \(SSA Form, Control Flow Graphs,) Tj
 T* (Dominance Frontiers\)  •  LLVM \(Compiler Backends, Control Flow Graphs, Machine Codegen\)  •  Cranelift \(JIT Compilation, SSA Form,) Tj
 T* (Machine Codegen\)  •  Algorithmic Supercompilation \(Supercompilation, Operational Semantics, Homeomorphic Embedding\)  • ) Tj
@@ -595,14 +593,14 @@ BT
 /F2 8.5 Tf
 9.7749999999999986 TL
 0.851 0.467 0.024 rg
-40. 459.8899999999999864 Td
+40. 496.8899999999999864 Td
 (Topological & Mathematical Formalisms:) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 449.8899999999999864 Td
+48. 486.8899999999999864 Td
 (Persistent Homology \(Persistent Homology, Chain Complexes, Topological Invariants\)  •  Simplicial Complexes \(Simplicial Complexes,) Tj
 T* (Chain Complexes, Triangulations\)  •  Path-Crossing Functors \(Category Theory, Functorial Invariants, Persistent Homology\)  •  Extremal) Tj
 T* (Combinatorics \(Sunflower Conjecture, Combinatorial Bounds, Hypergraph Filtrations\)  •  Dynamical Systems & ODEs \(Runge-Kutta) Tj
@@ -614,14 +612,14 @@ BT
 /F2 8.5 Tf
 9.7749999999999986 TL
 0.851 0.467 0.024 rg
-40. 385.8899999999999864 Td
+40. 422.8899999999999864 Td
 (Scientific Computing & Systems Engineering:) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 375.8899999999999864 Td
+48. 412.8899999999999864 Td
 (Numerical Fluid & Hydraulics \(Hydraulic Modeling, Sediment Kinetics, Numerical Integration\)  •  Procedural Heightfields \(Heightfield) Tj
 T* (Dynamics, Thermal Talus, Discretized Grids\)  •  WebGL & Canvas Graphics \(Shader Programming, Discrete Differential Geometry,) Tj
 T* (Bayer Dithering\)  •  Property-Based Verification \(Invariant Fuzzing, Branch Coverage, Boundary Stress\)  •  Hypergraph Algorithms) Tj
@@ -633,45 +631,45 @@ BT
 /F2 11 Tf
 12.6499999999999986 TL
 0.078 0.094 0.129 rg
-40. 299.8899999999999864 Td
+40. 336.8899999999999864 Td
 (PRACTICAL & TECHNICAL EXPERIENCE) Tj
 ET
 0.85 0.47 0.02 RG
 1.2 w
-40. 295.8899999999999864 m
-68. 295.8899999999999864 l
+40. 332.8899999999999864 m
+68. 332.8899999999999864 l
 S
 0.86 0.88 0.9 RG
 0.5 w
-72. 295.8899999999999864 m
-555.2799999999999727 295.8899999999999864 l
+72. 332.8899999999999864 m
+555.2799999999999727 332.8899999999999864 l
 S
 BT
 /F2 9 Tf
 10.3499999999999996 TL
 0.059 0.09 0.165 rg
-40. 283.8899999999999864 Td
+40. 320.8899999999999864 Td
 (Website Manager — OnlineAirgun.com \(Rajput Gun House / Rajput Arms\)) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 272.8899999999999864 Td
+48. 309.8899999999999864 Td
 (• Technical website management and platform operations for the family-owned commercial platform.) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 262.8899999999999864 Td
+48. 299.8899999999999864 Td
 (• Conducted web security testing and systematic penetration audits to identify configuration flaws and fortify site resilience.) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.2 0.255 0.333 rg
-48. 252.8899999999999864 Td
+48. 289.8899999999999864 Td
 (• Managed digital inventory infrastructure, technical maintenance, and operational integrity.) Tj
 ET
 BT
@@ -853,7 +851,7 @@ endobj
 21 0 obj
 <<
 /Producer (jsPDF 4.2.1)
-/CreationDate (D:20261123173616+05'30')
+/CreationDate (D:20261123180136+05'30')
 >>
 endobj
 22 0 obj
@@ -867,35 +865,35 @@ endobj
 xref
 0 23
 0000000000 65535 f 
-0000018388 00000 n 
-0000020213 00000 n 
+0000018257 00000 n 
+0000020082 00000 n 
 0000000015 00000 n 
 0000000152 00000 n 
-0000010266 00000 n 
-0000010403 00000 n 
-0000018451 00000 n 
-0000018576 00000 n 
-0000018706 00000 n 
-0000018839 00000 n 
-0000018977 00000 n 
-0000019101 00000 n 
-0000019230 00000 n 
-0000019362 00000 n 
-0000019498 00000 n 
-0000019626 00000 n 
-0000019753 00000 n 
-0000019882 00000 n 
-0000020015 00000 n 
-0000020117 00000 n 
-0000020463 00000 n 
-0000020549 00000 n 
+0000010824 00000 n 
+0000010961 00000 n 
+0000018320 00000 n 
+0000018445 00000 n 
+0000018575 00000 n 
+0000018708 00000 n 
+0000018846 00000 n 
+0000018970 00000 n 
+0000019099 00000 n 
+0000019231 00000 n 
+0000019367 00000 n 
+0000019495 00000 n 
+0000019622 00000 n 
+0000019751 00000 n 
+0000019884 00000 n 
+0000019986 00000 n 
+0000020332 00000 n 
+0000020418 00000 n 
 trailer
 <<
 /Size 23
 /Root 22 0 R
 /Info 21 0 R
-/ID [ <5ACFCFF4432B63664AEE3EAA68E81E6C> <5ACFCFF4432B63664AEE3EAA68E81E6C> ]
+/ID [ <D3D82FF902887E3DF3E7DD62F52E5387> <D3D82FF902887E3DF3E7DD62F52E5387> ]
 >>
 startxref
-20653
+20522
 %%EOF

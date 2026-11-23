@@ -61,14 +61,11 @@ export const AboutSection: React.FC = () => {
           {/* Research Philosophy Formal Theorem Box (oxford-rule left border in academic-seal) */}
           <div className="my-8 p-6 bg-paper-bg-subtle border-l-4 border-academic-seal space-y-3">
             <div className="font-serif font-bold text-xs uppercase tracking-wider text-academic-amber">
-              Axiom I.1 — Research Philosophy
+              Research Approach &amp; Philosophy
             </div>
             <blockquote className="font-serif italic text-base sm:text-lg text-ink-primary leading-relaxed">
               "{profileData.researchPhilosophy}"
             </blockquote>
-            <div className="pt-2 flex justify-end">
-              <span className="tombstone font-serif text-sm text-academic-amber font-bold">∎</span>
-            </div>
           </div>
 
           {/* Academic Aspirations & Research Direction: Single-Column, Wide-Margin Pull-Quote Style */}

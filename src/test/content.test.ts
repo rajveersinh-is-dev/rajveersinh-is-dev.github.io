@@ -18,9 +18,9 @@ describe('Authoritative Content & Strict Honesty Validation', () => {
     expect(profileData.professionalIdentity).toBe('Independent Mathematical Researcher');
     expect(profileData.age).toBe(16);
     expect(profileData.location).toBe('Pune, Maharashtra, India');
-    expect(profileData.tagline).toBe('Discovering Structure. Proving Ideas. Building the Future.');
+    expect(profileData.tagline).toBe('Research in extremal combinatorics, computational geometry, and formal verification.');
     expect(profileData.about).toContain('I am an independent researcher');
-    expect(profileData.researchPhilosophy).toContain('Mathematics is not merely a subject to study');
+    expect(profileData.researchPhilosophy).toContain('I approach mathematics through proof construction');
   });
 
   it('strictly verifies education data without synthetic graduation or performance claims', () => {
