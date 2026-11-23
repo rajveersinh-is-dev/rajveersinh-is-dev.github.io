@@ -146,15 +146,15 @@ export const ConnectionsGraphSection: React.FC = () => {
           const dy = nodeB.y - nodeA.y;
           const distSq = dx * dx + dy * dy + 100;
           const dist = Math.sqrt(distSq);
-          const repForce = 850 / distSq;
+          const repForce = 1100 / distSq;
 
           const nx = dx / dist;
           const ny = dy / dist;
 
           fx -= nx * repForce;
           fy -= ny * repForce;
-          nodeB.vx += nx * repForce * 0.5;
-          nodeB.vy += ny * repForce * 0.5;
+          nodeB.vx += nx * repForce;
+          nodeB.vy += ny * repForce;
         }
 
         nodeA.vx += fx;
@@ -162,7 +162,7 @@ export const ConnectionsGraphSection: React.FC = () => {
       }
 
       // 2. Hooke's Law spring forces along relational edges
-      const restLength = 110;
+      const restLength = 120;
       const springK = 0.025;
 
       edges.forEach((edge) => {
@@ -306,6 +306,9 @@ export const ConnectionsGraphSection: React.FC = () => {
     }
   };
 
+  const bgSubtle =
+    theme === 'amber-crt' ? '#120e04' : theme === 'night' ? '#1a1816' : '#f4f0e6';
+
   const getNodeColor = (type: GraphConnectionNode['type']) => {
     if (theme === 'amber-crt') {
       switch (type) {
@@ -316,9 +319,22 @@ export const ConnectionsGraphSection: React.FC = () => {
         case 'concept':
           return '#cc8c00';
         case 'technology':
-          return '#805800';
+          return '#996800';
       }
     }
+    if (theme === 'night') {
+      switch (type) {
+        case 'research':
+          return '#f43f5e'; // Rose Crimson
+        case 'project':
+          return '#38bdf8'; // Sky Blue
+        case 'concept':
+          return '#fbbf24'; // Amber Gold
+        case 'technology':
+          return '#cbd5e1'; // Warm Slate
+      }
+    }
+    // Archival Paper (light mode)
     switch (type) {
       case 'research':
         return '#881337'; // Oxblood / Venetian Crimson
@@ -329,6 +345,139 @@ export const ConnectionsGraphSection: React.FC = () => {
       case 'technology':
         return '#44403c'; // Slate / Charcoal
     }
+  };
+
+  // Intelligent angular clearance label positioning:
+  // Dynamically computes the optimal angle around the node that maximizes angular clearance
+  // from incident connecting edges while harmonizing with outward celestial radial expansion,
+  // completely preventing collisions between text labels, lines, and adjacent nodes.
+  const getLabelPlacement = (
+    nodeId: string,
+    nodeX: number,
+    nodeY: number,
+    isSelected: boolean
+  ) => {
+    const nodeData = connectionsGraphData.find((n) => n.id === nodeId);
+    const connectedIds = nodeData ? nodeData.connections : [];
+
+    // Find all incident edges (bidirectional)
+    const neighborCoords: { x: number; y: number }[] = [];
+    connectedIds.forEach((cId) => {
+      const p = positions[cId] || initialPositions[cId];
+      if (p) neighborCoords.push(p);
+    });
+    connectionsGraphData.forEach((other) => {
+      if (other.id !== nodeId && other.connections.includes(nodeId) && !connectedIds.includes(other.id)) {
+        const p = positions[other.id] || initialPositions[other.id];
+        if (p) neighborCoords.push(p);
+      }
+    });
+
+    let outwardAngle = Math.atan2(nodeY - 300, nodeX - 400);
+    if (outwardAngle < 0) outwardAngle += 2 * Math.PI;
+
+    let bestAngle: number;
+
+    if (neighborCoords.length === 0) {
+      bestAngle = outwardAngle;
+    } else {
+      // Calculate angles from this node to each neighbor in [0, 2*PI)
+      const angles: number[] = [];
+      neighborCoords.forEach((nbr) => {
+        let a = Math.atan2(nbr.y - nodeY, nbr.x - nodeX);
+        if (a < 0) a += 2 * Math.PI;
+        angles.push(a);
+      });
+      angles.sort((a, b) => a - b);
+
+      const k = angles.length;
+      const minClearance = (55 * Math.PI) / 180; // 55 degrees safe clearance
+
+      // Check if outward radial direction falls inside a wide gap with >= 55 deg clearance
+      let outwardSafe = false;
+      for (let i = 0; i < k; i++) {
+        const a1 = angles[i];
+        const a2 = i === k - 1 ? angles[0] + 2 * Math.PI : angles[i + 1];
+        let o = outwardAngle;
+        if (o < a1) o += 2 * Math.PI;
+        if (o >= a1 + minClearance && o <= a2 - minClearance) {
+          // Verify canvas boundary containment for outward direction
+          const candX = nodeX + Math.cos(outwardAngle) * 26;
+          const candY = nodeY + Math.sin(outwardAngle) * 26;
+          if (candX >= 45 && candX <= 755 && candY >= 25 && candY <= 575) {
+            outwardSafe = true;
+            break;
+          }
+        }
+      }
+
+      if (outwardSafe) {
+        bestAngle = outwardAngle;
+      } else {
+        // Find the gap bisector that maximizes clearance and stays in bounds
+        interface GapOption {
+          score: number;
+          bisector: number;
+        }
+        const gaps: GapOption[] = [];
+
+        for (let i = 0; i < k; i++) {
+          const nextA = i === k - 1 ? angles[0] + 2 * Math.PI : angles[i + 1];
+          const gapSize = nextA - angles[i];
+          const bisector = (angles[i] + gapSize / 2) % (2 * Math.PI);
+
+          const candX = nodeX + Math.cos(bisector) * 26;
+          const candY = nodeY + Math.sin(bisector) * 26;
+          const inBounds = candX >= 45 && candX <= 755 && candY >= 25 && candY <= 575;
+
+          const score = gapSize * (inBounds ? 1.0 : 0.2);
+          gaps.push({ score, bisector });
+        }
+
+        gaps.sort((a, b) => b.score - a.score);
+        bestAngle = gaps[0].bisector;
+      }
+    }
+
+    const cosA = Math.cos(bestAngle);
+    const sinA = Math.sin(bestAngle);
+    const haloRadius = isSelected ? 22 : 16;
+
+    let x = nodeX;
+    let y = nodeY;
+    let anchor: 'start' | 'middle' | 'end' = 'middle';
+
+    if (Math.abs(cosA) <= 0.38) {
+      // Primarily vertical: above or below
+      anchor = 'middle';
+      if (sinA < 0) {
+        y = nodeY - haloRadius;
+      } else {
+        y = nodeY + haloRadius + 3;
+      }
+    } else if (cosA > 0.38) {
+      // Outward right
+      anchor = 'start';
+      x = nodeX + haloRadius;
+      y = nodeY + sinA * 6 + 3;
+    } else {
+      // Outward left
+      anchor = 'end';
+      x = nodeX - haloRadius;
+      y = nodeY + sinA * 6 + 3;
+    }
+
+    // Boundary containment within 800x600 SVG canvas
+    y = Math.max(16, Math.min(586, y));
+    if (anchor === 'middle') {
+      x = Math.max(50, Math.min(750, x));
+    } else if (anchor === 'start') {
+      x = Math.min(715, x);
+    } else {
+      x = Math.max(85, x);
+    }
+
+    return { x, y, anchor };
   };
 
   return (
@@ -369,19 +518,31 @@ export const ConnectionsGraphSection: React.FC = () => {
           {/* Archival Legend */}
           <div className="flex flex-wrap gap-3 p-2.5 rounded border border-paper-border-strong bg-paper-bg-subtle text-xs font-mono self-start md:self-auto">
             <div className="flex items-center space-x-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#881337] dark:bg-[#be123c]" />
+              <span
+                className="w-2.5 h-2.5 rounded-full"
+                style={{ backgroundColor: getNodeColor('research') }}
+              />
               <span className="text-ink-secondary">Research Area</span>
             </div>
             <div className="flex items-center space-x-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#1e3a5f] dark:bg-[#60a5fa]" />
+              <span
+                className="w-2.5 h-2.5 rounded-full"
+                style={{ backgroundColor: getNodeColor('project') }}
+              />
               <span className="text-ink-secondary">Treatise / Project</span>
             </div>
             <div className="flex items-center space-x-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#92400e] dark:bg-[#d97706]" />
+              <span
+                className="w-2.5 h-2.5 rounded-full"
+                style={{ backgroundColor: getNodeColor('concept') }}
+              />
               <span className="text-ink-secondary">Mathematical Concept</span>
             </div>
             <div className="flex items-center space-x-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#44403c] dark:bg-[#7a7266]" />
+              <span
+                className="w-2.5 h-2.5 rounded-full"
+                style={{ backgroundColor: getNodeColor('technology') }}
+              />
               <span className="text-ink-secondary">Toolchain</span>
             </div>
           </div>
@@ -400,6 +561,7 @@ export const ConnectionsGraphSection: React.FC = () => {
           <div className="lg:col-span-8 bg-paper-bg-subtle rounded border border-paper-border-strong p-4 relative overflow-hidden flex items-center justify-center min-h-[480px]">
             <svg
               ref={svgRef}
+              data-reticle-cursor="true"
               viewBox="0 0 800 600"
               className="w-full h-auto max-h-[580px] select-none touch-none"
               onPointerMove={handlePointerMove}
@@ -407,9 +569,36 @@ export const ConnectionsGraphSection: React.FC = () => {
               onPointerCancel={handlePointerUp}
             >
               {/* Concentric Celestial Orbit Lines */}
-              <circle cx="400" cy="300" r="160" stroke="currentColor" className="text-paper-border-subtle" strokeWidth="1" strokeDasharray="3 3" fill="none" opacity="0.6" />
-              <circle cx="400" cy="300" r="210" stroke="currentColor" className="text-paper-border-strong" strokeWidth="1" strokeDasharray="4 4" fill="none" opacity="0.6" />
-              <circle cx="400" cy="300" r="260" stroke="currentColor" className="text-paper-border-subtle" strokeWidth="1" strokeDasharray="3 3" fill="none" opacity="0.4" />
+              <circle
+                cx="400"
+                cy="300"
+                r="160"
+                stroke={theme === 'amber-crt' ? '#805800' : theme === 'night' ? '#5c5449' : '#7c6f5d'}
+                strokeWidth="1.2"
+                strokeDasharray="3 3"
+                fill="none"
+                opacity={theme === 'paper' ? 0.75 : 0.60}
+              />
+              <circle
+                cx="400"
+                cy="300"
+                r="210"
+                stroke={theme === 'amber-crt' ? '#805800' : theme === 'night' ? '#5c5449' : '#7c6f5d'}
+                strokeWidth="1.4"
+                strokeDasharray="4 4"
+                fill="none"
+                opacity={theme === 'paper' ? 0.85 : 0.65}
+              />
+              <circle
+                cx="400"
+                cy="300"
+                r="260"
+                stroke={theme === 'amber-crt' ? '#805800' : theme === 'night' ? '#5c5449' : '#7c6f5d'}
+                strokeWidth="1.2"
+                strokeDasharray="3 3"
+                fill="none"
+                opacity={theme === 'paper' ? 0.75 : 0.60}
+              />
 
               {/* Render edges */}
               {edges.map((edge) => {
@@ -432,86 +621,126 @@ export const ConnectionsGraphSection: React.FC = () => {
                       isConnectedToActive
                         ? theme === 'amber-crt'
                           ? '#ffd24d'
-                          : '#be123c'
+                          : theme === 'night'
+                          ? '#f43f5e'
+                          : '#881337'
                         : theme === 'amber-crt'
-                        ? '#3d2c08'
-                        : '#b8ad96'
+                        ? '#593e03'
+                        : theme === 'night'
+                        ? '#5a5043'
+                        : '#6b5f4d'
                     }
-                    strokeWidth={isConnectedToActive ? 2.5 : 0.8}
-                    strokeOpacity={isConnectedToActive ? 0.95 : isDimmed ? 0.15 : 0.4}
-                    strokeDasharray={isConnectedToActive ? undefined : '2 2'}
+                    strokeWidth={isConnectedToActive ? 2.4 : 1.0}
+                    strokeOpacity={isConnectedToActive ? 0.95 : isDimmed ? 0.50 : 0.70}
+                    strokeDasharray={isConnectedToActive ? undefined : '2 3'}
                     className="transition-opacity duration-200"
                   />
                 );
               })}
 
-              {/* Render nodes */}
-              {connectionsGraphData.map((node) => {
-                const pos = positions[node.id] || initialPositions[node.id];
-                if (!pos) return null;
+              {/* Render nodes with active/selected node sorted to the top */}
+              {[...connectionsGraphData]
+                .sort((a, b) => {
+                  const aActive = a.id === activeId ? 1 : 0;
+                  const bActive = b.id === activeId ? 1 : 0;
+                  return aActive - bActive;
+                })
+                .map((node) => {
+                  const pos = positions[node.id] || initialPositions[node.id];
+                  if (!pos) return null;
 
-                const isSelected = selectedNodeId === node.id;
-                const isHovered = hoveredNodeId === node.id;
-                const isIncident = incidentSubgraphNodeIds.has(node.id);
-                const isDimmed = activeNode !== null && !isIncident;
+                  const isSelected = selectedNodeId === node.id;
+                  const isHovered = hoveredNodeId === node.id;
+                  const isIncident = incidentSubgraphNodeIds.has(node.id);
+                  const isDimmed = activeNode !== null && !isIncident;
 
-                const color = getNodeColor(node.type);
+                  const color = getNodeColor(node.type);
+                  const labelPos = getLabelPlacement(node.id, pos.x, pos.y, isSelected || isHovered);
 
-                return (
-                  <g
-                    key={node.id}
-                    className="cursor-grab active:cursor-grabbing group"
-                    style={{
-                      opacity: isDimmed ? 0.2 : 1,
-                      transition: 'opacity 200ms ease-out',
-                    }}
-                    onClick={() => setSelectedNodeId(node.id)}
-                    onMouseEnter={() => setHoveredNodeId(node.id)}
-                    onMouseLeave={() => setHoveredNodeId(null)}
-                    onPointerDown={(e) => handlePointerDown(node.id, e)}
-                  >
-                    {/* Outer harmonic halo for active node */}
-                    {(isSelected || isHovered) && (
+                  return (
+                    <g
+                      key={node.id}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`${node.name} (${node.type})`}
+                      className="cursor-grab active:cursor-grabbing group focus:outline-none"
+                      style={{
+                        opacity: isDimmed ? 0.80 : 1,
+                        transition: 'opacity 200ms ease-out',
+                      }}
+                      onClick={() => setSelectedNodeId(node.id)}
+                      onMouseEnter={() => setHoveredNodeId(node.id)}
+                      onMouseLeave={() => setHoveredNodeId(null)}
+                      onPointerDown={(e) => handlePointerDown(node.id, e)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setSelectedNodeId(node.id);
+                          playClick(900);
+                        }
+                      }}
+                    >
+                      {/* Outer harmonic halo for active node */}
+                      {(isSelected || isHovered) && (
+                        <circle
+                          cx={pos.x}
+                          cy={pos.y}
+                          r={15}
+                          fill={
+                            theme === 'amber-crt'
+                              ? 'rgba(255, 210, 77, 0.1)'
+                              : theme === 'night'
+                              ? 'rgba(244, 63, 94, 0.12)'
+                              : 'rgba(136, 19, 55, 0.08)'
+                          }
+                          stroke={
+                            theme === 'amber-crt'
+                              ? '#ffd24d'
+                              : theme === 'night'
+                              ? '#f43f5e'
+                              : '#881337'
+                          }
+                          strokeWidth="1.8"
+                          strokeDasharray="2 2"
+                        />
+                      )}
+
+                      {/* Node circle - zero cx/cy transition to prevent detachment during dragging */}
                       <circle
                         cx={pos.x}
                         cy={pos.y}
-                        r={15}
-                        fill="none"
-                        stroke={theme === 'amber-crt' ? '#ffd24d' : '#be123c'}
-                        strokeWidth="1.5"
-                        strokeDasharray="2 2"
+                        r={isSelected || isHovered ? 8 : isIncident ? 6 : 5}
+                        fill={color}
+                        stroke={bgSubtle}
+                        strokeWidth="1.8"
                       />
-                    )}
 
-                    {/* Node circle */}
-                    <circle
-                      cx={pos.x}
-                      cy={pos.y}
-                      r={isSelected || isHovered ? 8 : isIncident ? 6 : 4.5}
-                      fill={color}
-                      stroke={theme === 'amber-crt' ? '#0a0802' : '#faf7f0'}
-                      strokeWidth="1.5"
-                      className="transition-all duration-150"
-                    />
-
-                    {/* Node label */}
-                    <text
-                      x={pos.x}
-                      y={pos.y + 18}
-                      textAnchor="middle"
-                      className={`text-[9px] font-mono select-none pointer-events-none transition-colors ${
-                        isSelected || isHovered
-                          ? 'fill-academic-amber font-bold'
-                          : isIncident
-                          ? 'fill-ink-primary font-semibold'
-                          : 'fill-ink-muted'
-                      }`}
-                    >
-                      {node.name}
-                    </text>
-                  </g>
-                );
-              })}
+                      {/* Boundary-safe node label with high-contrast background stroke halo */}
+                      <text
+                        x={labelPos.x}
+                        y={labelPos.y}
+                        textAnchor={labelPos.anchor}
+                        stroke={bgSubtle}
+                        strokeWidth="3.5"
+                        strokeLinejoin="round"
+                        paintOrder="stroke fill"
+                        className={`text-[9.5px] font-mono select-none pointer-events-none transition-colors ${
+                          isSelected || isHovered
+                            ? theme === 'amber-crt'
+                              ? 'fill-[#ffd24d] font-bold'
+                              : theme === 'night'
+                              ? 'fill-[#f43f5e] font-bold'
+                              : 'fill-[#881337] font-bold'
+                            : isIncident
+                            ? 'fill-ink-primary font-bold'
+                            : 'fill-ink-primary font-semibold'
+                        }`}
+                      >
+                        {node.name}
+                      </text>
+                    </g>
+                  );
+                })}
             </svg>
           </div>
 

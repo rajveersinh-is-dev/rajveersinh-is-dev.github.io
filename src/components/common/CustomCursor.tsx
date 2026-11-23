@@ -56,8 +56,8 @@ export const CustomCursor: React.FC = () => {
       const target = e.target as HTMLElement | null;
       if (!target) return;
 
-      // Check if cursor is over an interactive canvas
-      const canvasEl = target.closest('canvas');
+      // Check if cursor is over an interactive canvas or charted astronomical SVG
+      const canvasEl = target.closest('canvas, [data-reticle-cursor="true"]');
       const overCanvas = Boolean(canvasEl);
 
       if (overCanvas !== isOverCanvasRef.current) {

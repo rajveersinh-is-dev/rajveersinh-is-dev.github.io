@@ -3,6 +3,7 @@ import { skillsData } from '../../data';
 import type { SkillEntry } from '../../types/content';
 import { useIntersectionObserver } from '../../utils/intersectionObserver';
 import { MaskedReveal } from '../common/MaskedReveal';
+import { usePreferences } from '../../context';
 
 // Helper to format long constellation node labels into balanced lines
 function splitSkillLabel(name: string): string[] {
@@ -59,6 +60,10 @@ const CELESTIAL_STARS = [
 ];
 
 export const SkillsLandscapeSection: React.FC = () => {
+  const { theme } = usePreferences();
+  const bgSubtle =
+    theme === 'amber-crt' ? '#120e04' : theme === 'night' ? '#1a1816' : '#f4f0e6';
+
   const [selectedCategory, setSelectedCategory] = useState<number>(0);
   const [hoveredSkillName, setHoveredSkillName] = useState<string | null>(null);
   const [activeSkillName, setActiveSkillName] = useState<string | null>(
@@ -307,6 +312,7 @@ export const SkillsLandscapeSection: React.FC = () => {
           >
             <svg
               viewBox="0 0 720 340"
+              data-reticle-cursor="true"
               className="w-full h-auto max-h-[420px] mx-auto block overflow-visible"
               role="img"
               aria-label={`Skill constellation graph for ${currentCategory.categoryName}`}
@@ -333,10 +339,10 @@ export const SkillsLandscapeSection: React.FC = () => {
                   rx={75}
                   ry={36}
                   fill="none"
-                  stroke="currentColor"
-                  strokeWidth={0.6}
+                  stroke={theme === 'amber-crt' ? '#805800' : theme === 'night' ? '#5c5449' : '#7c6f5d'}
+                  strokeWidth={0.9}
                   strokeDasharray="2 4"
-                  className="text-paper-border-strong opacity-20"
+                  opacity={theme === 'paper' ? 0.75 : 0.55}
                 />
                 <ellipse
                   cx={cx}
@@ -344,10 +350,10 @@ export const SkillsLandscapeSection: React.FC = () => {
                   rx={125}
                   ry={60}
                   fill="none"
-                  stroke="currentColor"
-                  strokeWidth={0.7}
+                  stroke={theme === 'amber-crt' ? '#805800' : theme === 'night' ? '#5c5449' : '#7c6f5d'}
+                  strokeWidth={1.1}
                   strokeDasharray="3 4"
-                  className="text-paper-border-strong opacity-30"
+                  opacity={theme === 'paper' ? 0.85 : 0.65}
                 />
                 <ellipse
                   cx={cx}
@@ -355,10 +361,10 @@ export const SkillsLandscapeSection: React.FC = () => {
                   rx={215}
                   ry={105}
                   fill="none"
-                  stroke="currentColor"
-                  strokeWidth={0.8}
+                  stroke={theme === 'amber-crt' ? '#805800' : theme === 'night' ? '#5c5449' : '#7c6f5d'}
+                  strokeWidth={1.3}
                   strokeDasharray="4 5"
-                  className="text-paper-border-strong opacity-35"
+                  opacity={theme === 'paper' ? 0.85 : 0.70}
                 />
 
                 {/* Polar Coordinate Crosshairs */}
@@ -452,14 +458,23 @@ export const SkillsLandscapeSection: React.FC = () => {
                       y1={edge.y1}
                       x2={edge.x2}
                       y2={edge.y2}
-                      stroke={isHighlighted ? '#d97706' : 'currentColor'}
-                      strokeWidth={isHighlighted ? 2.0 : edge.sharedTopics.length > 0 ? 1.0 : 0.7}
+                      stroke={
+                        isHighlighted
+                          ? theme === 'amber-crt'
+                            ? '#ffd24d'
+                            : theme === 'night'
+                            ? '#f59e0b'
+                            : '#b45309'
+                          : theme === 'amber-crt'
+                          ? '#593e03'
+                          : theme === 'night'
+                          ? '#5a5043'
+                          : '#6b5f4d'
+                      }
+                      strokeWidth={isHighlighted ? 2.2 : edge.sharedTopics.length > 0 ? 1.0 : 0.8}
                       strokeDasharray={isHighlighted ? undefined : edge.sharedTopics.length > 0 ? '4 2' : '2 3'}
-                      className={`${
-                        prefersReducedMotion ? '' : 'transition-all duration-200'
-                      } text-paper-border-strong ${
-                        isHighlighted ? 'opacity-95' : isDimmed ? 'opacity-15' : 'opacity-40'
-                      }`}
+                      strokeOpacity={isHighlighted ? 0.95 : isDimmed ? 0.45 : 0.65}
+                      className={prefersReducedMotion ? '' : 'transition-all duration-200'}
                     />
                   );
                 })}
@@ -472,7 +487,7 @@ export const SkillsLandscapeSection: React.FC = () => {
                   cy={cy}
                   r={24}
                   fill="none"
-                  stroke="#d97706"
+                  stroke={theme === 'amber-crt' ? '#ffd24d' : theme === 'night' ? '#f59e0b' : '#b45309'}
                   strokeWidth={0.8}
                   strokeDasharray="2 3"
                   opacity={0.4}
@@ -481,15 +496,15 @@ export const SkillsLandscapeSection: React.FC = () => {
                   cx={cx}
                   cy={cy}
                   r={15}
-                  fill="var(--paper-bg-base, #121110)"
-                  stroke="#d97706"
+                  fill={bgSubtle}
+                  stroke={theme === 'amber-crt' ? '#ffd24d' : theme === 'night' ? '#f59e0b' : '#b45309'}
                   strokeWidth={1.5}
                 />
                 <circle
                   cx={cx}
                   cy={cy}
                   r={4}
-                  fill="#d97706"
+                  fill={theme === 'amber-crt' ? '#ffd24d' : theme === 'night' ? '#f59e0b' : '#b45309'}
                 />
                 <text
                   x={cx}
@@ -521,7 +536,7 @@ export const SkillsLandscapeSection: React.FC = () => {
                       onPointerLeave={() => setHoveredSkillName(null)}
                       className={`cursor-pointer outline-none ${
                         prefersReducedMotion ? '' : 'transition-opacity duration-200'
-                      } ${isDimmed ? 'opacity-20' : 'opacity-100'}`}
+                      } ${isDimmed ? 'opacity-80' : 'opacity-100'}`}
                     >
                       {/* Outer pulse/focus ring on selection/hover */}
                       {isPrimary && (
@@ -531,7 +546,7 @@ export const SkillsLandscapeSection: React.FC = () => {
                             cy={node.y}
                             r={18}
                             fill="none"
-                            stroke="#d97706"
+                            stroke={theme === 'amber-crt' ? '#ffd24d' : theme === 'night' ? '#f59e0b' : '#b45309'}
                             strokeWidth={1}
                             strokeDasharray="3 3"
                             opacity={0.5}
@@ -541,9 +556,9 @@ export const SkillsLandscapeSection: React.FC = () => {
                             cx={node.x}
                             cy={node.y}
                             r={13}
-                            fill="#d97706"
+                            fill={theme === 'amber-crt' ? '#ffd24d' : theme === 'night' ? '#f59e0b' : '#b45309'}
                             fillOpacity={0.15}
-                            stroke="#d97706"
+                            stroke={theme === 'amber-crt' ? '#ffd24d' : theme === 'night' ? '#f59e0b' : '#b45309'}
                             strokeWidth={1.2}
                           />
                         </>
@@ -554,8 +569,26 @@ export const SkillsLandscapeSection: React.FC = () => {
                         cx={node.x}
                         cy={node.y}
                         r={isPrimary ? 7 : node.isOuter ? 6 : 5}
-                        fill={isPrimary ? '#d97706' : isConnected ? '#e2d9cc' : '#736b5e'}
-                        stroke="#121110"
+                        fill={
+                          isPrimary
+                            ? theme === 'amber-crt'
+                              ? '#ffd24d'
+                              : theme === 'night'
+                              ? '#d97706'
+                              : '#b45309'
+                            : isConnected
+                            ? theme === 'amber-crt'
+                              ? '#ffb000'
+                              : theme === 'night'
+                              ? '#38bdf8'
+                              : '#1e3a5f'
+                            : theme === 'amber-crt'
+                            ? '#805800'
+                            : theme === 'night'
+                            ? '#a8a29e'
+                            : '#44403c'
+                        }
+                        stroke={bgSubtle}
                         strokeWidth={1.8}
                       />
 
@@ -574,13 +607,25 @@ export const SkillsLandscapeSection: React.FC = () => {
                         x={node.labelX}
                         y={node.labelY}
                         textAnchor={node.textAnchor}
-                        fill={isPrimary ? '#d97706' : 'currentColor'}
-                        stroke="var(--paper-bg-base, #121110)"
+                        fill={
+                          isPrimary
+                            ? theme === 'amber-crt'
+                              ? '#ffd24d'
+                              : theme === 'night'
+                              ? '#f59e0b'
+                              : '#b45309'
+                            : 'currentColor'
+                        }
+                        stroke={bgSubtle}
                         strokeWidth="3.5"
                         strokeLinejoin="round"
                         paintOrder="stroke fill"
-                        className={`font-mono text-[10px] font-semibold select-none pointer-events-none transition-colors ${
-                          isPrimary ? 'fill-academic-amber font-bold' : 'text-ink-primary'
+                        className={`font-mono text-[10px] select-none pointer-events-none transition-colors ${
+                          isPrimary
+                            ? 'font-bold'
+                            : isConnected
+                            ? 'font-bold text-ink-primary'
+                            : 'font-semibold text-ink-primary'
                         }`}
                       >
                         {node.labelLines.map((line, lIdx) => (

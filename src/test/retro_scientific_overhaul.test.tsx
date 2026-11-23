@@ -330,10 +330,76 @@ describe('Creative Engineering & Retro-Scientific Overhaul Test Suite', () => {
       // Find SVG element
       const svg = document.querySelector('#connections-graph svg');
       expect(svg).toBeTruthy();
+      expect(svg?.getAttribute('data-reticle-cursor')).toBe('true');
 
       // Verify node circles rendered
       const circles = svg?.querySelectorAll('circle');
       expect(circles && circles.length).toBeGreaterThan(10);
+    });
+
+    it('verifies label collision prevention, paintOrder stroke halos, and absence of transition-all on node circles', () => {
+      render(
+        <PreferencesProvider>
+          <ConnectionsGraphSection />
+        </PreferencesProvider>
+      );
+
+      const svg = document.querySelector('#connections-graph svg');
+      expect(svg).toBeTruthy();
+
+      // Ensure node circles DO NOT have transition-all on cx/cy (which causes visual detachment during drag)
+      const nodeCircles = svg?.querySelectorAll('g[role="button"] > circle:not([stroke-dasharray])');
+      expect(nodeCircles && nodeCircles.length).toBeGreaterThan(0);
+      nodeCircles?.forEach((circle) => {
+        const className = circle.getAttribute('class') || '';
+        expect(className).not.toContain('transition-all');
+      });
+
+      // Verify all node text labels feature stroke halo masking to prevent line collisions
+      const labels = svg?.querySelectorAll('g[role="button"] text');
+      expect(labels && labels.length).toBeGreaterThanOrEqual(20);
+      labels?.forEach((label) => {
+        expect(label.getAttribute('paint-order')).toBe('stroke fill');
+        expect(Number(label.getAttribute('stroke-width'))).toBeGreaterThanOrEqual(3);
+        const y = Number(label.getAttribute('y'));
+        expect(isNaN(y)).toBe(false);
+      });
+    });
+
+    it('verifies theme-aware high contrast, legend synchronization, and dynamic angular label clearance for Lagrangian Relaxation', () => {
+      render(
+        <PreferencesProvider>
+          <ConnectionsGraphSection />
+        </PreferencesProvider>
+      );
+
+      const svg = document.querySelector('#connections-graph svg');
+      expect(svg).toBeTruthy();
+
+      // Find Lagrangian Relaxation node and click it
+      const lagrangeNode = screen.getByRole('button', { name: /Lagrangian Relaxation/i });
+      expect(lagrangeNode).toBeTruthy();
+      fireEvent.click(lagrangeNode);
+
+      // Verify halo is rendered for selected node
+      const halo = lagrangeNode.querySelector('circle[stroke-dasharray="2 2"]');
+      expect(halo).toBeTruthy();
+
+      // Verify label has valid non-colliding placement
+      const label = lagrangeNode.querySelector('text');
+      expect(label).toBeTruthy();
+      const labelY = Number(label?.getAttribute('y'));
+      const circle = lagrangeNode.querySelector('circle:not([stroke-dasharray])');
+      const circleY = Number(circle?.getAttribute('cy'));
+      expect(Math.abs(labelY - circleY)).toBeGreaterThanOrEqual(15);
+
+      // Verify concentric celestial orbits have high contrast strokeWidth
+      const orbits = svg?.querySelectorAll('svg > circle[stroke-dasharray]');
+      expect(orbits && orbits.length).toBe(3);
+      orbits?.forEach((orbit) => {
+        expect(Number(orbit.getAttribute('stroke-width'))).toBeGreaterThanOrEqual(1.0);
+        expect(Number(orbit.getAttribute('opacity'))).toBeGreaterThanOrEqual(0.60);
+      });
     });
   });
 
