@@ -1,5 +1,5 @@
 // Service Worker for Offline-First Mathematical Portfolio
-const CACHE_NAME = 'rvp-math-v1.0.0';
+const CACHE_NAME = 'rvp-math-v3.0.0';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -30,12 +30,10 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests and local/http(s) schemes
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
   if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
 
-  // Never intercept Vite dev server, HMR, module requests, or local network dev hosts
   const isDevHost = Boolean(
     (url.port && url.port !== '80' && url.port !== '443') ||
     url.hostname === 'localhost' ||
@@ -58,17 +56,35 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Navigation / document requests: Network-First to guarantee fresh index.html
+  const isNavigate = event.request.mode === 'navigate' ||
+                     event.request.destination === 'document' ||
+                     event.request.headers.get('accept')?.includes('text/html');
+
+  if (isNavigate) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const copy = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match('./index.html') || caches.match('./'))
+    );
+    return;
+  }
+
+  // Hashed static assets: Cache-First with background revalidation
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
-        // Return cached, but optionally fetch in background to revalidate
         fetch(event.request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse));
           }
-        }).catch(() => {
-          // Offline fallback is already cachedResponse
-        });
+        }).catch(() => {});
         return cachedResponse;
       }
       return fetch(event.request).then((networkResponse) => {
@@ -77,11 +93,6 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
         }
         return networkResponse;
-      }).catch(() => {
-        // If html request fails, return cached index
-        if (event.request.headers.get('accept')?.includes('text/html')) {
-          return caches.match('./index.html') || caches.match('./');
-        }
       });
     })
   );

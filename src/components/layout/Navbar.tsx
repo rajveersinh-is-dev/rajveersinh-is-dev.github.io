@@ -132,7 +132,7 @@ export const Navbar: React.FC = () => {
           </nav>
 
           {/* Masthead Instrument Controls & Actions */}
-          <div className="hidden sm:flex items-center space-x-1.5">
+          <div className="hidden lg:flex items-center space-x-1.5">
             {/* Mathematical Terminal (REPL) Launcher */}
             <button
               onClick={toggleTerminal}

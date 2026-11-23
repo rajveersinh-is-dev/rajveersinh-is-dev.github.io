@@ -33,6 +33,10 @@
         background-color: #faf7f0;
         color: #1c1917;
       }
+      html.amber-crt {
+        background-color: #0a0802;
+        color: #ffb000;
+      }
       body {
         background-color: inherit;
         color: inherit;
@@ -45,9 +49,12 @@
     <script>
       (function () {
         try {
-          const readingMode = localStorage.getItem('rvp_reading_mode');
           const theme = localStorage.getItem('rvp_theme');
-          if (readingMode === 'true' || theme === 'light') {
+          const readingMode = localStorage.getItem('rvp_reading_mode');
+          if (theme === 'amber-crt') {
+            document.documentElement.classList.add('amber-crt', 'dark');
+            document.documentElement.classList.remove('reading-mode');
+          } else if (readingMode === 'true' || theme === 'light' || theme === 'paper') {
             document.documentElement.classList.remove('dark');
             document.documentElement.classList.add('reading-mode');
           } else {
@@ -55,6 +62,33 @@
             document.documentElement.classList.remove('reading-mode');
           }
         } catch (e) {}
+      })();
+    </script>
+
+    <!-- Self-Healing Watchdog: Recovers from stale service worker / cached scripts -->
+    <script>
+      (function () {
+        window.addEventListener('DOMContentLoaded', function () {
+          setTimeout(function () {
+            var root = document.getElementById('root');
+            if (root && root.children.length === 0) {
+              if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                  for (var i = 0; i < registrations.length; i++) registrations[i].unregister();
+                });
+              }
+              if ('caches' in window) {
+                caches.keys().then(function (names) {
+                  for (var j = 0; j < names.length; j++) caches.delete(names[j]);
+                });
+              }
+              if (!sessionStorage.getItem('rvp_recovery_done')) {
+                sessionStorage.setItem('rvp_recovery_done', '1');
+                window.location.reload();
+              }
+            }
+          }, 900);
+        });
       })();
     </script>
 
