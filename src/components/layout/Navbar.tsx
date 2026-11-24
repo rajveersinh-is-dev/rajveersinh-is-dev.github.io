@@ -20,11 +20,13 @@ const NAV_LINKS = [
   { label: 'Research', href: '#research-interests', section: '§ 2' },
   { label: 'Projects', href: '#projects', section: '§ 3' },
   { label: 'Preprints', href: '#preprints', section: '§ 4' },
-  { label: 'Achievements', href: '#achievements', section: '§ 5' },
+  { label: 'Honors', href: '#achievements', section: '§ 5' },
   { label: 'Skills', href: '#skills', section: '§ 6' },
   { label: 'Curriculum', href: '#education', section: '§ 7' },
+  { label: 'CV', href: '#cv', section: '§ 8' },
+  { label: 'Timeline', href: '#timeline', section: '§ 9' },
   { label: 'Graph', href: '#connections-graph', section: '§ 10' },
-  { label: 'Playground', href: '#playground', section: '§ 11' },
+  { label: 'Workbench', href: '#playground', section: '§ 11' },
   { label: 'Contact', href: '#contact', section: '§ 12' },
 ];
 
@@ -44,17 +46,44 @@ export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('about');
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [showCmdHint, setShowCmdHint] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem('rvp_seen_cmd_hint') !== 'true';
+  });
+
   const navLinks = NAV_LINKS;
 
   useEffect(() => {
+    if (!showCmdHint) return;
+    const timer = setTimeout(() => {
+      setShowCmdHint(false);
+      try {
+        localStorage.setItem('rvp_seen_cmd_hint', 'true');
+      } catch {}
+    }, 4500);
+    return () => clearTimeout(timer);
+  }, [showCmdHint]);
+
+  useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      const scrollY = window.scrollY || window.pageYOffset || 0;
+      setScrolled(scrollY > 20);
+
+      const docHeight = Math.max(
+        document.documentElement?.scrollHeight || 0,
+        document.body?.scrollHeight || 0,
+        1
+      );
+      const winHeight = window.innerHeight || 1;
+      const maxScroll = Math.max(1, docHeight - winHeight);
+      setScrollProgress(Math.min(1, Math.max(0, scrollY / maxScroll)));
 
       const sectionElements = NAV_LINKS
         .map((l) => ({ id: l.href.slice(1), el: document.getElementById(l.href.slice(1)) }))
         .filter((item): item is { id: string; el: HTMLElement } => item.el !== null);
 
-      const scrollPosition = window.scrollY + 140;
+      const scrollPosition = scrollY + 140;
       let currentSection = sectionElements[0]?.id || 'about';
 
       for (const { id, el } of sectionElements) {
@@ -148,18 +177,37 @@ export const Navbar: React.FC = () => {
             </button>
 
             {/* Bibliographic Concordance Launcher (Ctrl+K) */}
-            <button
-              onClick={toggleCommandPalette}
-              aria-label="Open Command Palette"
-              className="px-2 py-1 rounded-xs bg-paper-bg-subtle border border-paper-border-subtle hover:border-paper-border-strong text-xs font-serif text-ink-secondary hover:text-ink-primary flex items-center space-x-1 transition-colors cursor-pointer"
-              title="Search Index & Concordance (Ctrl+K)"
-            >
-              <Command className="w-3.5 h-3.5 text-ink-muted" />
-              <span className="font-serif hidden xl:inline">Index</span>
-              <kbd className="text-[10px] font-mono bg-paper-bg-elevated px-1 py-0.2 rounded-xs border border-paper-border-subtle text-ink-muted">
-                {isMac ? '⌘K' : 'Ctrl+K'}
-              </kbd>
-            </button>
+            <div className="relative">
+              <button
+                onClick={toggleCommandPalette}
+                aria-label="Open Command Palette"
+                className="px-2 py-1 rounded-xs bg-paper-bg-subtle border border-paper-border-subtle hover:border-paper-border-strong text-xs font-serif text-ink-secondary hover:text-ink-primary flex items-center space-x-1 transition-colors cursor-pointer"
+                title="Search Index & Concordance (Ctrl+K)"
+              >
+                <Command className="w-3.5 h-3.5 text-ink-muted" />
+                <span className="font-serif hidden xl:inline">Index</span>
+                <kbd className="text-[10px] font-mono bg-paper-bg-elevated px-1 py-0.2 rounded-xs border border-paper-border-subtle text-ink-muted">
+                  {isMac ? '⌘K' : 'Ctrl+K'}
+                </kbd>
+              </button>
+
+              {/* Onboarding hint badge for ⌘K */}
+              {showCmdHint && (
+                <div
+                  role="status"
+                  onClick={() => {
+                    setShowCmdHint(false);
+                    try {
+                      localStorage.setItem('rvp_seen_cmd_hint', 'true');
+                    } catch {}
+                  }}
+                  className="absolute -bottom-8 right-0 px-2 py-0.5 rounded border border-academic-amber bg-paper-bg-elevated font-mono text-[10px] text-academic-amber shadow-lg animate-fade-in cursor-pointer whitespace-nowrap z-50 flex items-center space-x-1"
+                >
+                  <span>Press {isMac ? '⌘K' : 'Ctrl+K'} to explore</span>
+                  <span className="text-ink-muted text-[9px] ml-1">✕</span>
+                </div>
+              )}
+            </div>
 
             {/* Subtle Web Audio Feedback Mute Toggle */}
             <button
@@ -380,6 +428,13 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
       )}
+      {/* Real-time reading scroll progress spine at bottom edge of header */}
+      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-paper-border-subtle/40 overflow-hidden pointer-events-none">
+        <div
+          className="h-full bg-academic-amber transition-[width] duration-100 ease-out shadow-[0_0_8px_rgba(245,158,11,0.7)]"
+          style={{ width: `${(scrollProgress * 100).toFixed(1)}%` }}
+        />
+      </div>
     </header>
   );
 };

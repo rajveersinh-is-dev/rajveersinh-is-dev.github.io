@@ -63,6 +63,21 @@ export const ProjectsSection: React.FC = () => {
 
   const categories = ['All', 'Compiler & Verification', 'Optimization & Graphs', 'Simulation & Systems'];
 
+  // Category item counts for filter badges
+  const categoryCounts = React.useMemo(() => {
+    const counts: Record<string, number> = { All: projectsData.length };
+    projectsData.forEach((p) => {
+      if (p.category.includes('Compiler') || p.category.includes('Verification')) {
+        counts['Compiler & Verification'] = (counts['Compiler & Verification'] || 0) + 1;
+      } else if (p.category.includes('Optimization') || p.category.includes('Graph')) {
+        counts['Optimization & Graphs'] = (counts['Optimization & Graphs'] || 0) + 1;
+      } else {
+        counts['Simulation & Systems'] = (counts['Simulation & Systems'] || 0) + 1;
+      }
+    });
+    return counts;
+  }, []);
+
   // Hash synchronization for deep linking and direct project page routing
   useEffect(() => {
     const handleHashSync = () => {
@@ -223,13 +238,22 @@ export const ProjectsSection: React.FC = () => {
                   playClick(800);
                   setActiveCategory(cat);
                 }}
-                className={`px-3 py-1.5 text-xs font-mono rounded transition-colors cursor-pointer ${
+                className={`px-3 py-1.5 text-xs font-mono rounded transition-colors cursor-pointer flex items-center space-x-1.5 ${
                   activeCategory === cat
                     ? 'bg-academic-amber text-paper-bg-base font-bold shadow-xs'
                     : 'text-ink-secondary hover:text-ink-primary hover:bg-paper-bg-elevated'
                 }`}
               >
-                {cat}
+                <span>{cat}</span>
+                <span
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                    activeCategory === cat
+                      ? 'bg-paper-bg-base/20 text-paper-bg-base'
+                      : 'bg-paper-bg-base border border-paper-border-subtle text-ink-muted'
+                  }`}
+                >
+                  ({categoryCounts[cat] || 0})
+                </span>
               </button>
             ))}
           </div>
@@ -327,24 +351,18 @@ export const ProjectsSection: React.FC = () => {
                     <Code2 className="w-4 h-4 text-academic-amber" />
                     <span>Interactive Step-by-Step Lowering Walkthrough Available</span>
                   </div>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleOpenProject(numlangProject, 'walkthrough');
-                    }}
-                    className="px-3 py-1.5 rounded bg-academic-amber text-paper-bg-base font-mono text-xs font-bold flex items-center space-x-1.5 hover:opacity-95 transition-opacity cursor-pointer self-start sm:self-auto shadow-xs"
-                  >
-                    <Cpu className="w-3.5 h-3.5" />
-                    <span><AsciiDecodeText text="Launch Lowering Walkthrough" /></span>
-                  </button>
-                </div>
-
-                {/* Interactive In-Browser NumLang Compiler REPL / Evaluator Directly in Hero Bento Card */}
-                <div
-                  className="pt-2 cursor-default"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <NumLangReplEvaluator />
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenProject(numlangProject, 'walkthrough');
+                      }}
+                      className="px-3 py-1.5 rounded bg-academic-amber text-paper-bg-base font-mono text-xs font-bold flex items-center space-x-1.5 hover:opacity-95 transition-opacity cursor-pointer self-start sm:self-auto shadow-xs"
+                    >
+                      <Cpu className="w-3.5 h-3.5" />
+                      <span><AsciiDecodeText text="Launch Lowering Walkthrough" /></span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Technology Badges */}
@@ -377,6 +395,32 @@ export const ProjectsSection: React.FC = () => {
                 </button>
               </div>
             </TiltCard>
+          )}
+
+          {/* DEDICATED FULL-WIDTH COMPILER REPL EXECUTION DECK */}
+          {numlangProject && (
+            <div className="w-full rounded border-2 border-academic-amber/50 bg-paper-bg-subtle shadow-md overflow-hidden">
+              <div className="px-4 sm:px-6 py-3 border-b border-paper-border-strong bg-paper-bg-elevated flex flex-col sm:flex-row sm:items-center justify-between gap-2 select-none">
+                <div className="flex items-center space-x-2.5">
+                  <div className="flex space-x-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-red-500/80 inline-block" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block" />
+                  </div>
+                  <span className="font-mono text-xs font-bold text-academic-amber uppercase tracking-wider">
+                    [NUMLANG LIVE IN-BROWSER COMPILER PIPELINE &amp; REPL SANDBOX]
+                  </span>
+                </div>
+                <div className="text-[11px] font-mono text-ink-muted flex items-center space-x-2">
+                  <span className="text-academic-amber">● IN-PROCESS JIT</span>
+                  <span>•</span>
+                  <span>Pure In-Browser SSA • Homeomorphic Supercompilation</span>
+                </div>
+              </div>
+              <div className="p-4 sm:p-6 bg-paper-bg-base/70">
+                <NumLangReplEvaluator />
+              </div>
+            </div>
           )}
 
           {/* Secondary Featured Projects in Asymmetric Bento Grid Beneath NumLang */}
@@ -452,6 +496,42 @@ export const ProjectsSection: React.FC = () => {
                       </span>
                       <p className="line-clamp-2 leading-relaxed text-ink-secondary">{project.motivation}</p>
                     </div>
+
+                    {/* Tailored Visual Demonstration Mini Preview */}
+                    {project.id === 'omni-toolkit' && (
+                      <div className="p-2.5 rounded bg-black/60 border border-paper-border-subtle font-mono text-[10px] space-y-1 select-none">
+                        <div className="text-ink-muted flex items-center space-x-1">
+                          <span className="text-academic-amber">$</span>
+                          <span>omni parse --ast rec.math --opt supercompile</span>
+                        </div>
+                        <div className="text-emerald-400 font-semibold">✓ 24 Inductive state terms folded (0.38ms)</div>
+                        <div className="text-academic-amber/90">» Emission: Cranelift CLIF [zero-heap]</div>
+                      </div>
+                    )}
+
+                    {project.id === 'terrain-erosion-engine' && (
+                      <div className="p-2.5 rounded bg-black/50 border border-paper-border-subtle font-mono text-[10px] space-y-1 select-none">
+                        <div className="flex items-center justify-between text-academic-amber">
+                          <span className="font-bold">∂h/∂t = -∇·(q_s) + D∇²h</span>
+                          <span className="text-[9px] text-ink-muted">256×256 grid</span>
+                        </div>
+                        <div className="text-ink-secondary text-[10px]">Hydraulic droplet transport &amp; thermal talus weathering</div>
+                      </div>
+                    )}
+
+                    {project.id === 'umbra' && (
+                      <div className="p-2 rounded bg-black/50 border border-paper-border-subtle font-mono text-[10px] space-y-1 select-none">
+                        <div className="text-academic-amber font-semibold">┌─[CLIENT TOKEN]───┐ → ┌─[ZK WITNESS AUDIT]─┐</div>
+                        <div className="text-ink-muted">│ Encrypted Proof  │ → │ Zero-Leakage Verifier │</div>
+                      </div>
+                    )}
+
+                    {project.id === 'docutrust' && (
+                      <div className="p-2 rounded bg-black/50 border border-paper-border-subtle font-mono text-[10px] space-y-1 select-none">
+                        <div className="text-sky-400/90 font-semibold">SHA-256 Merkle Root ⊢ Offline Signature</div>
+                        <div className="text-ink-muted">Verified Cryptographic Timestamp Invariant</div>
+                      </div>
+                    )}
 
                     {project.metricsAuditNote && (
                       <div className="text-[10px] font-mono text-ink-muted flex items-center space-x-1.5 bg-paper-bg-elevated p-2 rounded border border-paper-border-subtle">
@@ -607,7 +687,7 @@ export const ProjectsSection: React.FC = () => {
                 >
                   <div
                     style={sheetTranslateY > 0 ? { transform: `translateY(${sheetTranslateY}px)`, transition: 'none' } : undefined}
-                    className="w-full sm:max-w-4xl my-0 sm:my-auto max-h-[85dvh] sm:max-h-[90dvh] flex flex-col overflow-hidden bg-paper-bg-subtle border-t-2 sm:border-2 border-paper-border-strong rounded-t-xl sm:rounded shadow-2xl transition-transform"
+                    className="w-full max-w-4xl sm:max-w-5xl lg:max-w-6xl my-auto max-h-[85dvh] sm:max-h-[92dvh] flex flex-col overflow-hidden bg-paper-bg-subtle border-t-2 sm:border-2 border-paper-border-strong rounded-t-xl sm:rounded shadow-2xl transition-transform"
                     onClick={(e) => e.stopPropagation()}
                     onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}
@@ -688,81 +768,87 @@ export const ProjectsSection: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Modal Body */}
-                    <div className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 min-h-0">
+                    {/* Modal Body — Responsive Split Layout */}
+                    <div className="p-4 sm:p-6 overflow-y-auto flex-1 min-h-0">
                       {selectedProject.id === 'numlang' && modalTab === 'walkthrough' ? (
                         /* NumLang Lowering Walkthrough interactive component */
                         <div>
                           <NumLangLoweringWalkthrough />
                         </div>
                       ) : (
-                        <>
-                          {/* Visual Demonstration / Architecture Flow */}
-                          <div>
-                            <h4 className="text-xs font-mono uppercase tracking-wider text-academic-amber mb-2 font-semibold">
-                              Visual Demonstration &amp; Technical Architecture
-                            </h4>
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                          {/* Left Column: Theoretical Specification & Architecture Details */}
+                          <div className="lg:col-span-5 space-y-5">
+                            <div>
+                              <h4 className="text-xs font-serif uppercase tracking-wider text-ink-primary mb-1.5 font-bold">
+                                Description &amp; Research Scope
+                              </h4>
+                              <p className="text-sm text-ink-secondary leading-relaxed font-serif">
+                                {selectedProject.conciseDescription}
+                              </p>
+                            </div>
+
+                            <div>
+                              <h4 className="text-xs font-serif uppercase tracking-wider text-ink-primary mb-1.5 font-bold">
+                                Research &amp; Engineering Motivation
+                              </h4>
+                              <p className="text-xs text-ink-secondary leading-relaxed font-mono bg-paper-bg-base p-3 rounded border border-paper-border-subtle">
+                                {selectedProject.motivation}
+                              </p>
+                            </div>
+
+                            <div>
+                              <h4 className="text-xs font-serif uppercase tracking-wider text-ink-primary mb-1.5 font-bold">
+                                Key Technical Ideas &amp; Structural Principles
+                              </h4>
+                              <ul className="space-y-2">
+                                {selectedProject.keyIdeas.map((idea, idx) => (
+                                  <li
+                                    key={idx}
+                                    className="text-xs text-ink-secondary flex items-start space-x-2 font-mono"
+                                  >
+                                    <span className="text-academic-amber font-bold">[{idx + 1}]</span>
+                                    <span className="leading-relaxed">{idea}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            {selectedProject.metricsAuditNote && (
+                              <div className="p-3 rounded border-l-2 border-academic-amber bg-paper-bg-base border border-paper-border-subtle text-xs text-ink-secondary font-mono">
+                                <span className="font-bold text-academic-amber">Metric Transparency: </span>
+                                {selectedProject.metricsAuditNote}
+                              </div>
+                            )}
+
+                            <div>
+                              <h4 className="text-xs font-mono uppercase tracking-wider text-ink-muted mb-2 font-semibold">
+                                Technologies &amp; Proof Assistants
+                              </h4>
+                              <div className="flex flex-wrap gap-1.5">
+                                {selectedProject.technologies.map((t) => (
+                                  <span
+                                    key={t}
+                                    className="text-xs font-mono px-2.5 py-1 rounded border border-paper-border-strong bg-paper-bg-base text-ink-primary"
+                                  >
+                                    {t}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Right Column: Visual Demonstration & Architecture Flow */}
+                          <div className="lg:col-span-7 space-y-3">
+                            <div className="flex items-center justify-between border-b border-paper-border-subtle pb-1.5">
+                              <h4 className="text-xs font-mono uppercase tracking-wider text-academic-amber font-semibold">
+                                Visual Demonstration &amp; Technical Architecture
+                              </h4>
+                              <span className="text-[10px] font-mono text-ink-muted">Interactive</span>
+                            </div>
                             <ProjectVisualDemo project={selectedProject} />
                           </div>
-
-                          <div>
-                            <h4 className="text-xs font-serif uppercase tracking-wider text-ink-primary mb-1.5 font-bold">
-                              Description &amp; Research Scope
-                            </h4>
-                            <p className="text-sm text-ink-secondary leading-relaxed font-serif">
-                              {selectedProject.conciseDescription}
-                            </p>
-                          </div>
-
-                          <div>
-                            <h4 className="text-xs font-serif uppercase tracking-wider text-ink-primary mb-1.5 font-bold">
-                              Research &amp; Engineering Motivation
-                            </h4>
-                            <p className="text-xs text-ink-secondary leading-relaxed font-mono bg-paper-bg-base p-3.5 rounded border border-paper-border-subtle">
-                              {selectedProject.motivation}
-                            </p>
-                          </div>
-
-                          <div>
-                            <h4 className="text-xs font-serif uppercase tracking-wider text-ink-primary mb-1.5 font-bold">
-                              Key Technical Ideas &amp; Structural Principles
-                            </h4>
-                            <ul className="space-y-2">
-                              {selectedProject.keyIdeas.map((idea, idx) => (
-                                <li
-                                  key={idx}
-                                  className="text-xs text-ink-secondary flex items-start space-x-2 font-mono"
-                                >
-                                  <span className="text-academic-amber font-bold">[{idx + 1}]</span>
-                                  <span className="leading-relaxed">{idea}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-
-                          {selectedProject.metricsAuditNote && (
-                            <div className="p-3.5 rounded border-l-2 border-academic-amber bg-paper-bg-base border border-paper-border-subtle text-xs text-ink-secondary font-mono">
-                              <span className="font-bold text-academic-amber">Metric Transparency: </span>
-                              {selectedProject.metricsAuditNote}
-                            </div>
-                          )}
-
-                          <div>
-                            <h4 className="text-xs font-mono uppercase tracking-wider text-ink-muted mb-2 font-semibold">
-                              Technologies &amp; Proof Assistants
-                            </h4>
-                            <div className="flex flex-wrap gap-1.5">
-                              {selectedProject.technologies.map((t) => (
-                                <span
-                                  key={t}
-                                  className="text-xs font-mono px-2.5 py-1 rounded border border-paper-border-strong bg-paper-bg-base text-ink-primary"
-                                >
-                                  {t}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        </>
+                        </div>
                       )}
                     </div>
 

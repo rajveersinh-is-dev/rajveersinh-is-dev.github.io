@@ -99,6 +99,14 @@ export const ContactSection: React.FC = () => {
           </MaskedReveal>
         </div>
 
+        {/* Typographic Closing Statement */}
+        <div className="pt-2 pb-1 text-center max-w-2xl mx-auto space-y-3">
+          <p className="font-serif italic text-xl sm:text-2xl text-ink-primary leading-relaxed">
+            &ldquo;The best problems are the ones you do not yet know how to solve.&rdquo;
+          </p>
+          <div className="w-16 h-0.5 bg-academic-amber mx-auto opacity-70" />
+        </div>
+
         {/* Oxford Rule Divider */}
         <hr className="oxford-rule" />
 
@@ -276,13 +284,44 @@ export const ContactSection: React.FC = () => {
                   />
                 </div>
 
-                {/* Form submit button: academic-seal reserved here */}
+                {/* Primary CTA: Copy Payload */}
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setFormError(null);
+                    if (!name.trim()) {
+                      setFormError('Please enter your name.');
+                      return;
+                    }
+                    if (!senderEmail.trim() || !senderEmail.includes('@') || !senderEmail.includes('.')) {
+                      setFormError('Please enter a valid email address.');
+                      return;
+                    }
+                    if (!message.trim() || message.trim().length < 10) {
+                      setFormError('Message must contain at least 10 characters.');
+                      return;
+                    }
+                    const bodyContent = `To: ${contactData.email}\nSubject: ${subject.trim() || `Inquiry from ${name} via Research Archive`}\nFrom: ${name} <${senderEmail}>\n\n${message}`;
+                    setPreparedPayload(bodyContent);
+                    const ok = await copyTextToClipboard(bodyContent);
+                    if (ok) {
+                      setCopiedPayload(true);
+                      setTimeout(() => setCopiedPayload(false), 2500);
+                    }
+                  }}
+                  className="w-full py-3 px-4 rounded border-2 border-academic-amber bg-academic-amber text-paper-bg-base font-mono font-bold flex items-center justify-center space-x-2 transition-opacity hover:opacity-95 uppercase tracking-wider text-xs cursor-pointer shadow-sm"
+                >
+                  {copiedPayload ? <Check className="w-4 h-4 text-paper-bg-base" /> : <Copy className="w-4 h-4" />}
+                  <span>{copiedPayload ? 'Email Payload Copied to Clipboard!' : 'Copy Formatted Email Payload (Primary CTA)'}</span>
+                </button>
+
+                {/* Secondary Fallback: mailto dispatch */}
                 <button
                   type="submit"
-                  className="w-full py-3 px-4 rounded border border-academic-seal bg-academic-seal hover:bg-academic-seal/90 text-white font-mono font-bold flex items-center justify-center space-x-2 transition-colors uppercase tracking-wider text-xs cursor-pointer shadow-sm"
+                  className="w-full py-2.5 px-4 rounded border border-paper-border-strong bg-paper-bg-subtle hover:bg-paper-bg-elevated text-ink-secondary hover:text-ink-primary font-mono flex items-center justify-center space-x-2 transition-colors uppercase tracking-wider text-xs cursor-pointer"
                 >
-                  <Send className="w-4 h-4" />
-                  <span>Prepare &amp; Open Native Mail Client</span>
+                  <Send className="w-3.5 h-3.5 text-ink-muted" />
+                  <span>Or Dispatch via Mail Client (mailto:)</span>
                 </button>
               </form>
 

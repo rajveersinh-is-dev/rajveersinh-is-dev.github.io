@@ -13,8 +13,10 @@ export const SECTION_DEFS: SectionDefinition[] = [
   { id: 'achievements', label: '§ 05', fallbackPx: 2900 },
   { id: 'skills', label: '§ 06', fallbackPx: 3600 },
   { id: 'education', label: '§ 07', fallbackPx: 4300 },
-  { id: 'connections-graph', label: '§ 10', fallbackPx: 5300 },
-  { id: 'playground', label: '§ 11', fallbackPx: 6200 },
+  { id: 'cv', label: '§ 08', fallbackPx: 4800 },
+  { id: 'timeline', label: '§ 09', fallbackPx: 5300 },
+  { id: 'connections-graph', label: '§ 10', fallbackPx: 6000 },
+  { id: 'playground', label: '§ 11', fallbackPx: 6700 },
   { id: 'contact', label: '§ 12', fallbackPx: 7100 },
 ];
 

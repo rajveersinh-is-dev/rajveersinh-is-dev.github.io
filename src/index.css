@@ -391,3 +391,62 @@
     linear-gradient(to right, var(--paper-border-subtle) 1px, transparent 1px),
     linear-gradient(to bottom, var(--paper-border-subtle) 1px, transparent 1px);
 }
+
+/* Classical Editorial Drop-Cap */
+.drop-cap::first-letter {
+  font-family: "Computer Modern", "Latin Modern Roman", Charter, "Bitstream Charter", "STIX Two Text", Garamond, "EB Garamond", Georgia, serif;
+  float: left;
+  font-size: 3.5em;
+  line-height: 0.8;
+  margin-right: 0.12em;
+  margin-top: 0.05em;
+  font-weight: 700;
+  color: var(--academic-amber);
+}
+
+/* CRT Scanline Overlay in Amber CRT Mode */
+.crt-scanlines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: linear-gradient(
+    rgba(18, 14, 4, 0) 50%,
+    rgba(10, 8, 2, 0.45) 50%
+  );
+  background-size: 100% 3px;
+  opacity: 0.65;
+}
+
+/* Formal Academic Print / PDF Stylesheet */
+@media print {
+  header,
+  footer nav,
+  .crt-scanlines,
+  [data-testid^="blueprint-gutter"],
+  .custom-cursor,
+  button,
+  canvas,
+  .interactive-canvas,
+  #command-palette,
+  .no-print {
+    display: none !important;
+  }
+
+  body, html {
+    background: #ffffff !important;
+    color: #111111 !important;
+    font-size: 10.5pt !important;
+  }
+
+  a {
+    text-decoration: underline !important;
+    color: #111111 !important;
+  }
+
+  section {
+    page-break-inside: avoid !important;
+    border-top: 1px solid #cccccc !important;
+    padding: 12pt 0 !important;
+  }
+}

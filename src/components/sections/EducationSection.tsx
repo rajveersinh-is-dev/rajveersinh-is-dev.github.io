@@ -135,9 +135,16 @@ export const EducationSection: React.FC = () => {
                 </div>
 
                 <div className="pt-3 border-t border-paper-border-subtle flex items-center justify-between">
-                  <span className="inline-block px-2.5 py-1 rounded border border-academic-amber/40 bg-academic-amber/10 font-mono text-xs text-academic-amber font-semibold">
-                    {edu.status}
-                  </span>
+                  <div className="flex items-center space-x-2">
+                    <span className="inline-block px-2.5 py-1 rounded border border-academic-amber/40 bg-academic-amber/10 font-mono text-xs text-academic-amber font-semibold">
+                      {edu.status}
+                    </span>
+                    {edu.id.includes('iit') && (
+                      <span className="text-[10px] font-mono text-academic-amber px-1.5 py-0.5 rounded border border-academic-amber/30 bg-academic-amber/5">
+                        [Verify ↗ Confirmed]
+                      </span>
+                    )}
+                  </div>
                   <div className="flex items-center space-x-1.5 text-xs font-mono text-ink-secondary">
                     <Check className="w-3.5 h-3.5 text-academic-amber flex-shrink-0" />
                     <span>Confirmed Record</span>
@@ -152,77 +159,7 @@ export const EducationSection: React.FC = () => {
         <hr className="oxford-rule" />
 
         {/* =========================================================================
-            PART 2: CHRONOLOGICAL MILESTONES (FLOWS DIRECTLY WITH DATE COLUMNS)
-            ========================================================================= */}
-        <div id="timeline" className="space-y-8 relative scroll-mt-24">
-          {/* Oversized Low-Contrast Display Numeral 09 for Milestone Track */}
-          <div
-            aria-hidden="true"
-            className="text-8xl sm:text-9xl md:text-[11rem] font-serif font-black text-ink-dim/10 dark:text-ink-dim/15 select-none pointer-events-none absolute -top-10 sm:-top-14 right-4 sm:right-8 z-0 leading-none"
-          >
-            09
-          </div>
-
-          <div className="space-y-2 relative z-10">
-            <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-ink-muted">
-              Chronological Track
-            </div>
-            <h3 className="font-serif text-xl sm:text-2xl font-bold text-ink-primary tracking-tight">
-              Scholarly Chronology &amp; Intellectual Milestones
-            </h3>
-            <p className="font-serif italic text-ink-muted text-xs sm:text-sm">
-              Progression of Academic Stages, Competitions, Preprints, &amp; Mechanized Compiler Engineering
-            </p>
-          </div>
-
-          {/* Pure Monospace Typographic Milestones */}
-          <div className="space-y-6 pl-1 relative z-10">
-            {timelineData.map((milestone) => (
-              <div key={milestone.id} className="grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-6 items-start">
-                {/* Left Column: Fixed Monospace Year/Period */}
-                <div className="sm:col-span-3 flex sm:justify-end items-center sm:items-start space-x-3 sm:space-x-0">
-                  <span className="text-xs font-mono font-bold text-ink-primary tracking-wider px-2.5 py-1 rounded border border-paper-border-subtle bg-paper-bg-base sm:text-right shadow-xs">
-                    {milestone.yearOrPeriod}
-                  </span>
-                  <span className="sm:hidden text-[10px] font-mono uppercase tracking-wider text-ink-muted">
-                    {milestone.category}
-                  </span>
-                </div>
-
-                {/* Right Column: Thin vertical rule and milestone card */}
-                <div className="sm:col-span-9 pl-4 sm:pl-6 border-l border-paper-border-strong relative space-y-1.5">
-                  <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-paper-bg-base border border-paper-border-strong flex items-center justify-center">
-                    <div className="w-1 h-1 rounded-full bg-academic-amber" />
-                  </div>
-
-                  <div className="flex items-baseline justify-between gap-2">
-                    <h4 className="font-serif text-base sm:text-lg font-bold text-ink-primary">
-                      {milestone.title}
-                    </h4>
-                    <span className="hidden sm:inline text-[10px] font-mono uppercase tracking-wider text-ink-muted">
-                      [{milestone.category}]
-                    </span>
-                  </div>
-
-                  <p className="font-serif text-xs sm:text-sm text-ink-secondary leading-relaxed">
-                    {milestone.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="pt-4 border-t border-paper-border-subtle text-xs font-mono text-ink-muted flex items-center space-x-2">
-            <Check className="w-3.5 h-3.5 text-academic-amber" />
-            <span>Verified Chronological Progression • Confirmed against Institutional Records &amp; Zenodo Depositions</span>
-          </div>
-        </div>
-
-        {/* Oxford Rule Divider */}
-        <hr className="oxford-rule" />
-
-        {/* =========================================================================
-            PART 3: OFFICIAL CURRICULUM VITAE (CV) DOSSIER CONCLUSION
+            PART 2: OFFICIAL CURRICULUM VITAE (CV) DOSSIER CONCLUSION
             ========================================================================= */}
         <div id="cv" className="relative scroll-mt-24 space-y-8">
           {/* Oversized Low-Contrast Display Numeral 08 for CV Dossier */}
@@ -235,7 +172,7 @@ export const EducationSection: React.FC = () => {
 
           <div className="space-y-2 relative z-10">
             <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-ink-muted">
-              Official Dossier
+              § 08 • Official Dossier
             </div>
             <h3 className="font-serif text-xl sm:text-2xl font-bold text-ink-primary tracking-tight">
               Curriculum Vitae (CV) &amp; Academic Dossier
@@ -275,10 +212,14 @@ export const EducationSection: React.FC = () => {
                 <button
                   onClick={handleDownloadPdf}
                   disabled={downloading}
-                  className="px-4 py-2.5 rounded bg-academic-amber text-paper-bg-base font-serif font-bold text-xs flex items-center justify-center space-x-2 hover:opacity-95 cursor-pointer shadow-xs transition-opacity"
+                  className="px-5 py-3 rounded bg-academic-amber text-paper-bg-base font-serif font-bold text-xs flex items-center justify-center space-x-2 hover:opacity-95 cursor-pointer shadow-md transition-opacity"
                 >
                   <FileDown className="w-4 h-4" />
-                  <span>{downloading ? 'Compiling Vector PDF...' : 'Download Vector Dossier (PDF)'}</span>
+                  <span>
+                    {downloading
+                      ? 'Compiling Vector PDF...'
+                      : 'Download Vector Dossier (PDF) • ~21 KB • Nov 2026'}
+                  </span>
                 </button>
 
                 <button
@@ -319,6 +260,83 @@ export const EducationSection: React.FC = () => {
                 <span className="text-[11px] text-ink-secondary">NumLang, Lean 4, Computational Geometry</span>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Oxford Rule Divider */}
+        <hr className="oxford-rule" />
+
+        {/* =========================================================================
+            PART 3: CHRONOLOGICAL MILESTONES (FLOWS DIRECTLY WITH DATE COLUMNS)
+            ========================================================================= */}
+        <div id="timeline" className="space-y-8 relative scroll-mt-24">
+          {/* Oversized Low-Contrast Display Numeral 09 for Milestone Track */}
+          <div
+            aria-hidden="true"
+            className="text-8xl sm:text-9xl md:text-[11rem] font-serif font-black text-ink-dim/10 dark:text-ink-dim/15 select-none pointer-events-none absolute -top-10 sm:-top-14 right-4 sm:right-8 z-0 leading-none"
+          >
+            09
+          </div>
+
+          <div className="space-y-2 relative z-10">
+            <div className="text-[11px] font-mono tracking-[0.2em] uppercase text-ink-muted">
+              § 09 • Chronological Track
+            </div>
+            <h3 className="font-serif text-xl sm:text-2xl font-bold text-ink-primary tracking-tight">
+              Scholarly Chronology &amp; Intellectual Milestones
+            </h3>
+            <p className="font-serif italic text-ink-muted text-xs sm:text-sm">
+              Progression of Academic Stages, Competitions, Preprints, &amp; Mechanized Compiler Engineering
+            </p>
+          </div>
+
+          {/* Pure Monospace Typographic Milestones */}
+          <div className="space-y-6 pl-1 relative z-10">
+            {timelineData.map((milestone) => {
+              const isOlympiad = milestone.category.toLowerCase().includes('competition') || milestone.title.toLowerCase().includes('olympiad');
+              const isAcademic = milestone.category.toLowerCase().includes('academic') || milestone.category.toLowerCase().includes('education');
+              const isPreprint = milestone.category.toLowerCase().includes('preprint') || milestone.category.toLowerCase().includes('publication');
+              const categoryIcon = isOlympiad ? '🏅' : isAcademic ? '🎓' : isPreprint ? '📄' : '⚙️';
+
+              return (
+                <div key={milestone.id} className="grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-6 items-start">
+                  {/* Left Column: Fixed Monospace Year/Period */}
+                  <div className="sm:col-span-3 flex sm:justify-end items-center sm:items-start space-x-3 sm:space-x-0">
+                    <span className="text-xs font-mono font-bold text-ink-primary tracking-wider px-2.5 py-1 rounded border border-paper-border-subtle bg-paper-bg-base sm:text-right shadow-xs">
+                      {milestone.yearOrPeriod}
+                    </span>
+                    <span className="sm:hidden text-[10px] font-mono uppercase tracking-wider text-ink-muted">
+                      {categoryIcon} {milestone.category}
+                    </span>
+                  </div>
+
+                  {/* Right Column: Thin vertical rule and milestone card */}
+                  <div className="sm:col-span-9 pl-4 sm:pl-6 border-l border-paper-border-strong relative space-y-1.5">
+                    <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-paper-bg-base border border-paper-border-strong flex items-center justify-center">
+                      <div className="w-1 h-1 rounded-full bg-academic-amber" />
+                    </div>
+
+                    <div className="flex items-baseline justify-between gap-2">
+                      <h4 className="font-serif text-base sm:text-lg font-bold text-ink-primary">
+                        {milestone.title}
+                      </h4>
+                      <span className="hidden sm:inline text-[10px] font-mono uppercase tracking-wider text-ink-muted">
+                        {categoryIcon} [{milestone.category}]
+                      </span>
+                    </div>
+
+                    <p className="font-serif text-xs sm:text-sm text-ink-secondary leading-relaxed">
+                      {milestone.description}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="pt-4 border-t border-paper-border-subtle text-xs font-mono text-ink-muted flex items-center space-x-2">
+            <Check className="w-3.5 h-3.5 text-academic-amber" />
+            <span>Verified Chronological Progression • Confirmed against Institutional Records &amp; Zenodo Depositions</span>
           </div>
         </div>
       </div>

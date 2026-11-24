@@ -144,9 +144,9 @@ export const ConnectionsGraphSection: React.FC = () => {
 
           const dx = nodeB.x - nodeA.x;
           const dy = nodeB.y - nodeA.y;
-          const distSq = dx * dx + dy * dy + 100;
+          const distSq = dx * dx + dy * dy + 150;
           const dist = Math.sqrt(distSq);
-          const repForce = 1100 / distSq;
+          const repForce = 2200 / distSq;
 
           const nx = dx / dist;
           const ny = dy / dist;
@@ -162,8 +162,8 @@ export const ConnectionsGraphSection: React.FC = () => {
       }
 
       // 2. Hooke's Law spring forces along relational edges
-      const restLength = 120;
-      const springK = 0.025;
+      const restLength = 140;
+      const springK = 0.022;
 
       edges.forEach((edge) => {
         const u = pNodes[edge.source];
@@ -225,6 +225,25 @@ export const ConnectionsGraphSection: React.FC = () => {
     animId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(animId);
   }, [edges, draggedNodeId, prefersReducedMotion, isVisible]);
+
+  // Reset simulation to canonical mathematical coordinates
+  const handleResetLayout = () => {
+    playClick(750);
+    const pNodes: Record<string, NodePhysics> = {};
+    connectionsGraphData.forEach((node) => {
+      const init = initialPositions[node.id] || { x: 400, y: 300 };
+      pNodes[node.id] = {
+        id: node.id,
+        x: init.x,
+        y: init.y,
+        vx: 0,
+        vy: 0,
+      };
+    });
+    physicsRef.current = pNodes;
+    setPositions(initialPositions);
+    isSimulatingRef.current = true;
+  };
 
   // Pointer drag event handlers for interactive physics manipulation
   const handlePointerDown = (nodeId: string, e: React.PointerEvent) => {
@@ -513,6 +532,16 @@ export const ConnectionsGraphSection: React.FC = () => {
                 Draggable Force-Directed Topology — Relational Map of Mathematical Concepts, Treatises, &amp; Toolchains
               </p>
             </MaskedReveal>
+            <div className="flex items-center space-x-3 text-xs font-mono pt-0.5">
+              <span className="text-academic-amber font-semibold">21 nodes · 26 relational edges · force-directed physics</span>
+              <button
+                onClick={handleResetLayout}
+                className="px-2 py-0.5 rounded border border-paper-border-strong bg-paper-bg-subtle hover:bg-paper-bg-elevated text-[11px] text-ink-secondary hover:text-ink-primary cursor-pointer transition-colors"
+                title="Reset physics lattice to canonical layout"
+              >
+                Reset Layout [↺]
+              </button>
+            </div>
           </div>
 
           {/* Archival Legend */}
@@ -622,16 +651,16 @@ export const ConnectionsGraphSection: React.FC = () => {
                         ? theme === 'amber-crt'
                           ? '#ffd24d'
                           : theme === 'night'
-                          ? '#f43f5e'
-                          : '#881337'
+                          ? '#f59e0b'
+                          : '#b45309'
                         : theme === 'amber-crt'
                         ? '#593e03'
                         : theme === 'night'
                         ? '#5a5043'
-                        : '#6b5f4d'
+                        : '#92400e'
                     }
-                    strokeWidth={isConnectedToActive ? 2.4 : 1.0}
-                    strokeOpacity={isConnectedToActive ? 0.95 : isDimmed ? 0.50 : 0.70}
+                    strokeWidth={isConnectedToActive ? 2.2 : 0.9}
+                    strokeOpacity={isConnectedToActive ? 0.95 : isDimmed ? 0.35 : 0.55}
                     strokeDasharray={isConnectedToActive ? undefined : '2 3'}
                     className="transition-opacity duration-200"
                   />
@@ -697,8 +726,8 @@ export const ConnectionsGraphSection: React.FC = () => {
                             theme === 'amber-crt'
                               ? '#ffd24d'
                               : theme === 'night'
-                              ? '#f43f5e'
-                              : '#881337'
+                              ? '#f59e0b'
+                              : '#b45309'
                           }
                           strokeWidth="1.8"
                           strokeDasharray="2 2"
@@ -729,8 +758,8 @@ export const ConnectionsGraphSection: React.FC = () => {
                             ? theme === 'amber-crt'
                               ? 'fill-[#ffd24d] font-bold'
                               : theme === 'night'
-                              ? 'fill-[#f43f5e] font-bold'
-                              : 'fill-[#881337] font-bold'
+                              ? 'fill-[#f59e0b] font-bold'
+                              : 'fill-[#b45309] font-bold'
                             : isIncident
                             ? 'fill-ink-primary font-bold'
                             : 'fill-ink-primary font-semibold'

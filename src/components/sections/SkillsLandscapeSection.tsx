@@ -258,25 +258,29 @@ export const SkillsLandscapeSection: React.FC = () => {
         {/* Oxford Rule Divider */}
         <hr className="oxford-rule" />
 
-        {/* Cluster Tabs (active state in academic-amber) */}
+        {/* Cluster Tabs with Monospace Prefix Abbreviations */}
         <div className="flex flex-wrap gap-2 border-b border-paper-border-subtle pb-3">
-          {skillsData.map((cat, idx) => (
-            <button
-              key={cat.categoryName}
-              onClick={() => {
-                setSelectedCategory(idx);
-                setActiveSkillName(skillsData[idx]?.skills[0]?.name || null);
-                setHoveredSkillName(null);
-              }}
-              className={`px-4 py-2 rounded-xs font-mono text-xs transition-colors cursor-pointer ${
-                selectedCategory === idx
-                  ? 'border border-academic-amber bg-paper-bg-base text-academic-amber font-bold shadow-xs'
-                  : 'border border-paper-border-subtle bg-paper-bg-subtle text-ink-muted hover:text-ink-primary hover:bg-paper-bg-elevated'
-              }`}
-            >
-              {cat.categoryName}
-            </button>
-          ))}
+          {skillsData.map((cat, idx) => {
+            const prefix = idx === 0 ? '[M]' : idx === 1 ? '[CS]' : idx === 2 ? '[T]' : '[A]';
+            return (
+              <button
+                key={cat.categoryName}
+                onClick={() => {
+                  setSelectedCategory(idx);
+                  setActiveSkillName(skillsData[idx]?.skills[0]?.name || null);
+                  setHoveredSkillName(null);
+                }}
+                className={`px-3 sm:px-4 py-2 rounded-xs font-mono text-xs transition-colors cursor-pointer flex items-center space-x-1.5 ${
+                  selectedCategory === idx
+                    ? 'border border-academic-amber bg-paper-bg-base text-academic-amber font-bold shadow-xs'
+                    : 'border border-paper-border-subtle bg-paper-bg-subtle text-ink-muted hover:text-ink-primary hover:bg-paper-bg-elevated'
+                }`}
+              >
+                <span className="text-academic-amber font-bold">{prefix}</span>
+                <span>{cat.categoryName}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Competency Node Chips for Fast Inspection & Mobile Access */}
@@ -301,22 +305,24 @@ export const SkillsLandscapeSection: React.FC = () => {
           })}
         </div>
 
-        {/* SVG Skill Constellation Layout */}
-        <div className="rounded border border-paper-border-strong bg-paper-bg-base p-4 sm:p-8 space-y-6 shadow-sm">
-          <div
-            className="relative w-full select-none"
-            onClick={() => {
-              setActiveSkillName(null);
-              setHoveredSkillName(null);
-            }}
-          >
-            <svg
-              viewBox="0 0 720 340"
-              data-reticle-cursor="true"
-              className="w-full h-auto max-h-[420px] mx-auto block overflow-visible"
-              role="img"
-              aria-label={`Skill constellation graph for ${currentCategory.categoryName}`}
+        {/* SVG Skill Constellation & Compact Legend Sidebar */}
+        <div className="rounded border border-paper-border-strong bg-paper-bg-base p-4 sm:p-6 space-y-6 shadow-sm">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+            {/* SVG Constellation Chart */}
+            <div
+              className="lg:col-span-8 relative w-full select-none"
+              onClick={() => {
+                setActiveSkillName(null);
+                setHoveredSkillName(null);
+              }}
             >
+              <svg
+                viewBox="0 0 720 340"
+                data-reticle-cursor="true"
+                className="w-full h-auto max-h-[380px] mx-auto block overflow-visible"
+                role="img"
+                aria-label={`Skill constellation graph for ${currentCategory.categoryName}`}
+              >
               {/* Celestial Background Grid & Coordinate Ticks */}
               <g className="celestial-grid pointer-events-none">
                 {/* Fixed Background Stars */}
@@ -643,6 +649,55 @@ export const SkillsLandscapeSection: React.FC = () => {
                 })}
               </g>
             </svg>
+            </div>
+
+            {/* Compact Categorized Legend Sidebar */}
+            <div className="lg:col-span-4 p-4 rounded border border-paper-border-subtle bg-paper-bg-subtle/70 space-y-3 font-mono text-xs">
+              <div className="flex items-center justify-between border-b border-paper-border-subtle pb-2">
+                <span className="font-bold uppercase tracking-wider text-[10px] text-academic-amber">
+                  Cluster Index ({skills.length})
+                </span>
+                <span className="text-[10px] text-ink-muted">Tap to Focus</span>
+              </div>
+              <div className="space-y-1.5 max-h-[300px] overflow-y-auto pr-1">
+                {skills.map((s) => {
+                  const isSel = activeSkillName === s.name || hoveredSkillName === s.name;
+                  return (
+                    <div
+                      key={s.name}
+                      role="option"
+                      aria-selected={isSel}
+                      tabIndex={0}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveSkillName(s.name);
+                      }}
+                      onMouseEnter={() => setHoveredSkillName(s.name)}
+                      onMouseLeave={() => setHoveredSkillName(null)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setActiveSkillName(s.name);
+                        }
+                      }}
+                      className={`w-full text-left px-2.5 py-1.5 rounded transition-all cursor-pointer flex items-center justify-between text-[11px] ${
+                        isSel
+                          ? 'bg-academic-amber/15 border border-academic-amber text-academic-amber font-bold shadow-xs'
+                          : 'bg-paper-bg-base border border-paper-border-subtle text-ink-secondary hover:text-ink-primary hover:border-paper-border-strong'
+                      }`}
+                    >
+                      <span className="truncate pr-2">{s.name}</span>
+                      <span className="text-[9px] px-1 py-0.2 rounded bg-paper-bg-subtle text-ink-muted shrink-0 font-mono">
+                        Active Node
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="pt-2 border-t border-paper-border-subtle/50 text-[10px] text-ink-muted italic">
+                Hover or click any node to isolate topological neighbors.
+              </div>
+            </div>
           </div>
 
           {/* Interactive Inspection Tooltip / Panel Below Constellation */}

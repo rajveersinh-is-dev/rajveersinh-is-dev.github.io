@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build:cv": "npx tsx scripts/build-static-cv.ts",
-    "build": "tsc -b && vite build && npx tsx scripts/build-static-cv.ts",
+    "build": "tsc -b && vite build && npx tsx scripts/build-static-cv.ts && npx tsx scripts/generate-og-image.ts",
     "test": "vitest run",
     "lint": "oxlint",
     "preview": "vite preview"

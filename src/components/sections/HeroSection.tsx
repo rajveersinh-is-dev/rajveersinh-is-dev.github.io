@@ -65,23 +65,35 @@ export const HeroSection: React.FC = () => {
 
         {/* CENTER TYPOGRAPHIC ANCHOR */}
         <div
-          className={`my-auto py-8 sm:py-12 space-y-4 ${
+          className={`my-auto py-8 sm:py-12 space-y-4 relative ${
             prefersReducedMotion ? '' : 'animate-fade-in'
           }`}
           style={prefersReducedMotion ? undefined : { animationDelay: '150ms' }}
         >
+          {/* Ambient Drifting Proof Fragment & SSA Stream */}
+          <div
+            aria-hidden="true"
+            className="absolute -top-4 sm:-top-8 right-2 sm:right-6 pointer-events-none select-none text-[10px] sm:text-xs font-mono text-ink-dim/15 dark:text-ink-dim/20 space-y-1 hidden sm:block animate-pulse text-right"
+            style={{ animationDuration: '7s' }}
+          >
+            <div>∀ n : ℕ, fib(n) ≥ φⁿ⁻²</div>
+            <div>∂² = 0 ⊢ H*(K, ∂)</div>
+            <div>L(λ*) = max_λ &#123; min_x L(x, λ) &#125;</div>
+            <div>SSA[L₁: φ(v₀, v₁)] ⇓ codegen</div>
+          </div>
+
           <div className="space-y-1">
             <h1
               aria-label="Rajveersinh Vishal Pardeshi"
-              className="font-serif font-bold tracking-tight text-ink-primary"
+              className="font-serif tracking-tight text-ink-primary"
             >
               <MaskedReveal delayMs={100}>
-                <span className="block text-[2.75rem] min-[400px]:text-5xl sm:text-7xl md:text-8xl leading-none">
+                <span className="block text-[2.75rem] min-[400px]:text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black leading-none tracking-tight">
                   RAJVEERSINH
                 </span>
               </MaskedReveal>
               <MaskedReveal delayMs={200}>
-                <span className="block text-[2.75rem] min-[400px]:text-5xl sm:text-7xl md:text-8xl leading-none sm:translate-x-8 md:translate-x-12 mt-1 sm:mt-2 text-ink-primary">
+                <span className="block text-xl min-[400px]:text-2xl sm:text-4xl md:text-5xl font-serif font-light text-ink-muted sm:translate-x-8 md:translate-x-12 mt-1 sm:mt-2 tracking-normal">
                   VISHAL PARDESHI
                 </span>
               </MaskedReveal>
@@ -114,7 +126,7 @@ export const HeroSection: React.FC = () => {
           }`}
           style={prefersReducedMotion ? undefined : { animationDelay: '300ms' }}
         >
-          {/* Research links — plain text with arrow */}
+          {/* Research links — plain text with arrow morph */}
           <div className="flex flex-wrap items-center gap-6 text-xs sm:text-sm font-mono text-ink-primary">
             <a
               href="#research-interests"
@@ -122,7 +134,7 @@ export const HeroSection: React.FC = () => {
               className="hover:text-academic-amber transition-colors flex items-center space-x-1.5 group cursor-pointer"
             >
               <span>View Research</span>
-              <span className="group-hover:translate-x-1 transition-transform">→</span>
+              <span className="inline-block transition-transform duration-200 group-hover:translate-x-1 text-ink-muted group-hover:text-academic-amber font-serif">⟶</span>
             </a>
             <a
               href="#projects"
@@ -130,7 +142,7 @@ export const HeroSection: React.FC = () => {
               className="hover:text-academic-amber transition-colors flex items-center space-x-1.5 group cursor-pointer"
             >
               <span>Projects</span>
-              <span className="group-hover:translate-x-1 transition-transform">→</span>
+              <span className="inline-block transition-transform duration-200 group-hover:translate-x-1 text-ink-muted group-hover:text-academic-amber font-serif">⟶</span>
             </a>
             <a
               href="#preprints"
@@ -138,7 +150,7 @@ export const HeroSection: React.FC = () => {
               className="hover:text-academic-amber transition-colors flex items-center space-x-1.5 group cursor-pointer"
             >
               <span>Preprints</span>
-              <span className="group-hover:translate-x-1 transition-transform">→</span>
+              <span className="inline-block transition-transform duration-200 group-hover:translate-x-1 text-ink-muted group-hover:text-academic-amber font-serif">⟶</span>
             </a>
           </div>
 

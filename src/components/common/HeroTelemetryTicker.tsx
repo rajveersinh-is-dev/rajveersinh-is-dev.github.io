@@ -1,8 +1,19 @@
 import React, { useState, useEffect } from 'react';
 
+const RESEARCH_THOUGHTS = [
+  'Proving homeomorphic embedding termination for Ackermann recursion',
+  'Bounding Betti numbers for path-crossing filtration on temporal hypergraphs',
+  'Deriving subgradient dual updates for resource-constrained shortest path',
+  'Verifying SSA φ-node lowering invariants in Lean 4',
+  'Simulating turbulent kinetic energy dissipation in 2D hydraulic erosion',
+];
+
 export const HeroTelemetryTicker: React.FC = () => {
   const [puneTime, setPuneTime] = useState<string>('');
+  const [thoughtIndex, setThoughtIndex] = useState<number>(0);
+  const [fadeState, setFadeState] = useState<'fade-in' | 'fade-out'>('fade-in');
 
+  // Local Clock Tracker
   useEffect(() => {
     const updateTime = () => {
       try {
@@ -32,6 +43,19 @@ export const HeroTelemetryTicker: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Micro-Thought Cycle
+  useEffect(() => {
+    const cycleInterval = setInterval(() => {
+      setFadeState('fade-out');
+      setTimeout(() => {
+        setThoughtIndex((prev) => (prev + 1) % RESEARCH_THOUGHTS.length);
+        setFadeState('fade-in');
+      }, 350);
+    }, 5500);
+
+    return () => clearInterval(cycleInterval);
+  }, []);
+
   return (
     <div
       role="status"
@@ -47,6 +71,7 @@ export const HeroTelemetryTicker: React.FC = () => {
         <span className="font-bold text-ink-primary tracking-wider uppercase text-[10px]">
           PUNE, MH, IN
         </span>
+        <span className="text-[9px] font-mono text-ink-muted hidden sm:inline">[SSA SUPERCOMPILATION]</span>
       </div>
 
       <span className="text-paper-border-strong hidden sm:inline">|</span>
@@ -70,10 +95,17 @@ export const HeroTelemetryTicker: React.FC = () => {
 
       <span className="text-paper-border-strong hidden lg:inline">|</span>
 
-      {/* Active research focus */}
-      <div className="hidden lg:flex items-center space-x-1.5 text-ink-muted">
-        <span className="text-academic-amber font-semibold">ACTIVE:</span>
-        <span className="text-ink-secondary">SSA SUPERCOMPILATION &amp; TOPOLOGICAL INVARIANTS</span>
+      {/* Live Micro-Thought / Research Stream */}
+      <div className="hidden lg:flex items-center space-x-1.5 text-ink-muted min-w-[280px]">
+        <span className="text-academic-amber font-semibold shrink-0">CURRENTLY:</span>
+        <span
+          className={`text-ink-primary italic transition-opacity duration-300 ${
+            fadeState === 'fade-in' ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          "{RESEARCH_THOUGHTS[thoughtIndex]}"
+          <span className="animate-pulse text-academic-amber font-mono not-italic ml-0.5">_</span>
+        </span>
       </div>
     </div>
   );

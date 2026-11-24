@@ -107,16 +107,20 @@ export const PreprintsSection: React.FC = () => {
                 {/* Catalog Rubric & Metadata */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-paper-border-subtle pb-3">
                   <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
-                    <span className="font-bold text-ink-muted uppercase tracking-wider">
+                    <span className="font-bold text-academic-amber uppercase tracking-wider">
                       Article IV.{idx + 1}
                     </span>
                     <span className="text-paper-border-strong">•</span>
-                    <span className="px-2 py-0.5 rounded border border-academic-amber/40 bg-academic-amber/10 text-academic-amber font-semibold">
+                    <span className="px-2 py-0.5 rounded border border-academic-amber/40 bg-academic-amber/10 text-academic-amber font-semibold text-[10px]">
+                      [ZENODO • OPEN ACCESS • 2026]
+                    </span>
+                    <span className="text-paper-border-strong">•</span>
+                    <span className="text-ink-muted text-[10px]">
                       Status: {pub.status}
                     </span>
                     <span className="text-paper-border-strong">•</span>
-                    <span className="text-ink-muted">
-                      Independently Authored
+                    <span className="text-[10px] text-ink-muted px-2 py-0.5 rounded border border-paper-border-subtle bg-paper-bg-base">
+                      0 Citations • Nov 2026 Archival Deposit
                     </span>
                   </div>
 
@@ -243,6 +247,24 @@ export const PreprintsSection: React.FC = () => {
                       </>
                     )}
                   </button>
+                </div>
+
+                {/* Journal Archive Bottom Stamp & Permanent Identifier */}
+                <div className="pt-3 border-t border-paper-border-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] font-mono text-ink-muted">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-academic-amber font-semibold">PERMANENT IDENTIFIER:</span>
+                    <a
+                      href={pub.recordUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-ink-secondary hover:text-academic-amber underline underline-offset-2"
+                    >
+                      {pub.recordUrl.replace('https://', '')}
+                    </a>
+                  </div>
+                  <span className="text-[10px] text-ink-muted">
+                    Archival Zenodo Deposit • Machine-Readable Metadata Preserved
+                  </span>
                 </div>
 
                 {/* Expandable BibTeX Drawer */}

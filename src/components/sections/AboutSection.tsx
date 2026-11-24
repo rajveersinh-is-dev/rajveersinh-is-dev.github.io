@@ -2,6 +2,7 @@ import React from 'react';
 import { profileData, experienceData } from '../../data';
 import { useIntersectionObserver } from '../../utils/intersectionObserver';
 import { MaskedReveal } from '../common/MaskedReveal';
+import { ArchivalPortrait } from '../common/ArchivalPortrait';
 
 export const AboutSection: React.FC = () => {
   const [sectionRef, isVisible] = useIntersectionObserver<HTMLElement>();
@@ -45,25 +46,32 @@ export const AboutSection: React.FC = () => {
 
         {/* Wide-Margin Scholarly Narrative Layout */}
         <div className="space-y-8">
-          {/* First-Person Intellectual Manifesto with Drop Cap */}
-          <div className="space-y-5 font-serif text-ink-secondary text-base sm:text-lg leading-relaxed max-w-4xl">
-            <p className="drop-cap text-ink-primary">
-              I am an independent researcher focused on mathematical discoveries, algorithm design, and computational approaches to understanding complex structures. My interests span theoretical mathematics and computation, with a particular emphasis on developing original ideas through rigorous reasoning.
-            </p>
-            <p>
-              My interest in mathematics began early, and I earned multiple medals in SOF IMO Olympiads during my school years. I now pursue independent research while exploring the connections between mathematical theory, algorithms, scientific computing, and formal verification.
-            </p>
-            <p className="italic text-ink-primary font-medium">
-              I believe in approaching difficult problems with curiosity, persistence, and intellectual honesty.
-            </p>
+          {/* First-Person Intellectual Manifesto with Drop Cap & Archival Portrait */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+            <div className="md:col-span-8 space-y-5 font-serif text-ink-secondary text-base sm:text-lg leading-relaxed">
+              <p className="drop-cap text-ink-primary">
+                I am an independent researcher focused on mathematical discoveries, algorithm design, and computational approaches to understanding complex structures. My interests span theoretical mathematics and computation, with a particular emphasis on developing original ideas through rigorous reasoning.
+              </p>
+              <p>
+                My interest in mathematics began early, and I earned multiple medals in SOF IMO Olympiads during my school years. I now pursue independent research while exploring the connections between mathematical theory, algorithms, scientific computing, and formal verification.
+              </p>
+              <p className="italic text-ink-primary font-medium">
+                I believe in approaching difficult problems with curiosity, persistence, and intellectual honesty.
+              </p>
+            </div>
+
+            {/* Archival Bayer-Dithered Portrait Plate */}
+            <div className="md:col-span-4 flex justify-center md:justify-end">
+              <ArchivalPortrait />
+            </div>
           </div>
 
-          {/* Research Philosophy Formal Theorem Box (oxford-rule left border in academic-seal) */}
-          <div className="my-8 p-6 bg-paper-bg-subtle border-l-4 border-academic-seal space-y-3">
-            <div className="font-serif font-bold text-xs uppercase tracking-wider text-academic-amber">
+          {/* Research Philosophy Pull-Quote */}
+          <div className="my-8 py-6 px-6 sm:px-8 border-l-4 border-academic-amber bg-paper-bg-subtle/80 space-y-3 rounded-r-xs">
+            <div className="font-mono uppercase tracking-widest text-[11px] text-academic-amber font-bold">
               Research Approach &amp; Philosophy
             </div>
-            <blockquote className="font-serif italic text-base sm:text-lg text-ink-primary leading-relaxed">
+            <blockquote className="font-serif italic text-xl sm:text-2xl text-ink-primary leading-snug">
               "{profileData.researchPhilosophy}"
             </blockquote>
           </div>
@@ -111,7 +119,7 @@ export const AboutSection: React.FC = () => {
                   </div>
 
                   <div className="text-xs font-mono text-ink-muted">
-                    Commercial Enterprise Affiliation: <span className="text-ink-secondary font-medium">{exp.subsidiaryOrFamilyBusiness}</span>
+                    Affiliated Enterprise / Context: <span className="text-ink-secondary font-medium">{exp.subsidiaryOrFamilyBusiness}</span>
                   </div>
 
                   <ul className="text-xs sm:text-sm text-ink-secondary space-y-1.5 pt-1 font-serif">
