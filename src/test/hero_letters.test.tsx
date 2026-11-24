@@ -4,7 +4,7 @@ import { HeroSection } from '../components/sections/HeroSection';
 import { PreferencesProvider } from '../context';
 
 describe('HeroSection Interactive Name Letters & Newton Apple Easter Egg', () => {
-  it('renders headline with hyperbolic sine reflection Rajveersin(h) and per-letter interactive elements', () => {
+  it('renders headline with hyperbolic sine reflection Rajveersin(h) where (h) is pre-highlighted in orange', () => {
     render(
       <PreferencesProvider>
         <HeroSection />
@@ -21,11 +21,20 @@ describe('HeroSection Interactive Name Letters & Newton Apple Easter Egg', () =>
     expect(rLetters[0].className).toContain('hover:-translate-y-2.5');
     expect(rLetters[0].className).toContain('hover:scale-');
 
-    // Hyperbolic sine reflection (h) exists in the headline
-    expect(screen.getAllByTitle(/Hyperbolic sine/i).length).toBeGreaterThanOrEqual(1);
+    // Hyperbolic sine reflection (h) exists in the headline and is pre-highlighted in orange
+    const hyperbolicLetters = screen.getAllByTitle(/Hyperbolic sine reflection/i);
+    expect(hyperbolicLetters.length).toBe(3); // '(', 'h', ')'
+    hyperbolicLetters.forEach((el) => {
+      expect(el.className).toContain('text-orange-500');
+    });
+
+    // Verify counter and buttons are NOT present in the clean editorial UI
+    expect(screen.queryByText(/letters illuminated/i)).toBeNull();
+    expect(screen.queryByRole('button', { name: /Reset/i })).toBeNull();
+    expect(screen.queryByRole('button', { name: /All Orange/i })).toBeNull();
   });
 
-  it('changes letter to orange when clicked and displays illumination counter', () => {
+  it('changes unhighlighted letter to orange when clicked with audio feedback and no counter clutter', () => {
     render(
       <PreferencesProvider>
         <HeroSection />
@@ -39,34 +48,12 @@ describe('HeroSection Interactive Name Letters & Newton Apple Easter Egg', () =>
     fireEvent.click(rLetter);
     expect(rLetter.className).toContain('text-orange-500');
 
-    // Illumination counter appears
-    expect(screen.getByText(/1 of 27 letters illuminated/i)).toBeTruthy();
-
-    // Reset button clears illuminated letters
-    const resetBtn = screen.getByRole('button', { name: /Reset/i });
-    fireEvent.click(resetBtn);
-
-    expect(rLetter.className).not.toContain('text-orange-500');
-    expect(screen.queryByText(/illuminated/i)).toBeNull();
+    // No counter or reset button clutter appears
+    expect(screen.queryByText(/letters illuminated/i)).toBeNull();
+    expect(screen.queryByRole('button', { name: /Reset/i })).toBeNull();
   });
 
-  it('illuminates all letters when clicking [All Orange ⚡]', () => {
-    render(
-      <PreferencesProvider>
-        <HeroSection />
-      </PreferencesProvider>
-    );
-
-    const rLetter = screen.getAllByTitle(/Click to illuminate "R" orange/i)[0];
-    fireEvent.click(rLetter);
-
-    const allOrangeBtn = screen.getByRole('button', { name: /All Orange/i });
-    fireEvent.click(allOrangeBtn);
-
-    expect(screen.getByText(/27 of 27 letters illuminated/i)).toBeTruthy();
-  });
-
-  it('triggers Newton Apple Free Body Diagram easter egg when clicking "A" multiple times', () => {
+  it('triggers Newton Apple Free Body Diagram easter egg and dismisses via close button', () => {
     render(
       <PreferencesProvider>
         <HeroSection />
@@ -89,5 +76,34 @@ describe('HeroSection Interactive Name Letters & Newton Apple Easter Egg', () =>
     // Verify Free Body Diagram annotations are present
     expect(screen.getAllByText(/Fg = mg/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText(/FBD • m = 0.150 kg/i)).toBeTruthy();
+
+    // Close button works cleanly without dragging
+    const closeBtn = screen.getByRole('button', { name: /Close Easter egg/i });
+    expect(closeBtn).toBeTruthy();
+
+    fireEvent.click(closeBtn);
+
+    // Apple container dismissed
+    expect(screen.queryByLabelText(/Newton's Apple Free Body Diagram/i)).toBeNull();
+  });
+
+  it('dismisses Newton Apple simulation when pressing Escape key', () => {
+    render(
+      <PreferencesProvider>
+        <HeroSection />
+      </PreferencesProvider>
+    );
+
+    const aLetter = screen.getByTitle(/click 3x for Newton's apple/i);
+    fireEvent.click(aLetter);
+    fireEvent.click(aLetter);
+    fireEvent.click(aLetter);
+
+    expect(screen.getByLabelText(/Newton's Apple Free Body Diagram/i)).toBeTruthy();
+
+    // Press Escape
+    fireEvent.keyDown(window, { key: 'Escape' });
+
+    expect(screen.queryByLabelText(/Newton's Apple Free Body Diagram/i)).toBeNull();
   });
 });

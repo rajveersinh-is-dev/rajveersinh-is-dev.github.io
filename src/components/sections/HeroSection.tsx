@@ -16,7 +16,10 @@ export const HeroSection: React.FC = () => {
   const SECOND_NAME_VISHAL = 'VISHAL';
   const SECOND_NAME_PARDESHI = 'PARDESHI';
 
-  const [orangeLetters, setOrangeLetters] = useState<Set<string>>(() => new Set());
+  // Pre-highlight (h) reflecting the hyperbolic sine reflection
+  const [orangeLetters, setOrangeLetters] = useState<Set<string>>(
+    () => new Set(['first-10', 'first-11', 'first-12'])
+  );
   const [showNewtonApple, setShowNewtonApple] = useState<boolean>(false);
 
   // Easter egg: tracking rapid clicks on the letter 'A' in rAjveersin(h)
@@ -144,25 +147,24 @@ export const HeroSection: React.FC = () => {
                       const id = `first-${i}`;
                       const isOrange = orangeLetters.has(id);
                       const isHyperbolic = char === '(' || char === 'h' || char === ')';
+                      const isHighlighted = isOrange || isHyperbolic;
                       const isA = id === 'first-1' && char === 'A';
                       return (
                         <span
                           key={id}
                           onClick={() => toggleLetterOrange(id, i, char)}
                           className={`inline-block cursor-pointer select-none transition-all duration-200 ease-out origin-bottom hover:-translate-y-2.5 hover:scale-115 sm:hover:scale-120 hover:z-30 relative active:scale-95 ${
-                            isOrange
-                              ? 'text-orange-500 dark:text-[#ff6600] font-black'
-                              : isHyperbolic
-                              ? 'font-serif italic text-academic-amber hover:text-orange-500'
+                            isHighlighted
+                              ? `text-orange-500 dark:text-[#ff6600] font-black ${isHyperbolic ? 'font-serif italic' : ''}`
                               : 'text-ink-primary hover:text-ink-primary hover:drop-shadow-[0_10px_14px_rgba(0,0,0,0.45)]'
                           }`}
                           style={{
-                            textShadow: isOrange
+                            textShadow: isHighlighted
                               ? theme === 'paper'
                                 ? '0 0 14px rgba(234, 88, 12, 0.45)'
                                 : '0 0 20px rgba(255, 102, 0, 0.8), 0 0 35px rgba(255, 102, 0, 0.45)'
                               : undefined,
-                            filter: isOrange
+                            filter: isHighlighted
                               ? theme === 'paper'
                                 ? 'drop-shadow(0 2px 4px rgba(234, 88, 12, 0.35))'
                                 : 'drop-shadow(0 0 12px rgba(255, 102, 0, 0.65))'
@@ -172,7 +174,7 @@ export const HeroSection: React.FC = () => {
                             isA
                               ? 'Click to illuminate "A" orange (Easter egg: click 3x for Newton\'s apple)'
                               : isHyperbolic
-                              ? 'Hyperbolic sine: sinh(x) = (eˣ - e⁻ˣ)/2 • Click to illuminate'
+                              ? 'Hyperbolic sine reflection: sinh(x) = (eˣ - e⁻ˣ)/2'
                               : `Click to illuminate "${char}" orange`
                           }
                         >
@@ -242,40 +244,6 @@ export const HeroSection: React.FC = () => {
                 </MaskedReveal>
               </div>
             </h1>
-
-            {/* Interactive Illumination Controls (shown when letters are illuminated) */}
-            {orangeLetters.size > 0 && (
-              <div className="pt-2 flex items-center gap-2 text-[10px] sm:text-xs font-mono text-academic-amber animate-fade-in select-none">
-                <span className="font-bold">● {orangeLetters.size} of 27 letters illuminated</span>
-                <span className="text-ink-dim">•</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setOrangeLetters(new Set());
-                    playClick(440);
-                  }}
-                  className="hover:underline text-ink-muted hover:text-academic-amber cursor-pointer px-1 py-0.5 rounded border border-paper-border-subtle hover:border-academic-amber/50"
-                  title="Reset illuminated letters"
-                >
-                  [Reset ↺]
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const all = new Set<string>();
-                    FIRST_NAME_LETTERS.forEach((_, i) => all.add(`first-${i}`));
-                    SECOND_NAME_VISHAL.split('').forEach((_, i) => all.add(`second-v-${i}`));
-                    SECOND_NAME_PARDESHI.split('').forEach((_, i) => all.add(`second-p-${i}`));
-                    setOrangeLetters(all);
-                    playClick(880);
-                  }}
-                  className="hover:underline text-ink-muted hover:text-academic-amber cursor-pointer px-1 py-0.5 rounded border border-paper-border-subtle hover:border-academic-amber/50"
-                  title="Turn all letters orange"
-                >
-                  [All Orange ⚡]
-                </button>
-              </div>
-            )}
           </div>
 
           {/* Restrained Italic Tagline */}

@@ -38,14 +38,26 @@ export const NewtonAppleFBD: React.FC<NewtonAppleFBDProps> = ({ onDismiss, initi
     x: startX,
     y: startY,
   });
-  const velRef = useRef<{ x: number; y: number }>({ x: 35, y: 140 });
+  const velRef = useRef<{ x: number; y: number }>({ x: 45, y: 160 });
   const accRef = useRef<{ x: number; y: number }>({ x: 0, y: 980 });
-  const rotRef = useRef<number>(0);
+  const rotRef = useRef<number>(18);
+  const rotVelRef = useRef<number>(45); // Natural tumble angular velocity in deg/s
   const modeRef = useRef<AppleMode>('falling');
 
   useEffect(() => {
     modeRef.current = mode;
   }, [mode]);
+
+  // Keyboard shortcut: Escape closes the simulation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onDismiss();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onDismiss]);
 
   // Pointer drag tracking
   const isDraggingRef = useRef<boolean>(false);
@@ -174,7 +186,7 @@ export const NewtonAppleFBD: React.FC<NewtonAppleFBDProps> = ({ onDismiss, initi
 
         let newX = curPos.x + newVx * dt;
         let newY = curPos.y + newVy * dt;
-        let newRot = rotRef.current + (newVx * 0.15) * dt * 45;
+        let newRot = rotRef.current + (rotVelRef.current + newVx * 0.25) * dt;
 
         // Ground collision check
         if (newY >= groundY && newX >= -80 && newX <= winW + 80) {
@@ -183,12 +195,16 @@ export const NewtonAppleFBD: React.FC<NewtonAppleFBDProps> = ({ onDismiss, initi
             // Restitution bounce
             newVy = -newVy * 0.40;
             newVx = newVx * 0.70;
+            // Ground bounce imparts torque and spin
+            rotVelRef.current = -newVx * 0.8 + (Math.random() - 0.5) * 40;
             audioService.playAppleBounce(Math.min(1.5, Math.abs(newVy) / 380));
           } else {
-            // Settle on ground
+            // Settle on ground naturally on its curved side/cheek (not upright)
             newVy = 0;
             newVx = 0;
-            newRot = 0;
+            rotVelRef.current = 0;
+            const rollDir = Math.sign(newVx) || (rotRef.current >= 0 ? 1 : -1) || 1;
+            newRot = rollDir * 64; // Natural resting tilt angle ~64°
             modeRef.current = 'grounded';
             setMode('grounded');
           }
@@ -275,7 +291,8 @@ export const NewtonAppleFBD: React.FC<NewtonAppleFBDProps> = ({ onDismiss, initi
     posRef.current = { x: newX, y: newY };
     velRef.current = { x: computedVx, y: computedVy };
     accRef.current = { x: computedAx, y: computedAy };
-    rotRef.current = computedVx * 0.04;
+    rotRef.current = computedVx * 0.05;
+    rotVelRef.current = computedVx * 0.2;
 
     updateDOM();
   }, [updateDOM]);
@@ -302,7 +319,9 @@ export const NewtonAppleFBD: React.FC<NewtonAppleFBDProps> = ({ onDismiss, initi
       setMode('grounded');
       velRef.current = { x: 0, y: 0 };
       accRef.current = { x: 0, y: 0 };
-      rotRef.current = 0;
+      rotVelRef.current = 0;
+      const rollDir = Math.sign(curVel.x) || (rotRef.current >= 0 ? 1 : -1) || 1;
+      rotRef.current = rollDir * 64; // Settle naturally on side
       posRef.current.y = winH - 52;
       updateDOM();
     } else {
@@ -549,16 +568,27 @@ export const NewtonAppleFBD: React.FC<NewtonAppleFBDProps> = ({ onDismiss, initi
 
         {/* Floating Physics Telemetry Badge */}
         <div
-          className="absolute -top-24 left-14 min-w-[210px] p-2 rounded border border-academic-amber/60 bg-black/90 backdrop-blur-xs text-ink-primary shadow-xl pointer-events-auto select-none"
+          onPointerDown={(e) => e.stopPropagation()}
+          className="absolute -top-24 left-14 min-w-[210px] p-2 rounded border border-academic-amber/60 bg-black/90 backdrop-blur-xs text-ink-primary shadow-xl pointer-events-auto select-none cursor-default"
           style={{ fontSize: '9px', lineHeight: '1.4' }}
         >
           <div className="flex items-center justify-between border-b border-paper-border-strong pb-1 mb-1 font-bold text-academic-amber">
             <span>FBD • m = 0.150 kg</span>
             <button
               type="button"
-              onClick={onDismiss}
-              className="text-ink-muted hover:text-red-400 cursor-pointer px-1 text-[11px] font-bold"
+              onPointerDown={(e) => {
+                e.stopPropagation();
+              }}
+              onPointerUp={(e) => {
+                e.stopPropagation();
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDismiss();
+              }}
+              className="text-ink-muted hover:text-red-400 hover:bg-white/10 active:scale-90 cursor-pointer w-5 h-5 flex items-center justify-center rounded text-sm font-bold leading-none transition-colors"
               title="Close Easter egg"
+              aria-label="Close Easter egg"
             >
               ×
             </button>
