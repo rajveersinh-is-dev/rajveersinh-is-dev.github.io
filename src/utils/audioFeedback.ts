@@ -152,6 +152,59 @@ class AudioFeedbackService {
       osc.stop(now + 0.035);
     } catch {}
   }
+
+  /**
+   * Resonant Letter Pop & Harmonic Chime (~75ms).
+   * Distinct, crisp, resonant acoustic bell / mechanical pop sound
+   * synthesized natively via dual oscillators and exponential gain envelope.
+   * Modulates frequency across a pentatonic overtone scale based on letter index.
+   */
+  public playLetterClick(index: number = 0, isOrange: boolean = true) {
+    if (this.isMuted) return;
+    const ctx = this.initContext();
+    if (!ctx) return;
+    this.resumeContext(ctx);
+
+    try {
+      const now = ctx.currentTime;
+      // Pentatonic overtone scale frequencies: C5, D5, E5, G5, A5, C6, D6, E6, G6, A6, C7...
+      const scale = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50, 1174.66, 1318.51, 1567.98, 1760.00, 2093.00];
+      const baseFreq = scale[Math.abs(index) % scale.length];
+      const freq = isOrange ? baseFreq : baseFreq * 0.75;
+
+      // Primary tone oscillator (warm triangle with exponential decay)
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+
+      osc1.type = 'triangle';
+      osc1.frequency.setValueAtTime(freq, now);
+      osc1.frequency.exponentialRampToValueAtTime(freq * 0.96, now + 0.07);
+
+      gain1.gain.setValueAtTime(0.065, now);
+      gain1.gain.exponentialRampToValueAtTime(0.0001, now + 0.075);
+
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start(now);
+      osc1.stop(now + 0.08);
+
+      // Distinct mechanical transient 'pop' (crisp high sine burst, 14ms)
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(freq * 2.5, now);
+      osc2.frequency.exponentialRampToValueAtTime(freq * 0.5, now + 0.015);
+
+      gain2.gain.setValueAtTime(0.05, now);
+      gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.018);
+
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.start(now);
+      osc2.stop(now + 0.02);
+    } catch {}
+  }
 }
 
 export const audioService = new AudioFeedbackService();

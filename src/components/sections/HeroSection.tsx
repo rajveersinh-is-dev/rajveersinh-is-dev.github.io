@@ -8,7 +8,27 @@ import { usePreferences } from '../../context';
 import { FileDown, ArrowDown } from 'lucide-react';
 
 export const HeroSection: React.FC = () => {
-  const { visualEffectsEnabled, playClick } = usePreferences();
+  const { visualEffectsEnabled, playClick, playLetterClick, theme } = usePreferences();
+
+  const FIRST_NAME = 'RAJVEERSINH';
+  const SECOND_NAME_VISHAL = 'VISHAL';
+  const SECOND_NAME_PARDESHI = 'PARDESHI';
+
+  const [orangeLetters, setOrangeLetters] = useState<Set<string>>(() => new Set());
+
+  const toggleLetterOrange = (id: string, index: number) => {
+    setOrangeLetters((prev) => {
+      const next = new Set(prev);
+      const willBeOrange = !next.has(id);
+      if (willBeOrange) {
+        next.add(id);
+      } else {
+        next.delete(id);
+      }
+      playLetterClick?.(index, willBeOrange);
+      return next;
+    });
+  };
 
   const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
@@ -82,22 +102,141 @@ export const HeroSection: React.FC = () => {
             <div>SSA[L₁: φ(v₀, v₁)] ⇓ codegen</div>
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-1 pointer-events-auto select-none">
             <h1
               aria-label="Rajveersinh Vishal Pardeshi"
               className="font-serif tracking-tight text-ink-primary"
             >
-              <MaskedReveal delayMs={100}>
-                <span className="block text-[2.75rem] min-[400px]:text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black leading-none tracking-tight">
-                  RAJVEERSINH
-                </span>
-              </MaskedReveal>
-              <MaskedReveal delayMs={200}>
-                <span className="block text-xl min-[400px]:text-2xl sm:text-4xl md:text-5xl font-serif font-light text-ink-muted sm:translate-x-8 md:translate-x-12 mt-1 sm:mt-2 tracking-normal">
-                  VISHAL PARDESHI
-                </span>
-              </MaskedReveal>
+              <span className="sr-only">Rajveersinh Vishal Pardeshi</span>
+              <div aria-hidden="true">
+                <MaskedReveal delayMs={100} className="overflow-visible" innerClassName="pt-2 pb-1">
+                  <span className="block text-[2.75rem] min-[400px]:text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black leading-none tracking-tight">
+                    {FIRST_NAME.split('').map((char, i) => {
+                      const id = `first-${i}`;
+                      const isOrange = orangeLetters.has(id);
+                      return (
+                        <span
+                          key={id}
+                          onClick={() => toggleLetterOrange(id, i)}
+                          className={`inline-block cursor-pointer select-none transition-all duration-200 ease-out origin-bottom hover:-translate-y-2.5 hover:scale-115 sm:hover:scale-120 hover:z-30 relative active:scale-95 ${
+                            isOrange
+                              ? 'text-orange-500 dark:text-[#ff6600] font-black'
+                              : 'text-ink-primary hover:text-ink-primary hover:drop-shadow-[0_10px_14px_rgba(0,0,0,0.45)]'
+                          }`}
+                          style={{
+                            textShadow: isOrange
+                              ? theme === 'paper'
+                                ? '0 0 14px rgba(234, 88, 12, 0.45)'
+                                : '0 0 20px rgba(255, 102, 0, 0.8), 0 0 35px rgba(255, 102, 0, 0.45)'
+                              : undefined,
+                            filter: isOrange
+                              ? theme === 'paper'
+                                ? 'drop-shadow(0 2px 4px rgba(234, 88, 12, 0.35))'
+                                : 'drop-shadow(0 0 12px rgba(255, 102, 0, 0.65))'
+                              : undefined,
+                          }}
+                          title={`Click to illuminate "${char}" orange`}
+                        >
+                          {char}
+                        </span>
+                      );
+                    })}
+                  </span>
+                </MaskedReveal>
+
+                <MaskedReveal delayMs={200} className="overflow-visible" innerClassName="pt-1 pb-1">
+                  <span className="block text-xl min-[400px]:text-2xl sm:text-4xl md:text-5xl font-serif font-light text-ink-muted sm:translate-x-8 md:translate-x-12 mt-1 sm:mt-2 tracking-normal">
+                    {SECOND_NAME_VISHAL.split('').map((char, i) => {
+                      const id = `second-v-${i}`;
+                      const isOrange = orangeLetters.has(id);
+                      const noteIndex = 11 + i;
+                      return (
+                        <span
+                          key={id}
+                          onClick={() => toggleLetterOrange(id, noteIndex)}
+                          className={`inline-block cursor-pointer select-none transition-all duration-200 ease-out origin-bottom hover:-translate-y-1.5 hover:scale-115 hover:z-30 relative active:scale-95 ${
+                            isOrange
+                              ? 'text-orange-500 dark:text-[#ff6600] font-semibold'
+                              : 'text-ink-muted hover:text-ink-primary'
+                          }`}
+                          style={{
+                            textShadow: isOrange
+                              ? theme === 'paper'
+                                ? '0 0 10px rgba(234, 88, 12, 0.4)'
+                                : '0 0 16px rgba(255, 102, 0, 0.75)'
+                              : undefined,
+                          }}
+                          title={`Click to illuminate "${char}" orange`}
+                        >
+                          {char}
+                        </span>
+                      );
+                    })}
+                    <span className="inline-block w-[0.25em] sm:w-[0.3em] select-none">&nbsp;</span>
+                    {SECOND_NAME_PARDESHI.split('').map((char, i) => {
+                      const id = `second-p-${i}`;
+                      const isOrange = orangeLetters.has(id);
+                      const noteIndex = 17 + i;
+                      return (
+                        <span
+                          key={id}
+                          onClick={() => toggleLetterOrange(id, noteIndex)}
+                          className={`inline-block cursor-pointer select-none transition-all duration-200 ease-out origin-bottom hover:-translate-y-1.5 hover:scale-115 hover:z-30 relative active:scale-95 ${
+                            isOrange
+                              ? 'text-orange-500 dark:text-[#ff6600] font-semibold'
+                              : 'text-ink-muted hover:text-ink-primary'
+                          }`}
+                          style={{
+                            textShadow: isOrange
+                              ? theme === 'paper'
+                                ? '0 0 10px rgba(234, 88, 12, 0.4)'
+                                : '0 0 16px rgba(255, 102, 0, 0.75)'
+                              : undefined,
+                          }}
+                          title={`Click to illuminate "${char}" orange`}
+                        >
+                          {char}
+                        </span>
+                      );
+                    })}
+                  </span>
+                </MaskedReveal>
+              </div>
             </h1>
+
+            {/* Interactive Illumination Controls (shown when letters are illuminated) */}
+            {orangeLetters.size > 0 && (
+              <div className="pt-2 flex items-center gap-2 text-[10px] sm:text-xs font-mono text-academic-amber animate-fade-in select-none">
+                <span className="font-bold">● {orangeLetters.size} of 25 letters illuminated</span>
+                <span className="text-ink-dim">•</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOrangeLetters(new Set());
+                    playClick(440);
+                  }}
+                  className="hover:underline text-ink-muted hover:text-academic-amber cursor-pointer px-1 py-0.5 rounded border border-paper-border-subtle hover:border-academic-amber/50"
+                  title="Reset illuminated letters"
+                >
+                  [Reset ↺]
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const all = new Set<string>();
+                    FIRST_NAME.split('').forEach((_, i) => all.add(`first-${i}`));
+                    SECOND_NAME_VISHAL.split('').forEach((_, i) => all.add(`second-v-${i}`));
+                    SECOND_NAME_PARDESHI.split('').forEach((_, i) => all.add(`second-p-${i}`));
+                    setOrangeLetters(all);
+                    playClick(880);
+                  }}
+                  className="hover:underline text-ink-muted hover:text-academic-amber cursor-pointer px-1 py-0.5 rounded border border-paper-border-subtle hover:border-academic-amber/50"
+                  title="Turn all letters orange"
+                >
+                  [All Orange ⚡]
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Restrained Italic Tagline */}

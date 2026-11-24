@@ -23,6 +23,7 @@ export interface PreferencesContextType {
   toggleTerminal: () => void;
   playClick: (pitch?: number) => void;
   playToggle: (active: boolean) => void;
+  playLetterClick: (index?: number, isOrange?: boolean) => void;
 }
 
 export const PreferencesContext = createContext<PreferencesContextType | undefined>(undefined);

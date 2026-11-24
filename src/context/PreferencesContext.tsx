@@ -155,6 +155,10 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
     if (soundEnabled) audioService.playToggle(active);
   }, [soundEnabled]);
 
+  const playLetterClick = useCallback((index?: number, isOrange?: boolean) => {
+    if (soundEnabled) audioService.playLetterClick(index, isOrange);
+  }, [soundEnabled]);
+
   // Global Keyboard shortcuts: Ctrl+K (Concordance), Backtick or Ctrl+\ (Terminal), Esc (Close dialogs)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -233,6 +237,7 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
         toggleTerminal,
         playClick,
         playToggle,
+        playLetterClick,
       }}
     >
       {children}

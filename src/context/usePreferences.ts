@@ -22,6 +22,7 @@ const defaultPreferences: PreferencesContextType = {
   toggleTerminal: () => {},
   playClick: () => {},
   playToggle: () => {},
+  playLetterClick: () => {},
 };
 
 export const usePreferences = (): PreferencesContextType => {
