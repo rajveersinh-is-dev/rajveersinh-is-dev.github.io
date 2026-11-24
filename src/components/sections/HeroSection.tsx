@@ -1,22 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { profileData } from '../../data';
 import { downloadPdfCv } from '../../utils/generatePdfCv';
 import { AsciiDitherCanvas } from '../visuals/AsciiDitherCanvas';
 import { HeroTelemetryTicker } from '../common/HeroTelemetryTicker';
 import { MaskedReveal } from '../common/MaskedReveal';
+import { NewtonAppleFBD } from '../common/NewtonAppleFBD';
 import { usePreferences } from '../../context';
 import { FileDown, ArrowDown } from 'lucide-react';
 
 export const HeroSection: React.FC = () => {
   const { visualEffectsEnabled, playClick, playLetterClick, theme } = usePreferences();
 
-  const FIRST_NAME = 'RAJVEERSINH';
+  // Mathematical reflection: "Rajveersin(h)" incorporating the hyperbolic sine function sinh(x)
+  const FIRST_NAME_LETTERS = ['R', 'A', 'J', 'V', 'E', 'E', 'R', 'S', 'I', 'N', '(', 'h', ')'];
   const SECOND_NAME_VISHAL = 'VISHAL';
   const SECOND_NAME_PARDESHI = 'PARDESHI';
 
   const [orangeLetters, setOrangeLetters] = useState<Set<string>>(() => new Set());
+  const [showNewtonApple, setShowNewtonApple] = useState<boolean>(false);
 
-  const toggleLetterOrange = (id: string, index: number) => {
+  // Easter egg: tracking rapid clicks on the letter 'A' in rAjveersin(h)
+  const aClicksRef = useRef<number>(0);
+  const aLastClickRef = useRef<number>(0);
+
+  useEffect(() => {
+    const handleDrop = () => setShowNewtonApple(true);
+    window.addEventListener('rvp:drop-apple', handleDrop);
+    return () => window.removeEventListener('rvp:drop-apple', handleDrop);
+  }, []);
+
+  const toggleLetterOrange = (id: string, index: number, char: string) => {
+    // Check for Easter egg trigger on letter 'A' (index 1 of first name)
+    if (id === 'first-1' && char === 'A') {
+      const now = Date.now();
+      if (now - aLastClickRef.current < 2500) {
+        aClicksRef.current += 1;
+      } else {
+        aClicksRef.current = 1;
+      }
+      aLastClickRef.current = now;
+
+      if (aClicksRef.current >= 3) {
+        aClicksRef.current = 0;
+        setShowNewtonApple(true);
+      }
+    }
+
     setOrangeLetters((prev) => {
       const next = new Set(prev);
       const willBeOrange = !next.has(id);
@@ -111,16 +140,20 @@ export const HeroSection: React.FC = () => {
               <div aria-hidden="true">
                 <MaskedReveal delayMs={100} className="overflow-visible" innerClassName="pt-2 pb-1">
                   <span className="block text-[2.75rem] min-[400px]:text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black leading-none tracking-tight">
-                    {FIRST_NAME.split('').map((char, i) => {
+                    {FIRST_NAME_LETTERS.map((char, i) => {
                       const id = `first-${i}`;
                       const isOrange = orangeLetters.has(id);
+                      const isHyperbolic = char === '(' || char === 'h' || char === ')';
+                      const isA = id === 'first-1' && char === 'A';
                       return (
                         <span
                           key={id}
-                          onClick={() => toggleLetterOrange(id, i)}
+                          onClick={() => toggleLetterOrange(id, i, char)}
                           className={`inline-block cursor-pointer select-none transition-all duration-200 ease-out origin-bottom hover:-translate-y-2.5 hover:scale-115 sm:hover:scale-120 hover:z-30 relative active:scale-95 ${
                             isOrange
                               ? 'text-orange-500 dark:text-[#ff6600] font-black'
+                              : isHyperbolic
+                              ? 'font-serif italic text-academic-amber hover:text-orange-500'
                               : 'text-ink-primary hover:text-ink-primary hover:drop-shadow-[0_10px_14px_rgba(0,0,0,0.45)]'
                           }`}
                           style={{
@@ -135,7 +168,13 @@ export const HeroSection: React.FC = () => {
                                 : 'drop-shadow(0 0 12px rgba(255, 102, 0, 0.65))'
                               : undefined,
                           }}
-                          title={`Click to illuminate "${char}" orange`}
+                          title={
+                            isA
+                              ? 'Click to illuminate "A" orange (Easter egg: click 3x for Newton\'s apple)'
+                              : isHyperbolic
+                              ? 'Hyperbolic sine: sinh(x) = (eˣ - e⁻ˣ)/2 • Click to illuminate'
+                              : `Click to illuminate "${char}" orange`
+                          }
                         >
                           {char}
                         </span>
@@ -149,11 +188,11 @@ export const HeroSection: React.FC = () => {
                     {SECOND_NAME_VISHAL.split('').map((char, i) => {
                       const id = `second-v-${i}`;
                       const isOrange = orangeLetters.has(id);
-                      const noteIndex = 11 + i;
+                      const noteIndex = 13 + i;
                       return (
                         <span
                           key={id}
-                          onClick={() => toggleLetterOrange(id, noteIndex)}
+                          onClick={() => toggleLetterOrange(id, noteIndex, char)}
                           className={`inline-block cursor-pointer select-none transition-all duration-200 ease-out origin-bottom hover:-translate-y-1.5 hover:scale-115 hover:z-30 relative active:scale-95 ${
                             isOrange
                               ? 'text-orange-500 dark:text-[#ff6600] font-semibold'
@@ -176,11 +215,11 @@ export const HeroSection: React.FC = () => {
                     {SECOND_NAME_PARDESHI.split('').map((char, i) => {
                       const id = `second-p-${i}`;
                       const isOrange = orangeLetters.has(id);
-                      const noteIndex = 17 + i;
+                      const noteIndex = 19 + i;
                       return (
                         <span
                           key={id}
-                          onClick={() => toggleLetterOrange(id, noteIndex)}
+                          onClick={() => toggleLetterOrange(id, noteIndex, char)}
                           className={`inline-block cursor-pointer select-none transition-all duration-200 ease-out origin-bottom hover:-translate-y-1.5 hover:scale-115 hover:z-30 relative active:scale-95 ${
                             isOrange
                               ? 'text-orange-500 dark:text-[#ff6600] font-semibold'
@@ -207,7 +246,7 @@ export const HeroSection: React.FC = () => {
             {/* Interactive Illumination Controls (shown when letters are illuminated) */}
             {orangeLetters.size > 0 && (
               <div className="pt-2 flex items-center gap-2 text-[10px] sm:text-xs font-mono text-academic-amber animate-fade-in select-none">
-                <span className="font-bold">● {orangeLetters.size} of 25 letters illuminated</span>
+                <span className="font-bold">● {orangeLetters.size} of 27 letters illuminated</span>
                 <span className="text-ink-dim">•</span>
                 <button
                   type="button"
@@ -224,7 +263,7 @@ export const HeroSection: React.FC = () => {
                   type="button"
                   onClick={() => {
                     const all = new Set<string>();
-                    FIRST_NAME.split('').forEach((_, i) => all.add(`first-${i}`));
+                    FIRST_NAME_LETTERS.forEach((_, i) => all.add(`first-${i}`));
                     SECOND_NAME_VISHAL.split('').forEach((_, i) => all.add(`second-v-${i}`));
                     SECOND_NAME_PARDESHI.split('').forEach((_, i) => all.add(`second-p-${i}`));
                     setOrangeLetters(all);
@@ -324,6 +363,11 @@ export const HeroSection: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Newton's Apple Free Body Diagram Easter Egg */}
+      {showNewtonApple && (
+        <NewtonAppleFBD onDismiss={() => setShowNewtonApple(false)} />
+      )}
     </section>
   );
 };

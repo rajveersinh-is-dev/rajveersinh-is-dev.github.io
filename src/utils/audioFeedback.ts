@@ -205,6 +205,93 @@ class AudioFeedbackService {
       osc2.stop(now + 0.02);
     } catch {}
   }
+
+  /**
+   * Newton's Apple Discovery Chime: 3-note harmonic triad.
+   */
+  public playEasterEggChime() {
+    if (this.isMuted) return;
+    const ctx = this.initContext();
+    if (!ctx) return;
+    this.resumeContext(ctx);
+
+    try {
+      const now = ctx.currentTime;
+      const notes = [587.33, 739.99, 880.0]; // D5, F#5, A5
+      notes.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const start = now + i * 0.07;
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, start);
+        gain.gain.setValueAtTime(0.05, start);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.18);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(start);
+        osc.stop(start + 0.2);
+      });
+    } catch {}
+  }
+
+  /**
+   * Apple ground collision bounce thud (~40ms).
+   */
+  public playAppleBounce(intensity: number = 1) {
+    if (this.isMuted) return;
+    const ctx = this.initContext();
+    if (!ctx) return;
+    this.resumeContext(ctx);
+
+    try {
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(140, now);
+      osc.frequency.exponentialRampToValueAtTime(55, now + 0.04);
+
+      const amp = Math.min(0.08, 0.03 * intensity);
+      gain.gain.setValueAtTime(amp, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.045);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.05);
+    } catch {}
+  }
+
+  /**
+   * Aerodynamic throw / ballistic escape whoosh (~90ms).
+   */
+  public playAppleThrow() {
+    if (this.isMuted) return;
+    const ctx = this.initContext();
+    if (!ctx) return;
+    this.resumeContext(ctx);
+
+    try {
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(260, now);
+      osc.frequency.exponentialRampToValueAtTime(780, now + 0.09);
+
+      gain.gain.setValueAtTime(0.04, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.095);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.1);
+    } catch {}
+  }
 }
 
 export const audioService = new AudioFeedbackService();
