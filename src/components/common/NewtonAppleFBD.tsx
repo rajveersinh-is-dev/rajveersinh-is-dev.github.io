@@ -11,59 +11,153 @@ type AppleMode = 'falling' | 'grounded' | 'dragging' | 'thrown';
 
 export const NewtonAppleFBD: React.FC<NewtonAppleFBDProps> = ({ onDismiss, initialX }) => {
   const { theme } = usePreferences();
-
-  // Position, velocity, acceleration, rotation
-  const [pos, setPos] = useState<{ x: number; y: number }>(() => ({
-    x: initialX ?? (typeof window !== 'undefined' ? window.innerWidth * 0.38 : 300),
-    y: -60,
-  }));
-  const [vel, setVel] = useState<{ x: number; y: number }>({ x: 40, y: 160 });
-  const [acc, setAcc] = useState<{ x: number; y: number }>({ x: 0, y: 980 });
-  const [rot, setRot] = useState<number>(0);
   const [mode, setMode] = useState<AppleMode>('falling');
   const [showToast, setShowToast] = useState<boolean>(false);
 
-  // Animation frame and drag refs
-  const posRef = useRef(pos);
-  const velRef = useRef(vel);
-  const accRef = useRef(acc);
-  const rotRef = useRef(rot);
-  const modeRef = useRef(mode);
+  // References for zero-latency direct DOM updates
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const appleGroupRef = useRef<SVGGElement | null>(null);
+  const velLineRef = useRef<SVGLineElement | null>(null);
+  const velTextRef = useRef<SVGTextElement | null>(null);
+  const dragLineRef = useRef<SVGLineElement | null>(null);
+  const dragTextRef = useRef<SVGTextElement | null>(null);
+  const accLineRef = useRef<SVGLineElement | null>(null);
+  const accTextRef = useRef<SVGTextElement | null>(null);
+  const normalLineRef = useRef<SVGLineElement | null>(null);
+  const normalTextRef = useRef<SVGTextElement | null>(null);
+  const equilibriumTextRef = useRef<SVGTextElement | null>(null);
+  const hudStateRef = useRef<HTMLSpanElement | null>(null);
+  const hudVelRef = useRef<HTMLSpanElement | null>(null);
+  const hudAccRef = useRef<HTMLSpanElement | null>(null);
+
+  const startX = initialX ?? (typeof window !== 'undefined' ? window.innerWidth * 0.38 : 300);
+  const startY = -60;
+
+  // High-performance physics state kept in refs (no React state updates in RAF loop)
+  const posRef = useRef<{ x: number; y: number }>({
+    x: startX,
+    y: startY,
+  });
+  const velRef = useRef<{ x: number; y: number }>({ x: 35, y: 140 });
+  const accRef = useRef<{ x: number; y: number }>({ x: 0, y: 980 });
+  const rotRef = useRef<number>(0);
+  const modeRef = useRef<AppleMode>('falling');
 
   useEffect(() => {
-    posRef.current = pos;
-    velRef.current = vel;
-    accRef.current = acc;
-    rotRef.current = rot;
     modeRef.current = mode;
-  }, [pos, vel, acc, rot, mode]);
+  }, [mode]);
 
+  // Pointer drag tracking
+  const isDraggingRef = useRef<boolean>(false);
   const dragOffsetRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const dragSamplesRef = useRef<Array<{ x: number; y: number; time: number }>>([]);
   const lastTimeRef = useRef<number>(0);
   const rafIdRef = useRef<number | null>(null);
+
+  // Direct GPU DOM update helper
+  const updateDOM = useCallback(() => {
+    const { x, y } = posRef.current;
+    const { x: vx, y: vy } = velRef.current;
+    const { x: ax, y: ay } = accRef.current;
+    const rot = rotRef.current;
+    const curMode = modeRef.current;
+    const speed = Math.hypot(vx, vy);
+    const accMag = Math.hypot(ax, ay);
+
+    // 1. Move container via GPU translate3d with no CSS transition
+    if (containerRef.current) {
+      containerRef.current.style.transform = `translate3d(${x - 40}px, ${y - 40}px, 0)`;
+    }
+
+    // 2. Rotate apple body
+    if (appleGroupRef.current) {
+      appleGroupRef.current.style.transform = `rotate(${rot}deg)`;
+    }
+
+    // 3. Normal force (grounded)
+    const isGrounded = curMode === 'grounded';
+    if (normalLineRef.current) normalLineRef.current.style.display = isGrounded ? 'block' : 'none';
+    if (normalTextRef.current) normalTextRef.current.style.display = isGrounded ? 'block' : 'none';
+    if (equilibriumTextRef.current) equilibriumTextRef.current.style.display = isGrounded ? 'block' : 'none';
+
+    // 4. Velocity vector (moving)
+    const showVel = !isGrounded && speed > 20;
+    if (velLineRef.current && velTextRef.current) {
+      velLineRef.current.style.display = showVel ? 'block' : 'none';
+      velTextRef.current.style.display = showVel ? 'block' : 'none';
+      if (showVel) {
+        const vScale = Math.min(75, Math.max(22, speed * 0.1));
+        const vDirX = (vx / speed) * vScale;
+        const vDirY = (vy / speed) * vScale;
+        velLineRef.current.setAttribute('x2', `${vDirX}`);
+        velLineRef.current.setAttribute('y2', `${vDirY}`);
+        velTextRef.current.setAttribute('x', `${vDirX + 6}`);
+        velTextRef.current.setAttribute('y', `${vDirY}`);
+        velTextRef.current.textContent = `v: ${Math.round(speed)}px/s`;
+      }
+    }
+
+    // 5. Drag force vector (opposing velocity in flight)
+    const showDrag = (curMode === 'falling' || curMode === 'thrown') && speed > 35;
+    if (dragLineRef.current && dragTextRef.current) {
+      dragLineRef.current.style.display = showDrag ? 'block' : 'none';
+      dragTextRef.current.style.display = showDrag ? 'block' : 'none';
+      if (showDrag) {
+        const dragScale = Math.min(60, Math.max(18, speed * 0.08));
+        const dragDirX = (-vx / speed) * dragScale;
+        const dragDirY = (-vy / speed) * dragScale;
+        dragLineRef.current.setAttribute('x2', `${dragDirX}`);
+        dragLineRef.current.setAttribute('y2', `${dragDirY}`);
+        dragTextRef.current.setAttribute('x', `${dragDirX + 6}`);
+        dragTextRef.current.setAttribute('y', `${dragDirY}`);
+      }
+    }
+
+    // 6. Acceleration vector (dragging)
+    const showAcc = curMode === 'dragging' && accMag > 50;
+    if (accLineRef.current && accTextRef.current) {
+      accLineRef.current.style.display = showAcc ? 'block' : 'none';
+      accTextRef.current.style.display = showAcc ? 'block' : 'none';
+      if (showAcc) {
+        const accScale = Math.min(70, Math.max(20, accMag * 0.04));
+        const accDirX = (ax / accMag) * accScale;
+        const accDirY = (ay / accMag) * accScale;
+        accLineRef.current.setAttribute('x2', `${accDirX}`);
+        accLineRef.current.setAttribute('y2', `${accDirY}`);
+        accTextRef.current.setAttribute('x', `${accDirX + 6}`);
+        accTextRef.current.setAttribute('y', `${accDirY}`);
+        accTextRef.current.textContent = `a: ${Math.round(accMag)}px/s²`;
+      }
+    }
+
+    // 7. Telemetry HUD text
+    if (hudStateRef.current) hudStateRef.current.textContent = curMode.toUpperCase();
+    if (hudVelRef.current) hudVelRef.current.textContent = `|v|: ${Math.round(speed)} px/s`;
+    if (hudAccRef.current) hudAccRef.current.textContent = `|a|: ${Math.round(accMag)} px/s²`;
+  }, []);
 
   // Trigger discovery chime once on mount
   useEffect(() => {
     audioService.playEasterEggChime();
   }, []);
 
-  // Main physics loop
+  // Main physics loop: 60/120fps with zero React state thrashing
   useEffect(() => {
     lastTimeRef.current = performance.now();
 
     const loop = (now: number) => {
-      const dt = Math.min(0.033, (now - lastTimeRef.current) / 1000);
+      if (lastTimeRef.current === 0) lastTimeRef.current = now;
+      const dt = Math.min(0.033, Math.max(0.001, (now - lastTimeRef.current) / 1000));
       lastTimeRef.current = now;
 
       const currentMode = modeRef.current;
       const winW = typeof window !== 'undefined' ? window.innerWidth : 1200;
       const winH = typeof window !== 'undefined' ? window.innerHeight : 800;
-      const groundY = winH - 52; // Ground height
+      const groundY = winH - 52;
 
-      if (currentMode === 'falling' || currentMode === 'thrown') {
-        const g = 1380; // px/s²
-        const cd = 0.0009; // aerodynamic drag
+      if (!isDraggingRef.current && (currentMode === 'falling' || currentMode === 'thrown')) {
+        const g = 1400; // px/s²
+        const cd = 0.00085; // aerodynamic drag
         const curVel = velRef.current;
         const curPos = posRef.current;
         const speed = Math.hypot(curVel.x, curVel.y);
@@ -72,33 +166,31 @@ export const NewtonAppleFBD: React.FC<NewtonAppleFBDProps> = ({ onDismiss, initi
         const fdx = -cd * curVel.x * speed;
         const fdy = -cd * curVel.y * speed;
 
-        const newAcc = {
-          x: fdx / 0.15,
-          y: g + fdy / 0.15,
-        };
+        const newAx = fdx / 0.15;
+        const newAy = g + fdy / 0.15;
 
-        const newVx = curVel.x + newAcc.x * dt;
-        const newVy = curVel.y + newAcc.y * dt;
+        let newVx = curVel.x + newAx * dt;
+        let newVy = curVel.y + newAy * dt;
 
         let newX = curPos.x + newVx * dt;
         let newY = curPos.y + newVy * dt;
-        let newRot = rotRef.current + (curVel.x * 0.15) * dt * 50;
+        let newRot = rotRef.current + (newVx * 0.15) * dt * 45;
 
         // Ground collision check
         if (newY >= groundY && newX >= -80 && newX <= winW + 80) {
           newY = groundY;
-          if (Math.abs(newVy) > 100) {
+          if (Math.abs(newVy) > 90) {
             // Restitution bounce
-            const bounceVy = -newVy * 0.42;
-            const bounceVx = newVx * 0.72;
-            audioService.playAppleBounce(Math.min(1.5, Math.abs(newVy) / 400));
-            velRef.current = { x: bounceVx, y: bounceVy };
+            newVy = -newVy * 0.40;
+            newVx = newVx * 0.70;
+            audioService.playAppleBounce(Math.min(1.5, Math.abs(newVy) / 380));
           } else {
             // Settle on ground
-            setMode('grounded');
-            modeRef.current = 'grounded';
-            velRef.current = { x: 0, y: 0 };
+            newVy = 0;
+            newVx = 0;
             newRot = 0;
+            modeRef.current = 'grounded';
+            setMode('grounded');
           }
         }
 
@@ -111,15 +203,17 @@ export const NewtonAppleFBD: React.FC<NewtonAppleFBDProps> = ({ onDismiss, initi
             setShowToast(true);
             setTimeout(() => {
               onDismiss();
-            }, 800);
+            }, 600);
             return;
           }
         }
 
-        setPos({ x: newX, y: newY });
-        setVel(velRef.current);
-        setAcc(newAcc);
-        setRot(newRot);
+        posRef.current = { x: newX, y: newY };
+        velRef.current = { x: newVx, y: newVy };
+        accRef.current = { x: newAx, y: newAy };
+        rotRef.current = newRot;
+
+        updateDOM();
       }
 
       rafIdRef.current = requestAnimationFrame(loop);
@@ -131,13 +225,14 @@ export const NewtonAppleFBD: React.FC<NewtonAppleFBDProps> = ({ onDismiss, initi
         cancelAnimationFrame(rafIdRef.current);
       }
     };
-  }, [onDismiss]);
+  }, [onDismiss, updateDOM]);
 
-  // Pointer drag handlers
+  // Pointer drag handlers: butter-smooth direct tracking
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     e.currentTarget.setPointerCapture(e.pointerId);
-    setMode('dragging');
+    isDraggingRef.current = true;
     modeRef.current = 'dragging';
+    setMode('dragging');
 
     dragOffsetRef.current = {
       x: e.clientX - posRef.current.x,
@@ -149,13 +244,12 @@ export const NewtonAppleFBD: React.FC<NewtonAppleFBDProps> = ({ onDismiss, initi
   }, []);
 
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    if (modeRef.current !== 'dragging') return;
+    if (!isDraggingRef.current) return;
 
     const now = performance.now();
     const newX = e.clientX - dragOffsetRef.current.x;
     const newY = e.clientY - dragOffsetRef.current.y;
 
-    // Track pointer movement for dynamic velocity and acceleration
     const samples = dragSamplesRef.current;
     samples.push({ x: e.clientX, y: e.clientY, time: now });
     if (samples.length > 5) samples.shift();
@@ -178,50 +272,46 @@ export const NewtonAppleFBD: React.FC<NewtonAppleFBDProps> = ({ onDismiss, initi
       computedAy = (computedVy - prevVy) / dtSec;
     }
 
-    setPos({ x: newX, y: newY });
-    setVel({ x: computedVx, y: computedVy });
-    setAcc({ x: computedAx, y: computedAy });
-    setRot(computedVx * 0.05);
-  }, []);
+    posRef.current = { x: newX, y: newY };
+    velRef.current = { x: computedVx, y: computedVy };
+    accRef.current = { x: computedAx, y: computedAy };
+    rotRef.current = computedVx * 0.04;
+
+    updateDOM();
+  }, [updateDOM]);
 
   const handlePointerUp = useCallback((e: React.PointerEvent) => {
     try {
       e.currentTarget.releasePointerCapture(e.pointerId);
     } catch {}
 
+    isDraggingRef.current = false;
     const curVel = velRef.current;
     const speed = Math.hypot(curVel.x, curVel.y);
     const winW = typeof window !== 'undefined' ? window.innerWidth : 1200;
     const winH = typeof window !== 'undefined' ? window.innerHeight : 800;
     const curPos = posRef.current;
 
-    // If released with high velocity or outside screen, it's thrown!
-    if (
-      speed > 280 ||
-      curPos.x < 20 ||
-      curPos.x > winW - 20 ||
-      curPos.y < 20
-    ) {
-      setMode('thrown');
+    // Check if thrown with speed or dragged beyond screen boundaries
+    if (speed > 240 || curPos.x < 30 || curPos.x > winW - 30 || curPos.y < 30) {
       modeRef.current = 'thrown';
+      setMode('thrown');
       audioService.playAppleThrow();
     } else if (curPos.y >= winH - 75) {
-      // Sits on ground
-      setMode('grounded');
       modeRef.current = 'grounded';
-      setVel({ x: 0, y: 0 });
-      setPos({ x: curPos.x, y: winH - 52 });
+      setMode('grounded');
+      velRef.current = { x: 0, y: 0 };
+      accRef.current = { x: 0, y: 0 };
+      rotRef.current = 0;
+      posRef.current.y = winH - 52;
+      updateDOM();
     } else {
-      // Drop under gravity
-      setMode('falling');
       modeRef.current = 'falling';
+      setMode('falling');
     }
-  }, []);
+  }, [updateDOM]);
 
-  const speed = Math.hypot(vel.x, vel.y);
-  const accMag = Math.hypot(acc.x, acc.y);
-
-  // Theme palettes for vector diagram
+  // Initial values for SSR/first paint
   const isAmber = theme === 'amber-crt';
   const isPaper = theme === 'paper';
 
@@ -229,32 +319,6 @@ export const NewtonAppleFBD: React.FC<NewtonAppleFBDProps> = ({ onDismiss, initi
   const appleStroke = isAmber ? '#ffd24d' : isPaper ? '#7c2d12' : '#991b1b';
   const stemColor = isAmber ? '#805800' : '#78350f';
   const leafColor = isAmber ? '#ffb000' : '#16a34a';
-
-  // Dynamic vector arrows from Center of Mass (0, 0)
-  // 1. Gravity (Weight W = mg)
-  const fgLen = 50;
-
-  // 2. Normal force N (when grounded)
-  const showNormal = mode === 'grounded';
-  const nLen = 50;
-
-  // 3. Velocity vector v (when moving)
-  const showVelocity = mode !== 'grounded' && speed > 25;
-  const vScale = Math.min(80, Math.max(22, speed * 0.1));
-  const vDirX = speed > 0 ? (vel.x / speed) * vScale : 0;
-  const vDirY = speed > 0 ? (vel.y / speed) * vScale : 0;
-
-  // 4. Drag force Fd (opposing velocity when in air)
-  const showDrag = (mode === 'falling' || mode === 'thrown') && speed > 35;
-  const dragScale = Math.min(65, Math.max(18, speed * 0.08));
-  const dragDirX = speed > 0 ? (-vel.x / speed) * dragScale : 0;
-  const dragDirY = speed > 0 ? (-vel.y / speed) * dragScale : 0;
-
-  // 5. Applied force / Acceleration (when dragging)
-  const showAcc = mode === 'dragging' && accMag > 50;
-  const accScale = Math.min(75, Math.max(20, accMag * 0.04));
-  const accDirX = accMag > 0 ? (acc.x / accMag) * accScale : 0;
-  const accDirY = accMag > 0 ? (acc.y / accMag) * accScale : 0;
 
   return (
     <div
@@ -268,7 +332,7 @@ export const NewtonAppleFBD: React.FC<NewtonAppleFBDProps> = ({ onDismiss, initi
         </div>
       )}
 
-      {/* Ground contact line indicator when apple is near bottom */}
+      {/* Ground contact line indicator */}
       <div
         className="absolute bottom-0 inset-x-0 h-1 border-t border-academic-amber/30 pointer-events-none"
         style={{
@@ -277,11 +341,12 @@ export const NewtonAppleFBD: React.FC<NewtonAppleFBDProps> = ({ onDismiss, initi
         }}
       />
 
-      {/* Main Interactive Physics Container */}
+      {/* Main Interactive Physics Container (Hardware Accelerated) */}
       <div
-        className="absolute pointer-events-auto cursor-grab active:cursor-grabbing touch-none transition-transform"
+        ref={containerRef}
+        className="absolute pointer-events-auto cursor-grab active:cursor-grabbing touch-none will-change-transform"
         style={{
-          transform: `translate3d(${pos.x - 40}px, ${pos.y - 40}px, 0)`,
+          transform: `translate3d(${startX - 40}px, ${startY - 40}px, 0)`,
           width: '80px',
           height: '80px',
         }}
@@ -297,7 +362,6 @@ export const NewtonAppleFBD: React.FC<NewtonAppleFBDProps> = ({ onDismiss, initi
           className="w-[220px] h-[220px] absolute -top-[70px] -left-[70px] overflow-visible pointer-events-none"
         >
           <defs>
-            {/* Arrowhead Markers */}
             <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
               <path d="M 0 1 L 10 5 L 0 9 z" fill="#ef4444" />
             </marker>
@@ -310,9 +374,6 @@ export const NewtonAppleFBD: React.FC<NewtonAppleFBDProps> = ({ onDismiss, initi
             <marker id="arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
               <path d="M 0 1 L 10 5 L 0 9 z" fill="#f97316" />
             </marker>
-            <marker id="arrow-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-              <path d="M 0 1 L 10 5 L 0 9 z" fill="#f59e0b" />
-            </marker>
           </defs>
 
           {/* 1. Downward Gravity Force Vector (W = mg) */}
@@ -320,15 +381,14 @@ export const NewtonAppleFBD: React.FC<NewtonAppleFBDProps> = ({ onDismiss, initi
             x1="0"
             y1="0"
             x2="0"
-            y2={fgLen}
+            y2="50"
             stroke="#ef4444"
             strokeWidth="2.5"
-            strokeDasharray={mode === 'grounded' ? 'none' : '3 2'}
             markerEnd="url(#arrow-red)"
           />
           <text
             x="8"
-            y={fgLen + 4}
+            y="54"
             fill="#ef4444"
             fontSize="9"
             fontWeight="bold"
@@ -338,116 +398,116 @@ export const NewtonAppleFBD: React.FC<NewtonAppleFBDProps> = ({ onDismiss, initi
           </text>
 
           {/* 2. Upward Normal Force Vector N (when grounded) */}
-          {showNormal && (
-            <>
-              <line
-                x1="0"
-                y1="0"
-                x2="0"
-                y2={-nLen}
-                stroke="#10b981"
-                strokeWidth="2.5"
-                markerEnd="url(#arrow-emerald)"
-              />
-              <text
-                x="8"
-                y={-nLen + 4}
-                fill="#10b981"
-                fontSize="9"
-                fontWeight="bold"
-                fontFamily="monospace"
-              >
-                N = 1.47N ↑
-              </text>
-              {/* Static equilibrium tag */}
-              <text
-                x="-55"
-                y="-65"
-                fill="#10b981"
-                fontSize="8"
-                fontWeight="bold"
-                fontFamily="monospace"
-                className="bg-black/80 px-1 py-0.5 rounded"
-              >
-                ΣF = N - mg = 0
-              </text>
-            </>
-          )}
+          <line
+            ref={normalLineRef}
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="-50"
+            stroke="#10b981"
+            strokeWidth="2.5"
+            markerEnd="url(#arrow-emerald)"
+            style={{ display: mode === 'grounded' ? 'block' : 'none' }}
+          />
+          <text
+            ref={normalTextRef}
+            x="8"
+            y="-46"
+            fill="#10b981"
+            fontSize="9"
+            fontWeight="bold"
+            fontFamily="monospace"
+            style={{ display: mode === 'grounded' ? 'block' : 'none' }}
+          >
+            N = 1.47N ↑
+          </text>
+          <text
+            ref={equilibriumTextRef}
+            x="-55"
+            y="-65"
+            fill="#10b981"
+            fontSize="8"
+            fontWeight="bold"
+            fontFamily="monospace"
+            style={{ display: mode === 'grounded' ? 'block' : 'none' }}
+          >
+            ΣF = N - mg = 0
+          </text>
 
           {/* 3. Drag Force Fd (opposing velocity in air) */}
-          {showDrag && (
-            <>
-              <line
-                x1="0"
-                y1="0"
-                x2={dragDirX}
-                y2={dragDirY}
-                stroke="#06b6d4"
-                strokeWidth="2"
-                markerEnd="url(#arrow-cyan)"
-              />
-              <text
-                x={dragDirX + 6}
-                y={dragDirY}
-                fill="#06b6d4"
-                fontSize="8"
-                fontFamily="monospace"
-              >
-                F_drag
-              </text>
-            </>
-          )}
+          <line
+            ref={dragLineRef}
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="0"
+            stroke="#06b6d4"
+            strokeWidth="2"
+            markerEnd="url(#arrow-cyan)"
+            style={{ display: 'none' }}
+          />
+          <text
+            ref={dragTextRef}
+            x="0"
+            y="0"
+            fill="#06b6d4"
+            fontSize="8"
+            fontFamily="monospace"
+            style={{ display: 'none' }}
+          >
+            F_drag
+          </text>
 
           {/* 4. Velocity Vector v */}
-          {showVelocity && (
-            <>
-              <line
-                x1="0"
-                y1="0"
-                x2={vDirX}
-                y2={vDirY}
-                stroke="#10b981"
-                strokeWidth="2"
-                markerEnd="url(#arrow-emerald)"
-              />
-              <text
-                x={vDirX + 6}
-                y={vDirY}
-                fill="#10b981"
-                fontSize="8"
-                fontFamily="monospace"
-              >
-                v: {Math.round(speed)}px/s
-              </text>
-            </>
-          )}
+          <line
+            ref={velLineRef}
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="0"
+            stroke="#10b981"
+            strokeWidth="2"
+            markerEnd="url(#arrow-emerald)"
+            style={{ display: 'none' }}
+          />
+          <text
+            ref={velTextRef}
+            x="0"
+            y="0"
+            fill="#10b981"
+            fontSize="8"
+            fontFamily="monospace"
+            style={{ display: 'none' }}
+          >
+            v
+          </text>
 
           {/* 5. Acceleration Vector a (when dragging) */}
-          {showAcc && (
-            <>
-              <line
-                x1="0"
-                y1="0"
-                x2={accDirX}
-                y2={accDirY}
-                stroke="#f97316"
-                strokeWidth="2"
-                markerEnd="url(#arrow-orange)"
-              />
-              <text
-                x={accDirX + 6}
-                y={accDirY}
-                fill="#f97316"
-                fontSize="8"
-                fontFamily="monospace"
-              >
-                a = d²r/dt²
-              </text>
-            </>
-          )}
+          <line
+            ref={accLineRef}
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="0"
+            stroke="#f97316"
+            strokeWidth="2"
+            markerEnd="url(#arrow-orange)"
+            style={{ display: 'none' }}
+          />
+          <text
+            ref={accTextRef}
+            x="0"
+            y="0"
+            fill="#f97316"
+            fontSize="8"
+            fontFamily="monospace"
+            style={{ display: 'none' }}
+          >
+            a
+          </text>
 
           {/* Rotatable Apple Body Centered at Origin */}
-          <g transform={`rotate(${rot})`}>
+          <g ref={appleGroupRef}>
             {/* Apple Stem */}
             <path
               d="M 0 -18 C 2 -26, 8 -30, 9 -34"
@@ -489,7 +549,7 @@ export const NewtonAppleFBD: React.FC<NewtonAppleFBDProps> = ({ onDismiss, initi
 
         {/* Floating Physics Telemetry Badge */}
         <div
-          className="absolute -top-24 left-14 min-w-[210px] p-2 rounded border border-academic-amber/60 bg-black/90 backdrop-blur-xs text-ink-primary shadow-xl pointer-events-auto"
+          className="absolute -top-24 left-14 min-w-[210px] p-2 rounded border border-academic-amber/60 bg-black/90 backdrop-blur-xs text-ink-primary shadow-xl pointer-events-auto select-none"
           style={{ fontSize: '9px', lineHeight: '1.4' }}
         >
           <div className="flex items-center justify-between border-b border-paper-border-strong pb-1 mb-1 font-bold text-academic-amber">
@@ -504,11 +564,11 @@ export const NewtonAppleFBD: React.FC<NewtonAppleFBDProps> = ({ onDismiss, initi
             </button>
           </div>
           <div className="text-ink-muted">
-            STATE: <span className="text-academic-amber uppercase font-semibold">{mode}</span>
+            STATE: <span ref={hudStateRef} className="text-academic-amber uppercase font-semibold">{mode}</span>
           </div>
           <div className="flex justify-between">
-            <span>|v|: {Math.round(speed)} px/s</span>
-            <span>|a|: {Math.round(accMag)} px/s²</span>
+            <span ref={hudVelRef}>|v|: 0 px/s</span>
+            <span ref={hudAccRef}>|a|: 0 px/s²</span>
           </div>
           <div className="text-[8px] text-ink-dim pt-1 border-t border-paper-border-strong/60 mt-1 flex justify-between items-center">
             <span>Drag to test forces</span>
